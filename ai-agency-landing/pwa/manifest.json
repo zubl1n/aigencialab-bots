@@ -1,0 +1,20 @@
+{
+  "name": "AiGency.cl — Dashboard Enterprise",
+  "short_name": "AiGency",
+  "description": "Dashboard operativo para gestión de agentes IA enterprise. Leads, alertas, tickets y métricas.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0A0A0F",
+  "theme_color": "#0A0A0F",
+  "orientation": "portrait",
+  "categories": ["business", "productivity"],
+  "lang": "es-CL",
+  "icons": [
+    { "src": "../public/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "../public/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Ver Leads", "url": "./index.html#pg-leads", "description": "Pipeline de leads calientes" },
+    { "name": "Ver Alertas", "url": "./index.html#pg-alerts", "description": "Alertas de negocio activas" }
+  ]
+}

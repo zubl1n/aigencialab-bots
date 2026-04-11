@@ -1,0 +1,103 @@
+﻿<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Demo: Agente de Atención al Cliente IA — AigenciaLab.cl</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Montserrat:wght@600;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/demos/demo-shared.css"/>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="../../index.html" class="back-btn">← Volver al Inicio</a>
+  <div class="topbar-title">🎧 Demo: Agente de Atención al Cliente</div>
+  <div class="topbar-badge live">EN VIVO</div>
+</nav>
+
+<div class="dashboard-layout">
+
+  <!-- ── SIDEBAR MÉTRICAS ────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="agent-avatar">🤖</div>
+      <div>
+        <div class="agent-name">Nova · Soporte IA</div>
+        <div class="agent-status">● Activo — Turno 24/7</div>
+      </div>
+    </div>
+
+    <!-- KPIs -->
+    <!-- TABS -->
+    <div class="sidebar-tabs">
+      <button class="stab active" data-tab="dashboard">📊 Dashboard</button>
+      <button class="stab" data-tab="clientes">🗃️ Clientes</button>
+    </div>
+
+    <!-- TAB: DASHBOARD -->
+    <div class="tab-panel" id="tab-dashboard" style="display:flex;flex-direction:column;gap:14px;">
+    <div class="kpi-grid">
+      <div class="kpi-card green"><div class="kpi-val" id="kpiResolved">0</div><div class="kpi-label">Tickets Resueltos</div></div>
+      <div class="kpi-card hl"><div class="kpi-val" id="kpiCSAT">—</div><div class="kpi-label">CSAT ★</div></div>
+      <div class="kpi-card"><div class="kpi-val" id="kpiTMO">—</div><div class="kpi-label">TMO Promedio</div></div>
+      <div class="kpi-card"><div class="kpi-val" id="kpiEscalated">0</div><div class="kpi-label">Escalados</div></div>
+    </div>
+    <div class="section-label">Tickets Activos</div>
+    <div class="ticket-list" id="ticketList"></div>
+    <div class="section-label">Base de Conocimiento</div>
+    <ul class="kb-list">
+      <li onclick="injectFAQ('¿Cuál es el horario de atención?')">&#128203; Horarios de atención</li>
+      <li onclick="injectFAQ('¿Cómo hago una devolución?')">&#128203; Política de devoluciones</li>
+      <li onclick="injectFAQ('¿Cuál es el estado de mi pedido?')">&#128203; Estado de pedido</li>
+      <li onclick="injectFAQ('Quiero hablar con un humano')">&#128203; Escalar a agente humano</li>
+      <li onclick="injectFAQ('Tengo un problema con mi factura')">&#128203; Problemas de facturación</li>
+    </ul>
+    <ul class="activity-log" id="activityLog"></ul>
+    </div>
+
+    <!-- TAB: CLIENTES -->
+    <div class="tab-panel" id="tab-clientes" style="display:none;flex-direction:column;gap:12px;">
+      <div id="clientTable"></div>
+    </div>
+
+    <div class="cyber-notice">
+      🔒 <strong>Ley N°21.663</strong> — Chats no almacenados post-sesión. Cifrado TLS 1.3 en tránsito.
+    </div>
+  </aside>
+
+  <!-- ── CHAT SOPORTE ─────────────────────────────────────────── -->
+  <main class="chat-panel">
+    <div class="chat-header">
+      <div class="header-info">
+        <div class="ticket-badge" id="ticketId">Sin ticket activo</div>
+        <div class="header-sub">Tú eres el cliente — escribe tu consulta</div>
+      </div>
+      <div class="header-actions">
+        <button class="btn-escalate" id="escalateBtn">⚠ Escalar a Humano</button>
+        <button class="btn-new" id="newTicketBtn">+ Nuevo Ticket</button>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="system-msg">Haz clic en <strong>"Nuevo Ticket"</strong> para iniciar una conversación con el Agente de Soporte IA.</div>
+    </div>
+
+    <div class="chat-input-row">
+      <input type="text" id="userInput" placeholder="Escribe tu consulta de soporte aquí..." disabled/>
+      <button id="sendBtn" class="btn-send" disabled>→</button>
+    </div>
+    <div class="chat-note">💡 Pistas: pregunta por devoluciones, horarios, facturas o estado de envío</div>
+  </main>
+
+</div>
+
+<script src="/demos/agente-atencion/app.js"></script>
+</body>
+</html>
+
+<!-- HISTORY MODAL -->
+<div id="historyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center;padding:20px;"><div style="background:#1C1E26;border:1px solid rgba(0,229,255,.2);border-radius:16px;width:100%;max-width:580px;max-height:80vh;display:flex;flex-direction:column;"><div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.07);"><div><div style="font-family:Montserrat,sans-serif;font-weight:700;" id="historyTitle">Historial</div><div style="font-size:.75rem;color:#A9B0BB;margin-top:2px;">Conversaci&oacute;n completa</div></div><button onclick="closeHistory()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#A9B0BB;width:32px;height:32px;border-radius:8px;cursor:pointer;">&#x2715;</button></div><div id="historyContent" style="overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:12px;flex:1;"></div></div></div>
+
+
+

@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Demo: Agente de Backoffice IA — AigenciaLab.cl</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=Montserrat:wght@600;800&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="/demos/demo-shared.css"/>
+</head>
+<body>
+
+<nav class="topbar">
+  <a href="../../index.html" class="back-btn">← Volver al Inicio</a>
+  <div class="topbar-title">⚙️ Demo: Agente de Backoffice IA</div>
+  <div class="topbar-badge">EN VIVO</div>
+</nav>
+
+<div class="dashboard-layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="agent-avatar">🤖</div>
+      <div>
+        <div class="agent-name">Agente Backoffice</div>
+        <div class="agent-status">● Activo — Procesando documentos</div>
+      </div>
+    </div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card hl">
+        <div class="kpi-val" id="kpiDocs">0</div>
+        <div class="kpi-label">Docs Procesados</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-val" id="kpiAccuracy">99.2%</div>
+        <div class="kpi-label">Precisión Extracción</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="kpiTime">—</div>
+        <div class="kpi-label">Tiempo Promedio</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="kpiSaved">—</div>
+        <div class="kpi-label">Horas Ahorradas</div>
+      </div>
+    </div>
+
+    <div class="section-label">Cola de Procesamiento</div>
+    <div class="sidebar-tabs"><button class="stab active" data-tab="dashboard">&#128202; Dashboard</button><button class="stab" data-tab="documentos">&#128450;&#65039; Documentos</button></div><div class="tab-panel" id="tab-dashboard" style="display:flex;flex-direction:column;gap:14px;"><!-- inner start --><<div class="queue-list" id="queueList"></div>
+
+    <div class="section-label" style="margin-top:16px;">Integraciones Activas</div>
+    <ul class="integrations-list">
+      <li class="int-item active">✅ SII Chile — Conectado</li>
+      <li class="int-item active">✅ Defontana ERP — Sincronizado</li>
+      <li class="int-item active">✅ Google Sheets — Activo</li>
+      <li class="int-item pending">🔄 BUK RRHH — Sincronizando...</li>
+    </ul>
+
+    </div><div class="tab-panel" id="tab-documentos" style="display:none;flex-direction:column;gap:12px;"><div id="docTable"></div></div><div class="cyber-notice">
+      🔒 <strong>Ley N°21.663</strong> — RUTs y datos tributarios cifrados AES-256. Sin logs persistentes post-sesión.
+    </div>
+  </aside>
+
+  <!-- ── MAIN PANEL ── -->
+  <main class="main-panel">
+
+    <!-- Upload Zone -->
+    <div class="upload-zone" id="uploadZone">
+      <div class="upload-icon">📄</div>
+      <h3>Arrastra tu Factura o Boleta aquí</h3>
+      <p>Formatos soportados: PDF, XML SII, JPG, PNG · El agente extrae los datos automáticamente</p>
+      <button class="btn-upload" id="uploadBtn">O haz clic para simular carga de documento</button>
+    </div>
+
+    <!-- Processing animation (hidden initially) -->
+    <div class="processing-panel" id="processingPanel" style="display:none;">
+      <div class="proc-header">
+        <div class="proc-icon">⚙️</div>
+        <div>
+          <div class="proc-title">Procesando Documento...</div>
+          <div class="proc-sub" id="procStep">Iniciando motor de extracción</div>
+        </div>
+      </div>
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <ul class="proc-steps" id="procSteps"></ul>
+    </div>
+
+    <!-- Results (hidden initially) -->
+    <div class="results-panel" id="resultsPanel" style="display:none;">
+      <div class="results-header">
+        <h3>✅ Extracción Completada</h3>
+        <div class="results-badges">
+          <span class="rbadge green">Precisión: 99.4%</span>
+          <span class="rbadge">Tiempo: <span id="resultTime">—</span>s</span>
+        </div>
+        <button class="btn-reset" id="resetBtn">Procesar otro documento</button>
+      </div>
+
+      <div class="results-grid">
+        <div class="result-table-wrap">
+          <div class="rt-label">Datos Extraídos del Documento</div>
+          <table class="result-table" id="resultTable"></table>
+        </div>
+        <div class="result-actions-wrap">
+          <div class="rt-label">Acciones de Exportación</div>
+          <div class="action-buttons">
+            <button class="btn-action" onclick="simulateExport('Defontana ERP')">📤 Cargar a Defontana</button>
+            <button class="btn-action" onclick="simulateExport('Google Sheets')">📊 Exportar a Sheets</button>
+            <button class="btn-action" onclick="simulateExport('SII Chile')">🏛 Validar en SII</button>
+            <button class="btn-action" onclick="simulateExport('BUK RRHH')">👥 Enviar a BUK</button>
+          </div>
+          <div class="export-log" id="exportLog"></div>
+        </div>
+      </div>
+
+      <div class="history-label">Historial de documentos procesados en esta sesión</div>
+      <table class="history-table">
+        <thead><tr><th>Documento</th><th>RUT Emisor</th><th>Monto</th><th>Estado</th><th>Destino</th></tr></thead>
+        <tbody id="historyBody"></tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<script src="/demos/agente-backoffice/app.js"></script>
+</body>
+</html>
+
+<div id="historyModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center;padding:20px;"><div style="background:#1C1E26;border:1px solid rgba(0,229,255,.2);border-radius:16px;width:100%;max-width:600px;max-height:80vh;display:flex;flex-direction:column;"><div style="display:flex;justify-content:space-between;align-items:center;padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.07);"><div><div style="font-family:Montserrat,sans-serif;font-weight:700;" id="historyTitle">Documentos</div><div style="font-size:.75rem;color:#A9B0BB;">Historial por empresa</div></div><button onclick="closeHistory()" style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:#A9B0BB;width:32px;height:32px;border-radius:8px;cursor:pointer;">&#x2715;</button></div><div id="historyContent" style="overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;flex:1;"></div></div></div>
+
+
+

@@ -1,0 +1,7 @@
+{
+  "id": "gemini-agent",
+  "name": "AigenciaLab Gemini Agent",
+  "entrypoint": "index.ts",
+  "verify_jwt": false,
+  "import_map": "./import_map.json"
+}

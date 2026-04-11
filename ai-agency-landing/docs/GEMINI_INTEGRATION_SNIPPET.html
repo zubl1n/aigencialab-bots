@@ -1,0 +1,125 @@
+<!-- ═══════════════════════════════════════════════════════════════
+     SNIPPET DE INTEGRACIÓN — Vanilla JS Frontend → Gemini Edge Function
+     
+     CASO 1: Demo en aigencialab.cl (geminiEndpoint activado)
+     CASO 2: Cliente externo (WooCommerce/Shopify) con 1 línea de script
+     ═══════════════════════════════════════════════════════════════ -->
+
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8">
+  <title>Test — Agente Nova con Gemini</title>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════════════════════
+     CASO 1: Activar con cerebro Gemini (Edge Function activa)
+     ══════════════════════════════════════════════════════════ -->
+<script src="/agents/agent-ventas.js"></script>
+<script>
+  AgentVentas.init({
+    companyName:  'AigenciaLab.cl',
+    agentName:    'Nova',
+    agentAvatar:  '🤖',
+    whatsapp:     '+56912345678',
+    primaryColor: '#4F5BD5',
+    accentColor:  '#6366F1',
+
+    // ← ACTIVAR GEMINI: URL de la Supabase Edge Function
+    // Una vez desplegada, obtener la URL desde:
+    // Supabase Dashboard → Edge Functions → gemini-agent → Endpoint URL
+    geminiEndpoint: 'https://hmnbbzpucefcldziwrvs.supabase.co/functions/v1/gemini-agent',
+
+    // Callbacks
+    onNewLead: function(lead) {
+      console.log('[Nova] Nuevo lead:', lead.company, '— Score:', lead.score);
+    },
+    onConversion: function(lead) {
+      console.log('[Nova] CONVERSIÓN:', lead.company);
+      // Aquí podrías enviar a tu CRM o disparar un webhook
+    }
+  });
+
+  AgentVentas.createWidget(); // Renderiza el chat bubble en la esquina
+</script>
+
+
+<!-- ══════════════════════════════════════════════════════════
+     CASO 2: Modo LOCAL (sin Gemini — FLOW hardcodeado)
+     Útil para demos, modo offline, o mientras no hay API key
+     ══════════════════════════════════════════════════════════ -->
+<!--
+<script src="https://aigencialab.cl/agents/agent-ventas.js"></script>
+<script>
+  AgentVentas.init({
+    companyName: 'RetailSur SpA',
+    agentName:   'Nova',
+    whatsapp:    '+56987654321',
+    // Sin geminiEndpoint → modo FLOW local automático
+  });
+  AgentVentas.createWidget();
+</script>
+-->
+
+
+<!-- ══════════════════════════════════════════════════════════
+     FETCH DIRECTO — Para frontends custom / SPA
+     Cómo enviar mensajes manualmente a la Edge Function
+     ══════════════════════════════════════════════════════════ -->
+<script>
+// Estado de conversación (se mantiene en memoria del cliente)
+var conversationHistory = [];
+var GEMINI_ENDPOINT = 'https://hmnbbzpucefcldziwrvs.supabase.co/functions/v1/gemini-agent';
+
+/**
+ * sendToGeminiAgent(message) → Promise<{ text, history, toolExecuted? }>
+ * 
+ * Envía un mensaje al agente Nova y devuelve la respuesta.
+ * El historial se actualiza automáticamente para multi-turn.
+ */
+async function sendToGeminiAgent(userMessage) {
+  const payload = {
+    userMessage: userMessage,        // string: texto del usuario
+    history: conversationHistory,    // array: historial previo (roles user/model)
+    context: {                       // object: datos del cliente embebido
+      companyName: 'Mi Empresa SpA',
+      agentName: 'Nova',
+      whatsapp: '+56912345678'
+    }
+  };
+
+  const response = await fetch(GEMINI_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const data = await response.json();
+  // Formato respuesta: { text, history, toolExecuted?, toolResult? }
+
+  // Actualizar historial para el próximo turno (multi-turn conversation)
+  if (Array.isArray(data.history)) {
+    conversationHistory = data.history;
+  }
+
+  return data;
+}
+
+// ── Ejemplo de uso ────────────────────────────────────────────
+// sendToGeminiAgent('Hola, quiero saber cuánto cuesta el plan Pro')
+//   .then(function(data) {
+//     console.log('Nova dice:', data.text);
+//     if (data.toolExecuted) console.log('Herramienta usada:', data.toolExecuted);
+//   })
+//   .catch(function(err) {
+//     console.error('Error:', err.message);
+//   });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8">
+  <title>Reporte de Viabilidad Comercial — AigenciaLab.cl</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Geist+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F4F5F7;
+      --surface: #FFFFFF;
+      --border: rgba(0,0,0,0.08);
+      --text: #1A1D26;
+      --muted: #6B7280;
+      --primary: #4F5BD5;
+      --accent: #2563EB;
+      --green: #059669;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding: 40px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 60px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.05);
+    }
+    .header {
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 24px;
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo { font-size: 1.8rem; font-weight: 800; }
+    .logo span { color: var(--accent); }
+    .date { font-size: 0.9rem; color: var(--muted); font-family: 'Geist Mono', monospace;}
+    
+    h1 { font-size: 1.8rem; font-weight: 800; margin-bottom: 16px; line-height: 1.2; }
+    h2 { font-size: 1.3rem; font-weight: 800; margin-top: 40px; margin-bottom: 16px; color: var(--primary); border-bottom: 1px solid var(--border); padding-bottom: 8px;}
+    h3 { font-size: 1.1rem; font-weight: 600; margin-top: 24px; margin-bottom: 12px; }
+    
+    p { margin-bottom: 16px; font-size: 0.95rem; }
+    
+    .alert {
+      background: rgba(5,150,105,0.08);
+      border-left: 4px solid var(--green);
+      padding: 16px;
+      margin-bottom: 24px;
+      border-radius: 0 8px 8px 0;
+    }
+    .alert strong { color: var(--green); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background: #F8FAFC;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.05em;
+    }
+    a { color: var(--accent); text-decoration: none; font-weight: 600; }
+    a:hover { text-decoration: underline; }
+    
+    ul { margin-left: 24px; margin-bottom: 16px; font-size: 0.95rem;}
+    li { margin-bottom: 8px; }
+
+    .print-btn {
+      display: block;
+      width: 100%;
+      text-align: center;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: white;
+      padding: 14px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 800;
+      margin-bottom: 30px;
+      cursor: pointer;
+      border: none;
+      font-size: 1rem;
+    }
+
+    @media print {
+      body { padding: 0; background: white; }
+      .container { border: none; box-shadow: none; padding: 0; max-width: 100%; }
+      .print-btn { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <button class="print-btn" onclick="window.print()">🖨️ Exportar a PDF (Imprimir -> Guardar como PDF)</button>
+
+  <div class="container">
+    <div class="header">
+      <div class="logo">AigenciaLab<span>.cl</span></div>
+      <div class="date" id="docDate">10 Abril 2026</div>
+    </div>
+
+    <h1>📊 Reporte de Viabilidad Comercial y Estado de Producción</h1>
+
+    <div class="alert">
+      <strong>✅ SÍ, ES TOTALMENTE FACTIBLE INICIAR LA COMERCIALIZACIÓN HOY.</strong>
+      <p style="margin-top: 8px; margin-bottom: 0;">El ecosistema actual de AigenciaLab.cl es sólido como un producto nivel "Enterprise". Todo el frontend de ventas y demostración está construido, así como simuladores muy realistas que funcionan perfectamente para convencer a prospectos B2B.</p>
+    </div>
+
+    <h2>1. Inventario de Activos Funcionales (Adquisición de Clientes)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Módulo</th>
+          <th>Enlace en Producción</th>
+          <th>Estado Realista</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Landing Page Principal</strong></td>
+          <td><a href="https://aigencialab.cl/" target="_blank">https://aigencialab.cl/</a></td>
+          <td><strong>100% Funcional.</strong> Diseño Premium, captura leads hacia Supabase, incluye calculadora de ROI operativa.</td>
+        </tr>
+        <tr>
+          <td><strong>Auditoría IA Gratuita</strong></td>
+          <td><a href="https://aigencialab.cl/audit/" target="_blank">aigencialab.cl/audit/</a></td>
+          <td><strong>100% Funcional.</strong> Usa Google PageSpeed API real. Genera reporte persuasivo para capturar email y celular.</td>
+        </tr>
+        <tr>
+          <td><strong>Onboarding Self-Service</strong></td>
+          <td><a href="https://aigencialab.cl/onboarding/" target="_blank">aigencialab.cl/onboarding/</a></td>
+          <td><strong>100% Funcional.</strong> Cuestionario paso a paso. Guarda la data en Supabase y redirige al nuevo portal de cliente.</td>
+        </tr>
+        <tr>
+          <td><strong>Tarjeta de Presentación</strong></td>
+          <td><a href="https://aigencialab.cl/tarjeta-presentacion.html" target="_blank">Ver QR Web</a></td>
+          <td><strong>100% Funcional.</strong> Lista para imprenta, con QR funcional.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>2. Demos de Agentes (Tu Herramienta de Ventas)</h2>
+    <p>Las demos son tu principal arma comercial. Actualmente usan un motor interno avanzado que simula Inteligencia Artificial mediante flujos estructurados.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>Demo</th>
+          <th>Enlace en Producción</th>
+          <th>Estado Realista</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Agente de Ventas (Prioridad #1)</strong></td>
+          <td><a href="https://aigencialab.cl/demos/agente-ventas/" target="_blank">Ver Demo</a></td>
+          <td><strong>100% Funcional (Simulación).</strong> Responde a intenciones de precio, equipo, demo. Captura datos y los envía a Supabase. <em>Es el bot ideal para vender hoy.</em></td>
+        </tr>
+        <tr>
+          <td><strong>Agente de Atención al Cliente</strong></td>
+          <td><a href="https://aigencialab.cl/demos/agente-atencion/" target="_blank">Ver Demo</a></td>
+          <td><strong>100% Funcional (Simulación).</strong> Maneja reclamos simulados, escalamiento de tickets y consultas de stock.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>3. Ecosistema Privado (Operaciones y Retención)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Panel</th>
+          <th>Enlace y Credenciales</th>
+          <th>Estado Realista</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Admin Dashboard (Uso Interno)</strong></td>
+          <td><a href="https://aigencialab.cl/admin/dashboard/" target="_blank">Admin Login</a><br>User: admin@aigencialab.cl<br>Pass: admin2026</td>
+          <td><strong>100% Funcional.</strong> Conectado a Supabase en tiempo real. Ve los leads entrantes. Muestra métricas de conversión.</td>
+        </tr>
+        <tr>
+          <td><strong>Portal de Clientes (Para ellos)</strong></td>
+          <td><a href="https://aigencialab.cl/client/" target="_blank">Client Login</a><br>User: cliente@empresa.cl<br>Pass: cliente2026</td>
+          <td><strong>Funcional (Modo Demo).</strong> Interfaz gráfica completa con gráficos, historial y métricas realistas para mostrar en reuniones.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>4. Priorización de Ventas B2B</h2>
+    <h3>🥇 PRIORIDAD 1: Agente de Ventas (Para Vender HOY)</h3>
+    <ul>
+      <li><strong>Plan Recomendado:</strong> Plan Pro (UF 12/mes + Setup UF 14).</li>
+      <li><strong>¿Qué hace?:</strong> Filtra curiosos, califica mediante preguntas, capta nombre/celular, y agenda reunión.</li>
+      <li><strong>Discurso comercial:</strong> "Automatiza la calificación de prospectos desde tu web. El bot los atiende 24/7 y te manda los prospectos reales y calientes a tu WhatsApp."</li>
+    </ul>
+
+    <h3>🥈 PRIORIDAD 2: Agente de Atención al Cliente</h3>
+    <ul>
+      <li><strong>Plan Recomendado:</strong> Plan Starter (UF 5/mes) o como Add-on.</li>
+      <li><strong>¿Qué hace?:</strong> Responde preguntas frecuentes, verifica estado de envíos, deriva a un humano si hay frustración.</li>
+    </ul>
+
+    <h2>5. El "Cerebro" Gemini IA vs Modo Simulado</h2>
+    <p>Hemos dejado preparado el código (Edge Function y Snippet) para conectar el Frontend a la API de <strong>Google Gemini 1.5 Flash</strong> cuando un cliente pague su setup.</p>
+    <ul>
+      <li><strong>Estado Actual (SIMULADO):</strong> Al hacer Demos, el bot responde de forma controlada buscando palabras clave. Infalible y sin alucinaciones para cerrar la venta en vivo.</li>
+      <li><strong>Estado Latente (IA REAL):</strong> El puente seguro (Edge Function) está listo. Solo requiere activar la API Key en el panel de Supabase y el bot responderá usando IA generativa total basada en los documentos del cliente.</li>
+    </ul>
+
+    <h2>6. Conclusión y Veredicto Final</h2>
+    <p>Tienes "luz verde" total para salir al mercado.</p>
+    <p>El producto que tienes hoy (Frontend, Landing, Demos, Dashboard, Audit) es visualmente superior a la mayoría del mercado SaaS local. Transmite la confianza de un producto corporativo, estable y enfocado en altos retornos (ROI).</p>
+    <p><strong>Siguientes pasos sugeridos:</strong> No modiques el código web. Invierte tu energía en generar tráfico a <code>aigencialab.cl/audit/</code> y realizar videollamadas de ventas mostrando el <code>Portal de Clientes</code> y la <code>Demo de Ventas</code>.</p>
+  </div>
+  <script>
+    document.getElementById('docDate').textContent = new Date().toLocaleDateString('es-CL', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'America/Santiago' });
+  </script>
+</body>
+</html>

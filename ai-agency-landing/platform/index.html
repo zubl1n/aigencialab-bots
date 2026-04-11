@@ -1,0 +1,194 @@
+﻿<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AigenciaLab Dashboard — Plataforma Enterprise SaaS</title>
+  <meta name="description" content="Dashboard operativo para gestión de agentes IA enterprise: Ecommerce, Logística, Business Intelligence y Ciberseguridad."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="dashboard.css"/>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ── SIDEBAR ────────────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="brand-dot"></div> AigenciaLab<span>.cl</span></div>
+
+    <div class="sidebar-section">Principal</div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-view="overview"><span class="nav-icon">📊</span><span>Overview</span></div>
+    </nav>
+
+    <div class="sidebar-section">Agentes Enterprise</div>
+    <nav class="sidebar-nav">
+      <div class="nav-item" data-view="ecommerce"><span class="nav-icon">🛒</span><span>Sales & Inventory</span></div>
+      <div class="nav-item" data-view="logistics"><span class="nav-icon">🚚</span><span>Logística</span><span class="nav-badge">3</span></div>
+      <div class="nav-item" data-view="bi"><span class="nav-icon">📈</span><span>Business Intelligence</span></div>
+      <div class="nav-item" data-view="cybersecurity"><span class="nav-icon">🛡️</span><span>Ciberseguridad</span><span class="nav-badge">2</span></div>
+    </nav>
+
+    <div class="sidebar-section">CRM & Ventas</div>
+    <nav class="sidebar-nav" id="crmNav">
+      <!-- Módulos inyectados dinámicamente: Pipeline, Alertas, Soporte -->
+    </nav>
+
+    <div class="sidebar-section">Sistema</div>
+    <nav class="sidebar-nav">
+      <div class="nav-item" data-view="logs"><span class="nav-icon">📋</span><span>Logs</span></div>
+    </nav>
+
+    <div class="sidebar-footer">
+      🔒 Ley N°21.663 · Ley N°19.628<br/>
+      <a href="../index.html">← Volver al sitio</a>
+    </div>
+  </aside>
+
+  <!-- ── MAIN CONTENT ──────────────────────────────────────── -->
+  <div class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="pageTitle">Overview — Ecosistema de Agentes</div>
+        <div class="topbar-sub" id="pageSub">Vista consolidada de todos los agentes enterprise</div>
+      </div>
+      <div class="topbar-actions">
+        <span class="topbar-badge live">● EN VIVO</span>
+        <a href="../index.html" class="btn-back">← Sitio Web</a>
+      </div>
+    </div>
+
+    <!-- PAGE CONTENT -->
+    <div class="page-content">
+
+      <!-- ═══ OVERVIEW ═══════════════════════════════════════ -->
+      <div class="module-view active" id="view-overview">
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Ventas Sincronizadas</div><div class="kpi-value" style="color:#2563EB;">$47.2M</div><div class="kpi-delta up">↑ 12.4% vs mes anterior</div></div>
+          <div class="kpi-card"><div class="kpi-label">Envíos Rastreados</div><div class="kpi-value" style="color:#059669;">1,847</div><div class="kpi-delta up">↑ 94.2% entregados a tiempo</div></div>
+          <div class="kpi-card"><div class="kpi-label">Forecast Accuracy</div><div class="kpi-value" style="color:#6C3AED;">91.7%</div><div class="kpi-delta up">↑ 3.1pp vs trimestre anterior</div></div>
+          <div class="kpi-card"><div class="kpi-label">Amenazas Bloqueadas</div><div class="kpi-value" style="color:#DC2626;">2,156</div><div class="kpi-delta">0 incidentes este mes</div></div>
+        </div>
+
+        <div class="grid-2">
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Ventas Últimos 30 Días</div></div>
+            <div class="panel-body"><div id="overviewSalesChart" class="chart-container"></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-header"><div class="panel-title">Distribución por Agente</div></div>
+            <div class="panel-body" style="display:flex;align-items:center;justify-content:center;gap:24px;">
+              <div id="overviewDonut"></div>
+              <div class="chart-legend" style="flex-direction:column;gap:8px;">
+                <span><span class="dot" style="background:#2563EB;"></span> Ecommerce (42%)</span>
+                <span><span class="dot" style="background:#6C3AED;"></span> Logística (28%)</span>
+                <span><span class="dot" style="background:#059669;"></span> BI (18%)</span>
+                <span><span class="dot" style="background:#DC2626;"></span> Cibersec (12%)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Actividad Reciente del Sistema</div></div>
+          <div class="panel-body" id="overviewAlerts">
+            <div class="alert-card info"><div class="alert-icon">🛒</div><div class="alert-body"><div class="alert-title">Stock sincronizado exitosamente</div><div class="alert-desc">WooCommerce → Defontana: 347 SKUs actualizados</div></div><div class="alert-time">Hace 2m</div></div>
+            <div class="alert-card warning"><div class="alert-icon">🚚</div><div class="alert-body"><div class="alert-title">SLA en riesgo: Envío #58392</div><div class="alert-desc">Starken Stgo→Temuco — 4h para vencimiento de plazo</div></div><div class="alert-time">Hace 8m</div></div>
+            <div class="alert-card info"><div class="alert-icon">📈</div><div class="alert-body"><div class="alert-title">Forecast generado: Semana 16</div><div class="alert-desc">3 productos requieren reabastecimiento urgente</div></div><div class="alert-time">Hace 15m</div></div>
+            <div class="alert-card critical"><div class="alert-icon">🛡️</div><div class="alert-body"><div class="alert-title">SQL Injection bloqueada</div><div class="alert-desc">IP 45.33.x.x — 12 intentos en 5 minutos → Bloqueado</div></div><div class="alert-time">Hace 23m</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ECOMMERCE ══════════════════════════════════════ -->
+      <div class="module-view" id="view-ecommerce">
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Ventas Hoy</div><div class="kpi-value" style="color:#2563EB;">$2.8M</div><div class="kpi-delta up">↑ 8.2% vs ayer</div></div>
+          <div class="kpi-card"><div class="kpi-label">Órdenes Activas</div><div class="kpi-value">43</div><div class="kpi-delta">17 pendientes de pago</div></div>
+          <div class="kpi-card"><div class="kpi-label">Carritos Abandonados</div><div class="kpi-value" style="color:#D97706;">12</div><div class="kpi-delta">$1.2M en potencial recuperable</div></div>
+          <div class="kpi-card"><div class="kpi-label">Stock Bajo Mínimo</div><div class="kpi-value" style="color:#DC2626;">5</div><div class="kpi-delta down">↓ 3 SKUs críticos</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel"><div class="panel-header"><div class="panel-title">Ventas por Hora (Hoy)</div></div><div class="panel-body"><div id="ecomSalesChart"></div></div></div>
+          <div class="panel"><div class="panel-header"><div class="panel-title">Top Productos</div></div><div class="panel-body"><div id="ecomTopProducts"></div></div></div>
+        </div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Inventario — Alertas de Stock</div></div><div class="panel-body"><div id="ecomInventoryTable"></div></div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Carritos Abandonados</div></div><div class="panel-body"><div id="ecomCartsTable"></div></div></div>
+      </div>
+
+      <!-- ═══ LOGISTICS ══════════════════════════════════════ -->
+      <div class="module-view" id="view-logistics">
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Envíos Activos</div><div class="kpi-value" style="color:#2563EB;">87</div><div class="kpi-delta up">↑ 12 nuevos hoy</div></div>
+          <div class="kpi-card"><div class="kpi-label">Entregados Hoy</div><div class="kpi-value" style="color:#059669;">34</div><div class="kpi-delta up">94.1% a tiempo</div></div>
+          <div class="kpi-card"><div class="kpi-label">Incidencias Abiertas</div><div class="kpi-value" style="color:#D97706;">3</div><div class="kpi-delta warning">1 en escalamiento</div></div>
+          <div class="kpi-card"><div class="kpi-label">Tiempo Promedio</div><div class="kpi-value">2.4d</div><div class="kpi-delta up">↑ 0.3d más rápido</div></div>
+        </div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Entregas por Courier (Mes)</div></div><div class="panel-body"><div id="logCourierChart"></div></div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Envíos en Tránsito</div></div><div class="panel-body"><div id="logShipmentsTable"></div></div></div>
+      </div>
+
+      <!-- ═══ BUSINESS INTELLIGENCE ══════════════════════════ -->
+      <div class="module-view" id="view-bi">
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Forecast Accuracy</div><div class="kpi-value" style="color:#6C3AED;">91.7%</div><div class="kpi-delta up">↑ 3.1pp vs Q3</div></div>
+          <div class="kpi-card"><div class="kpi-label">Productos en Riesgo de Quiebre</div><div class="kpi-value" style="color:#DC2626;">3</div><div class="kpi-delta">Restock sugerido activo</div></div>
+          <div class="kpi-card"><div class="kpi-label">Clientes en Riesgo de Churn</div><div class="kpi-value" style="color:#D97706;">8</div><div class="kpi-delta">Probabilidad >65%</div></div>
+          <div class="kpi-card"><div class="kpi-label">Segmentos Activos</div><div class="kpi-value" style="color:#059669;">5</div><div class="kpi-delta">Auto-detectados</div></div>
+        </div>
+        <div class="grid-2">
+          <div class="panel"><div class="panel-header"><div class="panel-title">Forecast de Demanda (Próx. 30 Días)</div></div><div class="panel-body"><div id="biForecastChart"></div></div></div>
+          <div class="panel"><div class="panel-header"><div class="panel-title">Distribución de Segmentos</div></div><div class="panel-body" style="display:flex;align-items:center;justify-content:center;gap:20px;"><div id="biSegmentDonut"></div><div class="chart-legend" style="flex-direction:column;gap:6px;"><span><span class="dot" style="background:#2563EB;"></span>Premium (22%)</span><span><span class="dot" style="background:#6C3AED;"></span>Recurrente (34%)</span><span><span class="dot" style="background:#059669;"></span>Ocasional (28%)</span><span><span class="dot" style="background:#D97706;"></span>Inactivo (16%)</span></div></div></div>
+        </div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Clientes en Riesgo de Churn</div></div><div class="panel-body"><div id="biChurnTable"></div></div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Sugerencias de Reabastecimiento</div></div><div class="panel-body"><div id="biRestockTable"></div></div></div>
+      </div>
+
+      <!-- ═══ CYBERSECURITY ══════════════════════════════════ -->
+      <div class="module-view" id="view-cybersecurity">
+        <div class="compliance-bar">
+          <div class="compliance-score high" id="cyberScore">92</div>
+          <div><strong>Score de Compliance:</strong> 92/100 — Ley N°19.628 y N°21.663<br/><span style="font-size:.75rem;color:#6B7280;">Última auditoría: hace 4 días · Próxima: en 26 días</span></div>
+        </div>
+        <div class="kpi-row">
+          <div class="kpi-card"><div class="kpi-label">Amenazas Bloqueadas (30d)</div><div class="kpi-value" style="color:#DC2626;">2,156</div><div class="kpi-delta">0 exitosas</div></div>
+          <div class="kpi-card"><div class="kpi-label">Vulnerabilidades</div><div class="kpi-value" style="color:#D97706;">2</div><div class="kpi-delta">1 crítica, 1 media</div></div>
+          <div class="kpi-card"><div class="kpi-label">Uptime WAF</div><div class="kpi-value" style="color:#059669;">99.98%</div><div class="kpi-delta up">↑ 0.02pp</div></div>
+          <div class="kpi-card"><div class="kpi-label">IPs Bloqueadas</div><div class="kpi-value">847</div><div class="kpi-delta">Blacklist activa</div></div>
+        </div>
+        <div class="panel">
+          <div class="panel-header"><div class="panel-title">Alertas de Seguridad Activas</div></div>
+          <div class="panel-body" id="cyberAlerts">
+            <div class="alert-card critical"><div class="alert-icon">🚨</div><div class="alert-body"><div class="alert-title">SQL Injection detectada — /api/v1/products?id=</div><div class="alert-desc">IP 45.33.32.156 (US) — Patrón: UNION SELECT — Bloqueado por WAF</div></div><div class="alert-time">Hace 23m</div></div>
+            <div class="alert-card warning"><div class="alert-icon">⚠️</div><div class="alert-body"><div class="alert-title">Certificado SSL expira en 14 días</div><div class="alert-desc">Dominio: api.cliente-ejemplo.cl — Renovación automática programada</div></div><div class="alert-time">Hace 2h</div></div>
+            <div class="alert-card info"><div class="alert-icon">ℹ️</div><div class="alert-body"><div class="alert-title">Escaneo de vulnerabilidades completado</div><div class="alert-desc">0 nuevas vulnerabilidades críticas encontradas · 2 medias en revisión</div></div><div class="alert-time">Hace 4h</div></div>
+          </div>
+        </div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Ataques por Tipo (Últimos 30 Días)</div></div><div class="panel-body"><div id="cyberAttackChart"></div></div></div>
+        <div class="panel"><div class="panel-header"><div class="panel-title">Auditoría Compliance — Ley 19.628</div></div><div class="panel-body"><div id="cyberComplianceTable"></div></div></div>
+      </div>
+
+      <!-- ═══ LOGS ═══════════════════════════════════════════ -->
+      <div class="module-view" id="view-logs">
+        <div class="panel"><div class="panel-header"><div class="panel-title">Logs del Sistema — Tiempo Real</div></div><div class="panel-body"><div id="systemLogs"></div></div></div>
+      </div>
+
+    </div><!-- /page-content -->
+  </div><!-- /main-content -->
+</div><!-- /app-layout -->
+
+<script src="components/chart-engine.js"></script>
+<script src="components/data-table.js"></script>
+<script src="components/log-viewer.js"></script>
+<script src="dashboard.js"></script>
+<!-- Growth Layer v3 Modules — load after dashboard.js -->
+<script src="modules/mod-pipeline.js"></script>
+<script src="modules/mod-support.js"></script>
+<script src="modules/mod-proposal.js"></script>
+<script src="modules/mod-alerts.js"></script>
+</body>
+</html>
+
