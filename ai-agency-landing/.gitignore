@@ -1,26 +1,19 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+# ── REGLAS DE SEGURIDAD PARA REPOSITORIO PÚBLICO/CLIENTES ── #
+# Ignoramos TODO el directorio de la aplicación web principal.
+*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Excepciones: Permitimos archivos estrictamente de Agentes
+!/agents/
+!/agents/**
+!/supabase/
+!/supabase/**
+!/docs/
+!/docs/GEMINI_INTEGRATION_SNIPPET.html
+!README.md
+!.gitignore
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Ignorar archivos ocultos del sistema y node modules si cayeran dentro de las excepciones
+node_modules/
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-.vercel
+.env
+.env.*
