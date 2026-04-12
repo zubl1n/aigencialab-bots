@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AigenciaLab.cl — Automatización IA Enterprise para Ecommerce Chile</title>
+  <meta name="description" content="AigenciaLab es una plataforma de software SaaS e IA que provee agentes autónomos diseñados para el ecosistema corporativo chileno. Automatiza logística, sincroniza e-commerce y aplica inteligencia predictiva (Ley N°21.663/N°19.628)."/>
+  <meta name="keywords" content="Desarrollo Ecommerce headless Chile, Integración IA WooCommerce Santiago, Soporte infraestructura IT remoto, Automatización logística con Inteligencia Artificial, Agentes IA empresas Chile"/>
+  <meta name="author" content="AigenciaLab.cl"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Geist+Mono:wght@400;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="./style.css"/>
+  <!-- Vercel Web Analytics -->
+  <script defer src="/_vercel/insights/script.js"></script>
+  <!-- Google Analytics 4 -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <div class="logo">AigenciaLab<span class="text-gradient">.cl</span></div>
+      <nav>
+        <a href="#servicios">Agentes</a>
+        <a href="#infraestructura">Infraestructura</a>
+        <a href="#pricing">Planes</a>
+        <a href="#seguridad">Seguridad</a>
+        <a href="platform/index.html">Dashboard →</a>
+        <a href="audit/index.html" class="btn btn-primary">🔍 Auditoría Gratuita</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- ── HERO ──────────────────────────────────────────────── -->
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-badge">🇨🇱 Socio Tecnológico Enterprise · Ley N°21.663 · Arquitectura RAG & LLMs</div>
+        <h1 class="reveal">Automatización <span class="text-gradient">End-to-End</span><br/>para Empresas que Escalan.</h1>
+        <p class="reveal reveal-delay-1">AigenciaLab es una plataforma de software SaaS y arquitectura de Inteligencia Artificial que provee agentes autónomos diseñados específicamente para el ecosistema corporativo chileno. Su tecnología permite automatizar logística con Starken, sincronizar inventarios e-commerce y aplicar inteligencia de negocios predictiva, garantizando cumplimiento estricto de la nueva Ley Marco de Ciberseguridad N°21.663.</p>
+
+        <div class="hero-terminal reveal reveal-delay-2">
+          <div class="metric"><span class="metric-val" id="counterLeads">0</span><span class="metric-label">leads procesados</span></div>
+          <div class="metric"><span class="metric-val" id="counterDocs">0</span><span class="metric-label">docs extraídos</span></div>
+          <div class="metric"><span class="metric-val" id="counterUptime">99.9%</span><span class="metric-label">uptime SLA</span></div>
+          <div class="metric"><span class="metric-val" id="counterThreats">0</span><span class="metric-label">amenazas bloqueadas</span></div>
+        </div>
+
+        <div class="hero-ctas reveal reveal-delay-3">
+          <a href="audit/index.html" class="btn btn-primary">🔍 Auditar mi Negocio — Gratis</a>
+          <a href="#demos" class="btn btn-secondary">Ver Demos en Vivo →</a>
+          <a href="platform/index.html" class="btn btn-ghost">Acceder al Dashboard ↗</a>
+        </div>
+
+        <div class="social-proof">
+          <span>Integración nativa con ecosistema local:</span>
+          <strong>WooCommerce · Shopify · WhatsApp API · Transbank · BUK · Defontana · SII · MercadoPago</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DOLOR ─────────────────────────────────────────────── -->
+    <section class="pain" id="dolor">
+      <div class="container">
+        <div class="pain-text reveal">
+          <div class="tag">El problema real</div>
+          <h2>Cada proceso manual es margen que pierdes.</h2>
+          <p>Las empresas medianas y grandes en Chile dedican hasta un <strong>40% de sus RRHH</strong> a tareas que hoy se automatizan al 100% con IA: sincronizar stock entre canales, rastrear envíos, conciliar facturas SII y monitorear amenazas. Mientras más creces, más te ahoga el overhead operativo.</p>
+          <ul class="pain-list">
+            <li>⚡ Desincronización de inventario entre WooCommerce / Shopify y tu ERP</li>
+            <li>⚡ Cero visibilidad de última milla post-despacho con Starken o Chilexpress</li>
+            <li>⚡ Decisiones de reabastecimiento por intuición, no por data</li>
+            <li>⚡ Vulnerabilidades web no detectadas hasta que es tarde</li>
+          </ul>
+        </div>
+        <div class="pain-image reveal reveal-delay-2">
+          <img src="./ai_sales_funnel.png" alt="Comparativa de operación manual vs automatizada con IA: reducción de overhead y aceleración del flujo" loading="lazy"/>
+          <div class="img-caption">
+            <span class="tag-left">❌ Operación Manual</span>
+            <span class="tag-right">✓ Automatización IA</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ══ AUDITORÍA LEAD MAGNET ═══════════════════════════════════ -->
+    <section id="auditoria" style="padding:80px 0;background:linear-gradient(135deg,rgba(37,99,235,.04),rgba(108,58,237,.04));border-top:1px solid rgba(255,255,255,.05);border-bottom:1px solid rgba(255,255,255,.05);">
+      <div class="container">
+        <div class="reveal" style="text-align:center;margin-bottom:48px;">
+          <div class="tag center">🎁 100% Gratuito · Sin registro · Resultado en 30 segundos</div>
+          <h2 style="margin-bottom:12px;">Descubre en 30 segundos dónde<br/>pierde dinero tu negocio</h2>
+          <p style="color:var(--text-muted);max-width:540px;margin:0 auto 32px;line-height:1.6;">Nuestro sistema de Auditoría IA analiza automáticamente tu negocio digital y te entrega un reporte con los puntos críticos de pérdida y oportunidades de automatización.</p>
+        </div>
+        <div class="reveal" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;max-width:860px;margin:0 auto 40px;">
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">⚡</div><div style="font-weight:700;margin-bottom:4px;">Velocidad Web</div><div style="font-size:.8rem;color:var(--text-muted);">Score de rendimiento real</div></div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">📊</div><div style="font-weight:700;margin-bottom:4px;">UX / Conversión</div><div style="font-size:.8rem;color:var(--text-muted);">Puntos de fuga detectados</div></div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">🔍</div><div style="font-weight:700;margin-bottom:4px;">SEO Básico</div><div style="font-size:.8rem;color:var(--text-muted);">Visibilidad orgánica</div></div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">💳</div><div style="font-weight:700;margin-bottom:4px;">Checkout</div><div style="font-size:.8rem;color:var(--text-muted);">Tasa de abandono</div></div>
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px;text-align:center;"><div style="font-size:1.8rem;margin-bottom:8px;">🤖</div><div style="font-weight:700;margin-bottom:4px;">Atención IA</div><div style="font-size:.8rem;color:var(--text-muted);">% sin respuesta automática</div></div>
+        </div>
+        <div style="text-align:center;">
+          <a href="audit/index.html" class="btn btn-primary reveal" style="display:inline-flex;font-size:1rem;padding:18px 40px;">🔍 Iniciar Auditoría Gratuita →</a>
+          <p style="margin-top:12px;font-size:.75rem;color:var(--text-muted);">🔒 Datos protegidos bajo Ley N°19.628 · Sin spam · Sin tarjeta</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STACK DE AGENTES (7 total) ────────────────────────── -->
+    <section class="services" id="servicios">
+      <div class="container">
+        <div class="tag center reveal">Stack de Agentes Enterprise</div>
+        <h2 class="reveal">7 Agentes Autónomos para <span class="text-gradient">Cada Vertical</span></h2>
+        <p class="section-sub reveal">Desplegables por separado o como ecosistema integrado. Cada agente tiene API REST documentada, webhooks configurables y adaptador de almacenamiento reemplazable.</p>
+
+        <div class="grid-enterprise">
+          <!-- Enterprise Agents -->
+          <div class="card reveal">
+            <div class="card-badge enterprise">Enterprise</div>
+            <div class="card-icon">🛒</div>
+            <h3>Sales & Inventory Sync</h3>
+            <p>Sincronización bidireccional de stock en tiempo real con WooCommerce y Shopify. Recuperación de carritos vía WhatsApp, validación de pasarelas Transbank/MercadoPago y upselling algorítmico.</p>
+            <div class="card-tags"><span>REST/GraphQL</span><span>WooCommerce</span><span>Shopify</span></div>
+            <a href="platform/index.html#ecommerce" class="card-link">Ver en Dashboard →</a>
+          </div>
+          <div class="card card-featured reveal reveal-delay-1">
+            <div class="card-badge enterprise">Enterprise</div>
+            <div class="card-icon">🚚</div>
+            <h3>Logística & Trazabilidad</h3>
+            <p>Tracking de última milla con Starken, Chilexpress, Blue Express. Dashboard embebido con rutas, gestión de incidencias automatizada y alertas de SLA de entrega en tiempo real.</p>
+            <div class="card-tags"><span>Couriers CL</span><span>SLA</span><span>Alertas</span></div>
+            <a href="platform/index.html#logistics" class="card-link">Ver en Dashboard →</a>
+          </div>
+          <div class="card reveal reveal-delay-2">
+            <div class="card-badge enterprise">Enterprise</div>
+            <div class="card-icon">📈</div>
+            <h3>Business Intelligence</h3>
+            <p>Forecasting de demanda, sugerencias de reabastecimiento de inventario, detección de patrones de fuga de clientes y segmentación automática basada en data histórica.</p>
+            <div class="card-tags"><span>Predictivo</span><span>Forecasting</span><span>Churn</span></div>
+            <a href="platform/index.html#bi" class="card-link">Ver en Dashboard →</a>
+          </div>
+          <div class="card reveal reveal-delay-3">
+            <div class="card-badge enterprise">Enterprise</div>
+            <div class="card-icon">🛡️</div>
+            <h3>Ciberseguridad & Compliance</h3>
+            <p>Monitoreo activo de infraestructura web, detección de anomalías en transacciones, prevención de inyecciones, y auditoría continua para Ley 19.628 de Protección de Datos.</p>
+            <div class="card-tags"><span>WAF</span><span>Ley 19.628</span><span>ANCI</span></div>
+            <a href="platform/index.html#cybersecurity" class="card-link">Ver en Dashboard →</a>
+          </div>
+
+          <!-- Core Agents (existing) -->
+          <div class="card reveal">
+            <div class="card-badge">Core</div>
+            <div class="card-icon">💬</div>
+            <h3>Agente de Ventas</h3>
+            <p>Califica leads por WhatsApp, responde cotizaciones al instante y agenda reuniones. Opera <strong>24/7/365</strong> sin sobrecostos de planilla.</p>
+            <div class="card-tags"><span>WhatsApp</span><span>Lead Scoring</span></div>
+            <a href="demos/agente-ventas/index.html" class="card-link">Demo funcional →</a>
+          </div>
+          <div class="card reveal reveal-delay-1">
+            <div class="card-icon">🎧</div>
+            <h3>Agente de Atención al Cliente</h3>
+            <p>Resuelve consultas, revisa estados de pedidos y escalada inteligente. Reduce el <strong>TMO hasta en 65%</strong>.</p>
+            <div class="card-tags"><span>Tickets</span><span>CSAT</span><span>Escalación</span></div>
+            <a href="demos/agente-atencion/index.html" class="card-link">Demo funcional →</a>
+          </div>
+          <div class="card reveal reveal-delay-2">
+            <div class="card-icon">⚙️</div>
+            <h3>Agente de Backoffice</h3>
+            <p>Extrae datos de facturas SII, sincroniza ERP/CRM. <strong>Ahorra 120+ horas/mes</strong> en tareas manuales.</p>
+            <div class="card-tags"><span>OCR</span><span>Defontana</span><span>SII</span></div>
+            <a href="demos/agente-backoffice/index.html" class="card-link">Demo funcional →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── INFRAESTRUCTURA & NOC ──────────────────────────────── -->
+    <section class="infra-section" id="infraestructura">
+      <div class="container">
+        <div class="tag center reveal">Infraestructura & Continuidad Operativa</div>
+        <h2 class="reveal">NOC/SOC con <span class="text-gradient">99.9% Uptime</span> Garantizado</h2>
+        <p class="section-sub reveal">Mesa de ayuda técnica con SLAs definidos, desarrollo web escalable y monitoreo 24/7 de tus agentes en producción.</p>
+        <div class="infra-grid">
+          <div class="infra-card reveal">
+            <div class="ic-icon">🌐</div>
+            <h4>Desarrollo Web & Arquitectura</h4>
+            <p>Sitios escalables optimizados para integraciones complejas (APIs REST/GraphQL) y tiempos de respuesta sub-segundo. Vital para SEO técnico y conversión.</p>
+          </div>
+          <div class="infra-card reveal reveal-delay-1">
+            <div class="ic-icon">🛠</div>
+            <h4>Soporte Remoto Tier 1 & Tier 2</h4>
+            <p>Mesa de ayuda corporativa con SLAs diferenciados: Tier 1 para incidencias operativas (≤4h), Tier 2 para escalamiento técnico y debugging en producción.</p>
+          </div>
+          <div class="infra-card reveal reveal-delay-2">
+            <div class="ic-icon">📡</div>
+            <h4>Monitoreo NOC 24/7</h4>
+            <p>Network Operations Center con alertas proactivas, auto-recovery de servicios caídos y dashboards de estado para cada agente desplegado.</p>
+          </div>
+          <div class="infra-card reveal reveal-delay-3">
+            <div class="ic-icon">🔒</div>
+            <h4>SOC — Security Operations</h4>
+            <p>Centro de operaciones de seguridad: detección de amenazas, análisis forense y protocolo de notificación a ANCI en 72 horas según Ley N°21.663.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── DEMOS EN VIVO ─────────────────────────────────────── -->
+    <section class="demos-section" id="demos">
+      <div class="container">
+        <div class="tag center reveal">Demos Interactivos</div>
+        <h2 class="reveal">Pruébalos <span class="text-gradient">Sin Registro</span></h2>
+        <p class="section-sub reveal">Experimenta en tiempo real cómo trabajan los agentes core. Sin tarjeta de crédito. Los agentes Enterprise están disponibles en el Dashboard.</p>
+        <div class="demos-grid">
+          <a href="demos/agente-ventas/index.html" class="demo-card reveal">
+            <div class="demo-icon">💬</div>
+            <div><h3>Demo: Agente de Ventas</h3><p>Dashboard de leads, scoring en vivo, conversación WhatsApp simulada y base de clientes persistente.</p></div>
+            <span class="demo-arrow">→</span>
+          </a>
+          <a href="demos/agente-atencion/index.html" class="demo-card reveal reveal-delay-1">
+            <div class="demo-icon">🎧</div>
+            <div><h3>Demo: Atención al Cliente</h3><p>Tickets, CSAT, TMO, escalamiento a humano y base de conocimiento configurable.</p></div>
+            <span class="demo-arrow">→</span>
+          </a>
+          <a href="demos/agente-backoffice/index.html" class="demo-card reveal reveal-delay-2">
+            <div class="demo-icon">⚙️</div>
+            <div><h3>Demo: Agente Backoffice</h3><p>Drag & drop de facturas, OCR simulado con extracción SII y exportación a Defontana/Sheets/BUK.</p></div>
+            <span class="demo-arrow">→</span>
+          </a>
+          <a href="platform/index.html" class="demo-card reveal reveal-delay-3" style="border-color:var(--border-vio);">
+            <div class="demo-icon">🚀</div>
+            <div><h3>Dashboard Enterprise (4 Agentes)</h3><p>Ecommerce, Logística, BI Predictivo y Ciberseguridad — dashboard operativo completo con gráficos en vivo.</p></div>
+            <span class="demo-arrow">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── BENCHMARK / INFORMATION GAIN ────────────────────────── -->
+    <section class="benchmark-section" id="benchmark" style="padding:4rem 0; text-align:center; background: rgba(37, 99, 235, 0.05); border-top: 1px solid rgba(255,255,255,0.05);">
+      <div class="container reveal">
+         <div class="tag center">Benchmark Local Chile 2026</div>
+         <p style="font-size:1.2rem;color:var(--text-main);max-width:800px;margin: 0 auto;line-height:1.6;">
+            "Según datos operativos de AigenciaLab, nuestra arquitectura <strong>RPA (Robotic Process Automation)</strong> y agentes <strong>LLM</strong> lograron reducir el tiempo de conciliación del <strong>SII y Defontana</strong> en un <span style="color:#10b981;font-weight:700;">84%</span>, incrementando paralelamente la retención de clientes en un <span style="color:#10b981;font-weight:700;">32%</span> para e-commerce chilenos."
+         </p>
+      </div>
+    </section>
+
+    <!-- ── CUÁNDO SÍ / CUÁNDO NO ─────────────────────────────── -->
+    <section class="honesty-section" id="cuando-si">
+      <div class="container">
+        <div class="tag center reveal">Sin promesas vacías · Metodología de ingeniería</div>
+        <h2 class="reveal">Cuándo la IA <span class="text-gradient">SÍ</span> hace diferencia<br>y cuándo no.</h2>
+        <p class="section-sub reveal">No vendemos magia. Te decimos la verdad desde el día 1: qué esperar, cuándo esperarlo, y con qué KPIs vamos a medir el éxito.</p>
+        <div class="honesty-grid">
+          <div class="honesty-col yes reveal">
+            <h4>✅ Cuándo la IA SÍ funciona</h4>
+            <ul>
+              <li>Tienes procesos repetitivos que consumen +40% del tiempo de tu equipo</li>
+              <li>Recibes más de 50 consultas/día por WhatsApp, email o chat</li>
+              <li>Tu equipo dedica horas a sincronizar stock entre canales</li>
+              <li>Quieres escalar sin contratar más personas en proporción lineal</li>
+              <li>Necesitas atención 24/7 pero no puedes costear turnos nocturnos</li>
+              <li>Tu backoffice gasta horas procesando facturas y documentos SII</li>
+            </ul>
+          </div>
+          <div class="honesty-col no reveal reveal-delay-1">
+            <h4>❌ Cuándo NO recomendamos IA (aún)</h4>
+            <ul>
+              <li>Tu operación es completamente irregular o no tiene procesos definidos</li>
+              <li>Tu producto/servicio cambia cada semana y no hay datos históricos</li>
+              <li>Buscas un chatbot genérico sin integración real a tu negocio</li>
+              <li>Solo atiendes a 5-10 clientes al mes con procesos simples</li>
+              <li>No tienes voluntad de compartir datos con el sistema para entrenarlo</li>
+            </ul>
+          </div>
+        </div>
+        <p class="honesty-footer reveal">En AigenciaLab no hacemos promesas vacías. Si no somos la solución correcta para tu empresa hoy, te lo decimos antes de cobrarte un peso.</p>
+      </div>
+    </section>
+
+    <!-- ── PRICING ────────────────────────────────────────────── -->
+    <section class="pricing-section" id="pricing">
+      <div class="container">
+        <div class="tag center reveal">Modelo SaaS · Transpa­rencia Total</div>
+        <h2 class="reveal">Planes con <span class="text-gradient">60% OFF</span> en Implementación</h2>
+        <p class="section-sub reveal">Setup con descuento exclusivo de lanzamiento. ROI demostrable en 90 días o ajustamos sin costo.</p>
+
+        <!-- Currency + Badge row -->
+        <div class="currency-row reveal">
+          <div class="clp-badge">💰 Planes desde <strong>$190.000 CLP/mes</strong> + IVA</div>
+          <div class="currency-toggle">
+            <button id="btn-uf" class="active" onclick="setCurrency('uf')">UF</button>
+            <button id="btn-clp" onclick="setCurrency('clp')">CLP</button>
+          </div>
+        </div>
+
+        <div class="pricing-grid">
+          <!-- Starter -->
+          <div class="price-card reveal">
+            <div class="tier-name">Starter</div>
+            <div class="uf-price" id="uf-starter">UF 5 <span style="font-size:1rem;color:var(--text-sub);font-weight:400;">/mes</span></div>
+            <div class="clp-price" id="clp-starter">$190.000 <span style="font-size:1rem;color:var(--text-sub);font-weight:400;">/mes</span></div>
+            <div class="tier-setup"><del style="color:#6B7280;">Setup: UF 15</del> → <strong style="color:#059669;">UF 6</strong> <span style="background:linear-gradient(135deg,#059669,#10B981);color:#fff;padding:2px 8px;border-radius:50px;font-size:.68rem;font-weight:700;">60% OFF</span></div>
+            <div class="tier-features">
+              <div class="tf">1 Agente Omnicanal (Webchat + WhatsApp)</div>
+              <div class="tf">Ingesta de FAQs (texto/PDF estático)</div>
+              <div class="tf">500 conversaciones/mes</div>
+              <div class="tf">Widget embebible (1 línea de código)</div>
+              <div class="tf">Dashboard básico de métricas</div>
+              <div class="tf">SLA Soporte: 48h (email)</div>
+              <div class="tf na">Sincronización ecommerce</div>
+              <div class="tf na">Dashboard Multi-Tenant</div>
+              <div class="tf na">Entorno Sandbox</div>
+            </div>
+            <a href="audit/index.html" class="btn btn-secondary btn-block">Auditar mi Negocio Gratis →</a>
+          </div>
+
+          <!-- Pro (Featured) -->
+          <div class="price-card featured reveal reveal-delay-1">
+            <div class="tier-name">Pro · Ecommerce</div>
+            <div class="uf-price" id="uf-pro">UF 12 <span style="font-size:1rem;color:var(--text-sub);font-weight:400;">/mes</span></div>
+            <div class="clp-price" id="clp-pro">$460.000 <span style="font-size:1rem;color:var(--text-sub);font-weight:400;">/mes</span></div>
+            <div class="tier-setup"><del style="color:#6B7280;">Setup: UF 35</del> → <strong style="color:#059669;">UF 14</strong> <span style="background:linear-gradient(135deg,#059669,#10B981);color:#fff;padding:2px 8px;border-radius:50px;font-size:.68rem;font-weight:700;">60% OFF</span></div>
+            <div class="tier-features">
+              <div class="tf">Agente de Ventas &amp; Inventario con IA</div>
+              <div class="tf">Webhooks WooCommerce/Shopify bidireccional</div>
+              <div class="tf">Dashboard "Harmonic Office" operativo</div>
+              <div class="tf">3 Canales: Webchat + WhatsApp + Instagram</div>
+              <div class="tf">Base de Conocimiento RAG (catálogo auto)</div>
+              <div class="tf">5.000 conversaciones/mes</div>
+              <div class="tf">3 usuarios con roles (Admin, Agent, Viewer)</div>
+              <div class="tf">Exportación CSV + Propuestas PDF</div>
+              <div class="tf">SLA: 24h (email + WhatsApp)</div>
+            </div>
+            <a href="audit/index.html" class="btn btn-primary btn-block">Obtener Propuesta →</a>
+          </div>
+
+          <!-- Enterprise -->
+          <div class="price-card reveal reveal-delay-2">
+            <div class="tier-name">Enterprise</div>
+            <div class="uf-price" id="uf-ent">UF 28 <span style="font-size:1rem;color:var(--text-sub);font-weight:400;">/mes</span></div>
+            <div class="clp-price" id="clp-ent">$1.080.000 <span style="font-size:1rem;color:var(--text-sub);font-weight:400;">/mes</span></div>
+            <div class="tier-setup"><del style="color:#6B7280;">Setup: UF 80</del> → <strong style="color:#059669;">UF 32</strong> <span style="background:linear-gradient(135deg,#059669,#10B981);color:#fff;padding:2px 8px;border-radius:50px;font-size:.68rem;font-weight:700;">60% OFF</span></div>
+            <div class="tier-features">
+              <div class="tf">Ecosistema completo: Ventas + Logística + Seguridad + Analytics</div>
+              <div class="tf">Dashboard Multi-Tenant avanzado + RBAC</div>
+              <div class="tf">Entorno Sandbox dedicado</div>
+              <div class="tf">Middleware Anti-Prompt Injection</div>
+              <div class="tf">5 canales: Web + WA + IG + Email + SMS</div>
+              <div class="tf">RAG avanzado pgvector (100K+ docs)</div>
+              <div class="tf">Usuarios ilimitados + roles granulares</div>
+              <div class="tf">Consultoría escalabilidad (4h/mes)</div>
+              <div class="tf">SLA Tier 2: 4 horas (Slack + teléfono)</div>
+            </div>
+            <a href="#contacto" class="btn btn-secondary btn-block">Contactar Ventas →</a>
+          </div>
+        </div>
+
+        <!-- Pasos de implementación -->
+        <section class="steps-section" style="padding:80px 0 0;">
+          <div class="tag center reveal">Proceso claro · Sin sorpresas</div>
+          <h2 class="reveal">Cómo te <span class="text-gradient">implementamos</span></h2>
+          <p class="section-sub reveal">No improvisamos. Cada semana tiene objetivos y entregables definidos.</p>
+          <div class="steps-grid">
+            <div class="step-item reveal">
+              <div class="step-num">01</div>
+              <h4>🔍 Auditoría IA</h4>
+              <p>Mapeamos tus procesos, identificamos automatizables y calculamos ROI proyectado con datos reales de tu operación.</p>
+            </div>
+            <div class="step-item reveal reveal-delay-1">
+              <div class="step-num">02</div>
+              <h4>⚙️ Diseño & Setup</h4>
+              <p>Configuramos el agente con tu knowledge base, integramos APIs locales (Transbank, SII, WooCommerce) y definimos flujos.</p>
+            </div>
+            <div class="step-item reveal reveal-delay-2">
+              <div class="step-num">03</div>
+              <h4>🚀 Deploy & Pruebas</h4>
+              <p>Lanzamos en sandbox, testeo con tu equipo, ajuste de respuestas y go-live en producción con monitoreo activo.</p>
+            </div>
+            <div class="step-item reveal reveal-delay-3">
+              <div class="step-num">04</div>
+              <h4>📊 Operación Continua</h4>
+              <p>Dashboard de KPIs semanales, reuniones quincenales, alertas proactivas y mejora continua del agente con tus datos.</p>
+            </div>
+          </div>
+        </section>
+          </div>
+        </section>
+
+        <!-- TABLA COMPARATIVA SEO/GEO -->
+        <div class="reveal" style="margin-top: 4rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 12px; overflow: hidden; max-width: 900px; margin-left: auto; margin-right: auto;">
+          <table style="width: 100%; text-align: left; border-collapse: collapse; font-size: 0.95rem;">
+            <thead>
+              <tr style="background: rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--text-main);">
+                <th style="padding: 1.2rem; font-weight: 600; width: 33%;">Métrica Operativa</th>
+                <th style="padding: 1.2rem; font-weight: 600; width: 33%;">Operación Humana Tradicional</th>
+                <th style="padding: 1.2rem; font-weight: 600; color: #60a5fa; width: 34%;">AigenciaLab IA Automática</th>
+              </tr>
+            </thead>
+            <tbody style="color: var(--text-muted);">
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 1.2rem;">Tiempo Medio de Respuesta (TMO)</td>
+                <td style="padding: 1.2rem;">~2 a 4 horas laborables</td>
+                <td style="padding: 1.2rem; color: #34d399; font-weight: 500;">Bajo 3 segundos (24/7)</td>
+              </tr>
+              <tr style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <td style="padding: 1.2rem;">Gestión de Logística (Starken/Chilexpress)</td>
+                <td style="padding: 1.2rem;">Búsqueda manual en portales</td>
+                <td style="padding: 1.2rem; color: #34d399; font-weight: 500;">Webhooks instantáneos y Alertas Wa</td>
+              </tr>
+              <tr>
+                <td style="padding: 1.2rem;">Conciliación ERP/SII</td>
+                <td style="padding: 1.2rem;">Digitalización manual mensual</td>
+                <td style="padding: 1.2rem; color: #34d399; font-weight: 500;">RPA Inyectado en tiempo real</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── ROI CALCULATOR ─────────────────────────────────────── -->
+    <section class="roi" id="roi">
+      <div class="container">
+        <div class="tag center reveal">Calculadora de Ahorro</div>
+        <h2 class="reveal">¿Cuánto <span class="text-gradient">Ahorrarías</span> con IA?</h2>
+        <p class="section-sub reveal">Ajusta los valores según tu operación real y descubre tu potencial de reducción de overhead mensual.</p>
+        <div class="calculator-box reveal">
+          <div class="slider-group">
+            <label for="hoursSlider"><span>Horas al mes en tareas manuales / operativas:</span><span id="hoursVal">160 hrs</span></label>
+            <input type="range" id="hoursSlider" min="20" max="1000" step="10" value="160"/>
+          </div>
+          <div class="slider-group">
+            <label for="salarySlider"><span>Sueldo Bruto Mensual Promedio (CLP):</span><span id="salaryVal">$800.000</span></label>
+            <input type="range" id="salarySlider" min="500000" max="5000000" step="50000" value="800000"/>
+          </div>
+          <div class="roi-result">
+            <h3>Reducción de overhead estimada mensual:</h3>
+            <div class="amount" id="savingsAmount">$280.000 <span style="font-size:1rem;color:var(--text-sub);font-weight:400;">/mes</span></div>
+            <p class="roi-note">Asumiendo 70% de automatización de tareas repetitivas. Resultados reales dependen del rubro, volumen operativo y complejidad de procesos.</p>
+          </div>
+          <a href="#contacto" class="btn btn-secondary btn-block">Obtener Cotización Real →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SEGURIDAD ──────────────────────────────────────────── -->
+    <section class="security-section" id="seguridad">
+      <div class="container">
+        <div class="tag center reveal">Cumplimiento Normativo</div>
+        <h2 class="reveal">Operamos bajo <span class="text-gradient">Ley N°21.663</span> y <span class="text-gradient">Ley N°19.628</span></h2>
+        <p class="section-sub reveal">Doble cumplimiento: Ciberseguridad + Protección de Datos Personales. Auditoría continua y protocolos de notificación a ANCI.</p>
+        <div class="security-grid">
+          <div class="security-card reveal">
+            <div class="sec-icon">🔐</div>
+            <h4>Cifrado End-to-End</h4>
+            <p>Comunicaciones con <strong>TLS 1.3</strong> y datos en reposo con <strong>AES-256</strong>. Conforme Art. 23 Ley N°21.663.</p>
+          </div>
+          <div class="security-card reveal reveal-delay-1">
+            <div class="sec-icon">🧩</div>
+            <h4>Minimización de Datos</h4>
+            <p>Principio de minimización Ley 19.628: solo procesamos lo estrictamente necesario. Sin venta ni transferencia a terceros.</p>
+          </div>
+          <div class="security-card reveal reveal-delay-2">
+            <div class="sec-icon">🏛️</div>
+            <h4>Soberanía de Datos</h4>
+            <p>Despliegue en <strong>servidores en Chile</strong> para empresas con requerimientos regulatorios de soberanía de datos.</p>
+          </div>
+          <div class="security-card reveal reveal-delay-3">
+            <div class="sec-icon">📋</div>
+            <h4>Notificación a ANCI</h4>
+            <p>Protocolo de notificación a la <strong>Agencia Nacional de Ciberseguridad</strong> dentro de 72 horas ante incidentes, según ley vigente.</p>
+          </div>
+        </div>
+
+        <!-- CISO STATEMENT (E-E-A-T) -->
+        <div class="reveal" style="margin-top: 3rem; background: rgba(255,255,255,0.02); border: 1px solid rgba(59,130,246,0.2); border-radius: 12px; padding: 2rem; text-align: left;">
+          <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 0.5rem;">
+            <div style="width: 48px; height: 48px; border-radius: 50%; background: var(--bg-main); border: 1px solid rgba(59,130,246,0.3); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink:0;">🛡️</div>
+            <div>
+              <div style="font-weight: 700; color: #fff; font-size: 1.1rem;">Declaración Técnica de Arquitectura Seguro</div>
+              <div style="font-size: 0.75rem; color: #60a5fa; letter-spacing: 0.05em; text-transform: uppercase; margin-bottom: 1rem;">Firmado por el CISO (Chief Information Security Officer)</div>
+              <p style="color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; font-style: italic; margin:0;">
+                "En AigenciaLab, nuestra prioridad estructural es la soberanía de los datos. Toda la arquitectura RAG (Retrieval-Augmented Generation) y los motores LLM operan bajo un entorno aislado (VPC). Los datos residentes en nuestros nodos de Supabase PostgreSQL están cifrados bajo estándar AES-256 GCM a nivel de fila mediante políticas RLS (Row Level Security). Esto asegura un cumplimiento robusto de la <strong>Ley N°19.628 de Protección de Datos Personales</strong>, descartando matemáticamente cualquier contaminación o fuga de datos cruzada en modelos heurísticos públicos."
+              </p>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </section>
+
+    <!-- ── POR QUÉ CHILE ──────────────────────────────────────── -->
+    <section class="why-chile" id="por-que">
+      <div class="container">
+        <div class="tag center reveal">Posicionamiento Local</div>
+        <h2 class="reveal">¿Por qué <span class="text-gradient">AigenciaLab Chile</span>?</h2>
+        <div class="why-grid">
+          <div class="why-item reveal">
+            <div class="why-num">01</div>
+            <h4>🇨🇱 Ecosistema 100% Local</h4>
+            <p>Integraciones nativas con Transbank, Defontana, BUK, SII, Starken, Chilexpress. Sin adaptaciones caras de proveedores extranjeros.</p>
+          </div>
+          <div class="why-item reveal reveal-delay-1">
+            <div class="why-num">02</div>
+            <h4>⚖️ Compliance Nativo</h4>
+            <p>Primer proveedor de IA en Chile con cumplimiento simultáneo de Ley 21.663 (Ciberseguridad) + Ley 19.628 (Protección de Datos).</p>
+          </div>
+          <div class="why-item reveal reveal-delay-2">
+            <div class="why-num">03</div>
+            <h4>🤝 Soporte en Santiago</h4>
+            <p>Equipo de ingenieros y consultores en horario CL. Reuniones presenciales en la Región Metropolitana. PM dedicado en tier Enterprise.</p>
+          </div>
+          <div class="why-item reveal reveal-delay-3">
+            <div class="why-num">04</div>
+            <h4>📈 ROI en 90 Días</h4>
+            <p>Garantía contractual: tu inversión en IA es rentable en los primeros 90 días o ajustamos el plan sin costo. Medido con KPIs reales.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CONTACTO ───────────────────────────────────────────── -->
+    <section class="contact-section" id="contacto">
+      <div class="container">
+        <h2 class="reveal">¿Listo para <span class="text-gradient">Eliminar el Overhead</span>?</h2>
+        <p>Agenda una auditoría gratuita de 45 minutos. Mapeamos tus procesos automatizables y te mostramos el ROI proyectado con datos reales.</p>
+        <form class="contact-form reveal" id="contactForm">
+          <div class="form-row">
+            <div class="form-group"><input type="text" id="fname" placeholder="Tu nombre" required/></div>
+            <div class="form-group"><input type="text" id="fcompany" placeholder="Empresa" required/></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="phone-input">
+                <span class="flag">🇨🇱 +56</span>
+                <input type="tel" id="fphone" placeholder="9 XXXX XXXX" required/>
+              </div>
+            </div>
+            <div class="form-group">
+              <select id="farea" required>
+                <option value="" disabled selected>¿Qué necesitas automatizar?</option>
+                <option>Ecommerce &amp; Sincronización de Inventario</option>
+                <option>Logística y Última Milla</option>
+                <option>Business Intelligence &amp; Forecasting</option>
+                <option>Ciberseguridad &amp; Compliance</option>
+                <option>Atención al Cliente / WhatsApp</option>
+                <option>Ventas y Calificación de Leads</option>
+                <option>Backoffice y Procesos Internos</option>
+                <option>Todo lo anterior (Enterprise)</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Agendar Auditoría Gratuita 🚀</button>
+          <p class="form-note">🔒 Tus datos están protegidos bajo Ley N°21.663 y Ley N°19.628. Solo te contactaremos para la auditoría.</p>
+        </form>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══ FOOTER ══════════════════════════════════════════════════ -->
+  <footer style="background:rgba(5,5,10,.97);border-top:1px solid rgba(255,255,255,.06);padding:64px 0 0;">
+    <div class="container">
+
+      <!-- Grid 4 columnas — inline grid para máxima compatibilidad -->
+      <div id="footer-grid" style="display:grid;grid-template-columns:minmax(180px,1.5fr) minmax(130px,1fr) minmax(130px,1fr) minmax(200px,1.5fr);gap:32px;align-items:start;">
+
+        <!-- Col 1: Brand -->
+        <div>
+          <div style="font-size:1.35rem;font-weight:700;margin-bottom:14px;color:#EAEDF3;font-family:'Inter',sans-serif;">
+            AigenciaLab<span style="background:linear-gradient(135deg,#00D4FF,#A855F7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">.cl</span>
+          </div>
+          <p style="font-size:.875rem;color:#8A8FA8;line-height:1.75;margin-bottom:24px;">
+            Automatización IA End-to-End para empresas chilenas que escalan.<br>
+            <strong style="color:#C8CCE0;">Equipo de ingenieros, no freelancers.</strong>
+          </p>
+          <a href="audit/index.html" style="display:inline-flex;align-items:center;gap:8px;padding:12px 22px;background:#00D4FF;color:#0A0A0F;font-weight:700;font-size:.82rem;border-radius:10px;text-decoration:none;letter-spacing:.01em;">🔍 Auditoría Gratuita</a>
+        </div>
+
+        <!-- Col 2: Servicios -->
+        <div>
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#555870;margin-bottom:18px;">Servicios</div>
+          <a href="#servicios" class="fl">Agentes IA 24/7</a>
+          <a href="#infraestructura" class="fl">NOC / Infraestructura</a>
+          <a href="#pricing" class="fl">Planes y Precios</a>
+          <a href="#seguridad" class="fl">Ciberseguridad</a>
+          <a href="demos/agente-ventas/index.html" class="fl">Demo Agente Ventas</a>
+          <a href="demos/agente-atencion/index.html" class="fl">Demo Atención Cliente</a>
+          <a href="demos/agente-backoffice/index.html" class="fl">Demo Backoffice</a>
+        </div>
+
+        <!-- Col 3: Plataforma -->
+        <div>
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#555870;margin-bottom:18px;">Plataforma</div>
+          <a href="platform/index.html" class="fl">Dashboard Enterprise →</a>
+          <a href="audit/index.html" class="fl">Auditoría Gratuita IA</a>
+          <a href="client/index.html" class="fl">Portal de Clientes</a>
+          <a href="#roi" class="fl">Calculadora de Ahorro</a>
+          <a href="#contacto" class="fl">Contactar Ventas</a>
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#555870;margin-top:20px;margin-bottom:14px;">Legal</div>
+          <a href="#seguridad" class="fl">Ley N°21.663 Ciberseg.</a>
+          <a href="#seguridad" class="fl">Ley N°19.628 Datos</a>
+        </div>
+
+        <!-- Col 4: Partners -->
+        <div>
+          <div style="font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#555870;margin-bottom:18px;">Tecnologías Partners</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+
+            <div class="pp"><svg viewBox="0 0 48 48" width="15" height="15" style="flex-shrink:0;"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.7 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg><span>Google Cloud</span></div>
+
+            <div class="pp"><svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366" style="flex-shrink:0;"><path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51a12.8 12.8 0 0 0-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35m-5.42 7.4h0a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.81 11.81 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41Z"/></svg><span>WhatsApp API</span></div>
+
+            <div class="pp"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff" style="flex-shrink:0;"><path d="M22.28 9.82a5.98 5.98 0 0 0-.51-4.91 6.05 6.05 0 0 0-6.51-2.9A6.07 6.07 0 0 0 4.97 4.18a5.98 5.98 0 0 0-4 2.9 6.05 6.05 0 0 0 .74 7.1 5.98 5.98 0 0 0 .51 4.91 6.05 6.05 0 0 0 6.51 2.9 5.98 5.98 0 0 0 4.52 2.02 6.06 6.06 0 0 0 5.77-4.21 5.98 5.98 0 0 0 3.99-2.9 6.05 6.05 0 0 0-.74-7.07z"/></svg><span>OpenAI</span></div>
+
+            <div class="pp"><svg width="34" height="14" viewBox="0 0 60 25" fill="#635BFF" style="flex-shrink:0;"><path d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.1 5.96 7.13 0 .4-.04 1.26-.06 1.85zm-5.38-2.43c0-1.55-1.2-2.22-2.5-2.22-1.39 0-2.53.84-2.73 2.22h5.23zM43.36 20.14c-1.8 0-3.32-.8-4.22-2.2v8.94h-4.03V5.53h4.03v2.1c.9-1.34 2.4-2.11 4.17-2.11 3.51 0 6.03 2.98 6.03 7.37 0 4.41-2.52 7.25-6 7.25zm-1.12-11.23c-1.82 0-3.21 1.51-3.21 3.96 0 2.45 1.39 3.98 3.21 3.98 1.8 0 3.2-1.53 3.2-3.98 0-2.45-1.4-3.96-3.2-3.96zM32.89 20.3V5.54h4.02v14.76h-4.02zM34.91 3.96c-1.33 0-2.39-1.07-2.39-2.38 0-1.33 1.06-2.4 2.39-2.4S37.3.25 37.3 1.58c0 1.31-1.06 2.38-2.39 2.38zM25.79 5.54h3.69v3.08h-3.69v5.99c0 1.2.62 1.5 1.53 1.5.7 0 1.35-.12 2.16-.4v3.25c-.99.3-2.02.43-3.24.43-3.38 0-4.48-1.56-4.48-4.66v-6.11h-2.5V5.54h2.5V1.28h4.03v4.26z"/></svg><span>Stripe</span></div>
+
+            <div class="pp"><svg width="15" height="15" viewBox="0 0 24 24" fill="#3ECF8E" style="flex-shrink:0;"><path d="M21.362 9.354H12V.396a.396.396 0 0 0-.716-.233L2.203 12.424l-.401.562a1.04 1.04 0 0 0 .836 1.659H12v8.959a.396.396 0 0 0 .716.233l9.081-12.261.401-.562a1.04 1.04 0 0 0-.836-1.66z"/></svg><span>Supabase</span></div>
+
+            <div class="pp"><svg width="15" height="13" viewBox="0 0 116 100" fill="#fff" style="flex-shrink:0;"><path d="M57.5 0L115 100H0L57.5 0z"/></svg><span>Vercel</span></div>
+
+          </div>
+        </div>
+      </div><!-- /footer-grid -->
+
+      <!-- Bottom bar -->
+      <div style="border-top:1px solid rgba(255,255,255,.06);padding:24px 0;margin-top:48px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+        <p style="font-size:.8rem;color:#555870;margin:0;">© 2026 AigenciaLab Chile SpA. Todos los derechos reservados.</p>
+        <p style="font-size:.72rem;color:#555870;margin:0;">Ley N°21.663 Ciberseguridad · Ley N°19.628 Datos · ANCI</p>
+      </div>
+    </div>
+  </footer>
+
+  <style>
+    .fl { display:block; font-size:.855rem; color:#8A8FA8; margin-bottom:11px; text-decoration:none; transition:color .18s; }
+    .fl:hover { color:#00D4FF; }
+    .pp { display:flex; align-items:center; gap:7px; background:rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.07); border-radius:8px; padding:7px 13px; transition:border-color .18s; }
+    .pp:hover { border-color:rgba(0,212,255,.28); }
+    .pp span { font-size:.75rem; font-weight:500; color:#CBD5E1; white-space:nowrap; }
+    @media (max-width:900px) {
+      #footer-grid { grid-template-columns:1fr 1fr !important; gap:28px !important; }
+    }
+    @media (max-width:560px) {
+      #footer-grid { grid-template-columns:1fr !important; gap:24px !important; }
+      footer { padding-top:44px !important; }
+    }
+  </style>
+
+  <!-- WhatsApp flotante -->
+  <a href="https://wa.me/56992258137?text=Hola%20AigenciaLab%2C%20quiero%20conocer%20m%C3%A1s%20sobre%20sus%20agentes%20IA"
+     target="_blank" rel="noopener" aria-label="Contactar por WhatsApp"
+     style="position:fixed;bottom:28px;right:28px;z-index:9999;width:58px;height:58px;border-radius:50%;overflow:hidden;background:#25D366;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(37,211,102,.5);text-decoration:none;">
+    <svg viewBox="0 0 24 24" width="28" height="28" style="display:block;flex-shrink:0;" fill="white">
+      <path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.88-.79-1.48-1.76-1.65-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51a12.8 12.8 0 0 0-.57-.01c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.21 3.07.15.2 2.1 3.2 5.08 4.49.71.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.69.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35m-5.42 7.4h0a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26c0-5.45 4.44-9.88 9.89-9.88 2.64 0 5.12 1.03 6.99 2.9a9.82 9.82 0 0 1 2.89 6.99c0 5.45-4.44 9.88-9.88 9.88m8.41-18.3A11.81 11.81 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.68 1.45h.01c6.55 0 11.89-5.34 11.89-11.89a11.82 11.82 0 0 0-3.48-8.41Z"/>
+    </svg>
+  </a>
+
+  <script src="./main.js"></script>
+  <script>
+  function setCurrency(c){
+    var isClp = c === 'clp';
+    document.getElementById('btn-uf').classList.toggle('active', !isClp);
+    document.getElementById('btn-clp').classList.toggle('active', isClp);
+    ['starter','pro','ent'].forEach(function(id){
+      document.getElementById('uf-'+id).classList.toggle('hide', isClp);
+      document.getElementById('clp-'+id).classList.toggle('show', isClp);
+    });
+  }
+  </script>
+</body>
+</html>
