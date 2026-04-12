@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://aigencialab.cl/sitemap.xml
