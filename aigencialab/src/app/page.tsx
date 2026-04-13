@@ -27,7 +27,7 @@ export default function LandingPage() {
   return (
     <div className="min-h-screen">
       {/* ── HEADER ── */}
-      <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-[#080a12]/80 backdrop-blur-xl">
+      <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="text-xl font-bold tracking-tight">
             Aigencia<span className="text-gradient">Lab.cl</span>
@@ -37,7 +37,7 @@ export default function LandingPage() {
             <a href="#pricing"   className="hover:text-white transition-colors">Planes</a>
             <a href="#seguridad" className="hover:text-white transition-colors">Seguridad</a>
             <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-            <Link href="/audit" className="bg-gradient-to-r from-blue-600 to-violet-600 text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
+            <Link href="/audit" className="bg-gradient-to-r from-primary to-purple text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
               🔍 Auditoría Gratis
             </Link>
           </nav>
@@ -62,7 +62,7 @@ export default function LandingPage() {
                 AigenciaLab es una plataforma de software SaaS y arquitectura de Inteligencia Artificial que provee agentes autónomos diseñados específicamente para el ecosistema corporativo chileno. Su tecnología permite automatizar logística con Starken, sincronizar inventarios e-commerce y aplicar inteligencia de negocios predictiva, garantizando cumplimiento estricto de la nueva Ley Marco de Ciberseguridad N°21.663.
               </p>
               <div className="flex flex-wrap gap-4 reveal reveal-3">
-                <Link href="/audit" className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-violet-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-blue-500/20">
+                <Link href="/audit" className="inline-flex items-center gap-2 bg-gradient-to-r from-primary to-purple text-white px-8 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-all hover:scale-105 shadow-lg shadow-primary/20">
                   🔍 Auditar mi Negocio — Gratis
                 </Link>
                 <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"
@@ -142,7 +142,7 @@ export default function LandingPage() {
         </section>
 
         {/* ── PRICING ── */}
-        <section id="pricing" className="py-20 border-t border-white/5 bg-[#0d0f1a]">
+        <section id="pricing" className="py-20 border-t border-white/5 bg-slate-900">
           <div className="max-w-5xl mx-auto px-6">
             <div className="text-center mb-14">
               <div className="inline-block text-xs font-semibold uppercase tracking-widest text-violet-400 bg-violet-400/10 px-3 py-1 rounded-full mb-4">Planes</div>

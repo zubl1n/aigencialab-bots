@@ -16,6 +16,37 @@
   <!-- Google Analytics 4 -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-XXXXXXXXXX');</script>
+  
+  <!-- Estructura Semántica GEO / SGE -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfessionalService",
+        "name": "AigenciaLab Chile",
+        "url": "https://aigencialab.cl",
+        "description": "AigenciaLab es una plataforma de software SaaS e IA que provee agentes autónomos diseñados para el ecosistema corporativo chileno. Automatiza logística, sincroniza e-commerce y aplica inteligencia predictiva.",
+        "areaServed": {
+          "@type": "Country",
+          "name": "Chile"
+        },
+        "knowsAbout": [
+          "Robotic Process Automation (RPA)",
+          "Large Language Models (LLMs)",
+          "Retrieval-Augmented Generation (RAG)",
+          "Automatización de E-commerce",
+          "Ley Marco de Ciberseguridad N°21.663",
+          "Ley de Protección de Datos Personales N°19.628"
+        ],
+        "brand": {
+          "@type": "Brand",
+          "name": "AigenciaLab"
+        }
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -27,6 +58,7 @@
         <a href="#infraestructura">Infraestructura</a>
         <a href="#pricing">Planes</a>
         <a href="#seguridad">Seguridad</a>
+        <a href="blog/index.html">Blog</a>
         <a href="platform/index.html">Dashboard →</a>
         <a href="audit/index.html" class="btn btn-primary">🔍 Auditoría Gratuita</a>
       </nav>
@@ -121,7 +153,7 @@
             <div class="card-badge enterprise">Enterprise</div>
             <div class="card-icon">🛒</div>
             <h3>Sales & Inventory Sync</h3>
-            <p>Sincronización bidireccional de stock en tiempo real con WooCommerce y Shopify. Recuperación de carritos vía WhatsApp, validación de pasarelas Transbank/MercadoPago y upselling algorítmico.</p>
+            <p>El servicio de Sales & Inventory Sync de AigenciaLab permite la sincronización bidireccional de inventario en tiempo real para ecosistemas de retail. Funciona inyectando webhooks automatizados entre plataformas corporativas locales como Defontana, WooCommerce y Shopify, eliminando el error humano de sobreventa.</p>
             <div class="card-tags"><span>REST/GraphQL</span><span>WooCommerce</span><span>Shopify</span></div>
             <a href="platform/index.html#ecommerce" class="card-link">Ver en Dashboard →</a>
           </div>
@@ -129,7 +161,7 @@
             <div class="card-badge enterprise">Enterprise</div>
             <div class="card-icon">🚚</div>
             <h3>Logística & Trazabilidad</h3>
-            <p>Tracking de última milla con Starken, Chilexpress, Blue Express. Dashboard embebido con rutas, gestión de incidencias automatizada y alertas de SLA de entrega en tiempo real.</p>
+            <p>AigenciaLab provee agentes logísticos que realizan Tracking de última milla mediante lectura de APIs de Starken y Chilexpress. Genera webhooks instantáneos y notifica directamente a clientes vía WhatsApp API con alertas SLA, disminuyendo consultas TMO.</p>
             <div class="card-tags"><span>Couriers CL</span><span>SLA</span><span>Alertas</span></div>
             <a href="platform/index.html#logistics" class="card-link">Ver en Dashboard →</a>
           </div>
@@ -169,7 +201,7 @@
           <div class="card reveal reveal-delay-2">
             <div class="card-icon">⚙️</div>
             <h3>Agente de Backoffice</h3>
-            <p>Extrae datos de facturas SII, sincroniza ERP/CRM. <strong>Ahorra 120+ horas/mes</strong> en tareas manuales.</p>
+            <p>El RPA Inteligente automatiza procesos tributarios realizando conciliación automática de facturas SII mediante reconocimiento OCR, importando metadatos y conciliando balances financieros mensuales corporativos. <strong>Ahorra 120+ horas/mes</strong> en tareas manuales.</p>
             <div class="card-tags"><span>OCR</span><span>Defontana</span><span>SII</span></div>
             <a href="demos/agente-backoffice/index.html" class="card-link">Demo funcional →</a>
           </div>

@@ -174,7 +174,7 @@ async function generateReply(
     { role: 'system', content: systemMessage }
   ]
   
-  msgs.forEach(m => {
+  msgs.forEach((m: any) => {
     messages.push({ role: m.direction === 'in' ? 'user' : 'assistant', content: m.content })
   })
 
@@ -212,11 +212,12 @@ async function generateReply(
     
     if (responseMsg.tool_calls) {
       for (const toolCall of responseMsg.tool_calls) {
-        if (toolCall.function.name === 'escalate_to_human') {
+        const tc = toolCall as any
+        if (tc.function.name === 'escalate_to_human') {
           return { text: "Entendido, transferiré tu consulta a nuestro equipo humano. Pronto te responderán por este canal.", needsHuman: true }
         }
-        if (toolCall.function.name === 'create_lead') {
-          const args = JSON.parse(toolCall.function.arguments)
+        if (tc.function.name === 'create_lead') {
+          const args = JSON.parse(tc.function.arguments)
           await supabase.from('leads').insert({
             client_id: clientId,
             contact_name: args.name,

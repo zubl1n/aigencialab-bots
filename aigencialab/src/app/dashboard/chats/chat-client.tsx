@@ -5,7 +5,7 @@ import { createClient } from '@/lib/supabase/client'
 import { MessageCircle, User, Bot, AlertTriangle, Send, ShieldAlert } from 'lucide-react'
 
 type Message = { id: string; direction: string; content: string; timestamp: string }
-type Conv = { id: string; contact_wa: string; contact_name: string; status: string; channel: string; updated_at: string; messages: Message[] }
+type Conv = { id: string; client_id: string; contact_wa: string; contact_name: string; status: string; channel: string; updated_at: string; messages: Message[] }
 
 export default function ChatClient({ initialConvs }: { initialConvs: Conv[] }) {
   const [convs, setConvs] = useState<Conv[]>(initialConvs)
