@@ -21,6 +21,13 @@ export interface BotConfig {
   widget_color: string;
   language: string;
   welcome_message?: string;
+  is_demo?: boolean;
+  llm_config?: {
+    system_prompt: string;
+    temperature: number;
+    model: string;
+    max_tokens: number;
+  };
   created_at: string;
 }
 

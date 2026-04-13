@@ -3,6 +3,9 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = { title: 'BI Analytics — AigenciaLab' }
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 60;
+
 export default async function AnalyticsPage() {
   const supabase = createAdminSupabase()
   
@@ -44,8 +47,8 @@ export default async function AnalyticsPage() {
     <div className="p-8">
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold">Business Intelligence</h1>
-          <p className="text-slate-500 text-sm">Finanzas y Rendimiento Global Multi-Tenant (Calculado en Vivo)</p>
+          <h1 className="text-3xl font-bold text-foreground">Business Intelligence</h1>
+          <p className="text-muted-foreground text-sm">Finanzas y Rendimiento Global Multi-Tenant (Calculado en Vivo)</p>
         </div>
       </div>
 

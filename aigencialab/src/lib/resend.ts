@@ -102,3 +102,55 @@ export async function sendOnboardingWelcomeEmail(data: {
     `,
   })
 }
+
+export async function sendBotActivationEmail(data: {
+  contactName: string;
+  companyName: string;
+  email: string;
+  botName: string;
+}) {
+  const resend = getResend()
+  if (!resend || !data.email) return
+
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl'}/dashboard/installation`
+
+  await resend.emails.send({
+    from: FROM,
+    to:   [data.email],
+    subject: `🤖 ¡Tu Agente IA "${data.botName}" ha sido activado!`,
+    html: `
+      <div style="font-family:Inter,sans-serif;max-width:560px;margin:0 auto;background:#0a0c14;color:#e2e8f0;border-radius:12px;overflow:hidden;border:1px solid #1e293b;">
+        <div style="background:linear-gradient(135deg,#1e40af,#7c3aed);padding:32px;text-align:center;">
+          <h1 style="margin:0;color:#fff;font-size:1.8rem;letter-spacing:-0.5px;">¡Bot Activado! 🤖</h1>
+          <p style="color:rgba(255,255,255,.8);margin:8px 0 0;font-size:1rem;">${data.companyName}</p>
+        </div>
+        
+        <div style="padding:40px 32px;">
+          <p style="font-size:1.1rem;color:#fff;">Hola ${data.contactName},</p>
+          <p style="line-height:1.6;color:#94a3b8;">Grandes noticias: Tu Agente IA <strong>${data.botName}</strong> ha sido activado por nuestro equipo de ingeniería y ya está listo para trabajar.</p>
+          
+          <div style="background:rgba(30,64,175,0.1);border:1px solid rgba(30,64,175,0.2);padding:24px;border-radius:16px;margin:32px 0;">
+            <h3 style="margin-top:0;color:#00d4ff;font-size:1.1rem;">🚀 Próximo Paso: Instalación</h3>
+            <p style="font-size:0.9rem;line-height:1.6;color:#94a3b8;">Para que el chat aparezca en tu sitio web, solo necesitas copiar un pequeño fragmento de código (Snippet) en tu HTML.</p>
+            <div style="text-align:center;margin-top:20px;">
+              <a href="${dashboardUrl}" style="display:inline-block;background:#1e40af;color:#fff;padding:14px 28px;border-radius:10px;text-decoration:none;font-weight:700;font-size:1rem;">
+                📋 Obtener Código de Instalación
+              </a>
+            </div>
+          </div>
+          
+          <div style="border-top:1px solid #1e293b;padding-top:24px;margin-top:32px;">
+            <p style="font-size:0.85rem;color:#64748b;line-height:1.6;">
+              Si utilizas WordPress, también puedes descargar nuestro plugin oficial desde el dashboard. 
+              Si tienes cualquier duda técnica, nuestro equipo está a un clic de distancia en WhatsApp.
+            </p>
+          </div>
+        </div>
+        
+        <div style="padding:24px;text-align:center;background:#0f172a;color:#475569;font-size:0.75rem;border-top:1px solid #1e293b;">
+          AIgenciaLab.cl · Plataforma de Agentes IA · ${new Date().getFullYear()}
+        </div>
+      </div>
+    `,
+  })
+}

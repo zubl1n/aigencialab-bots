@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { createClient } from '@/lib/supabase/client';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Bot, Building2, Globe, Mail, User, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const origin = searchParams.get('origin') || 'direct';
+  
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,22 +37,22 @@ export default function RegisterPage() {
     const { fullName, companyName, email, website, plan } = formData;
 
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { error: signUpError } = await supabase.auth.signUp({
         email,
-        password: Math.random().toString(36).slice(-12), // Temporary password or user chooses later
+        password: Math.random().toString(36).slice(-12),
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
             full_name: fullName,
             company_name: companyName,
             website: website,
-            plan: plan
+            plan: plan,
+            origin: origin
           }
         }
       });
 
       if (signUpError) throw signUpError;
-
       setSuccess(true);
     } catch (err: any) {
       setError(err.message || 'Error al registrarse. Por favor intenta de nuevo.');
@@ -83,7 +86,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-      {/* Background Decor */}
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px]" />
         <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-purple/20 rounded-full blur-[128px]" />
@@ -221,5 +223,17 @@ export default function RegisterPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function RegisterPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-primary animate-spin" />
+      </div>
+    }>
+      <RegisterForm />
+    </Suspense>
   );
 }

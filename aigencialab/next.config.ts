@@ -24,11 +24,20 @@ const nextConfig: NextConfig = {
       },
     ]
   },
+  trailingSlash: false,
   async redirects() {
     return [
       { source: '/admin',     destination: '/dashboard', permanent: false },
       { source: '/panel',     destination: '/dashboard', permanent: false },
       { source: '/auditoria', destination: '/audit',     permanent: false },
+    ]
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/sitemap.xml',
+        destination: '/api/sitemap',
+      },
     ]
   },
 }

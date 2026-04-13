@@ -116,7 +116,20 @@ export default function OnboardingPage() {
       } else if (step === 4) {
         // Finalize
         await supabase.from('bot_configs').update({ active: false }).eq('client_id', user.id);
-        // Trigger notification logic would go here (Edge Function)
+        
+        // Trigger notification logic (Edge Function)
+        await supabase.functions.invoke('send-email', {
+          body: {
+            to: user.email,
+            subject: 'Configuración de Bot Enviada - AIgenciaLab',
+            type: 'onboarding_complete',
+            data: {
+              company_name: companyForm.companyName,
+              bot_name: botForm.botName
+            }
+          }
+        });
+
         router.push('/dashboard?onboarding=complete');
         return;
       }
@@ -384,8 +397,8 @@ export default function OnboardingPage() {
               <pre className="bg-slate-900 border border-white/10 rounded-2xl p-6 text-sm text-primary font-mono overflow-x-auto">
                 <code>{`<!-- AIgenciaLab Widget -->
 <script 
-  src="https://cdn.aigencialab.com/widget.js" 
-  data-key="${apiKey}"
+  src="https://aigencialab.cl/widget/widget.js" 
+  data-api-key="${apiKey}"
   defer>
 </script>
 <!-- End AIgenciaLab Widget -->`}</code>

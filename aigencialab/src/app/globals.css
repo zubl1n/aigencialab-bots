@@ -2,43 +2,86 @@
 @import "tailwindcss";
 
 :root {
-  --primary:   #3b82f6;
-  --accent:    #10b981;
-  --purple:    #8b5cf6;
-  --success:   #10b981;
-  --warning:   #f59e0b;
-  --danger:    #ef4444;
-  --bg:        #020617;
-  --bg2:       #0f172a;
-  --bg3:       #1e293b;
-  --border:    rgba(148, 163, 184, 0.1);
-  --text:      #f8fafc;
-  --muted:     #94a3b8;
-  --sub:       #cbd5e1;
+  --background: 0 0% 99%;
+  --foreground: 222 20% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 20% 12%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 20% 12%;
+  --primary: 222 85% 48%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 222 20% 12%;
+  --muted: 220 14% 94%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 262 80% 58%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 222 85% 48%;
+  --radius: 0.75rem;
+
+  /* Custom Status Tokens */
+  --success: 155 72% 35%;
+  --warning: 38 95% 48%;
+  --danger: 0 72% 51%;
+
+  /* Tech-Noir Legacy Compatibility */
+  --tech-cyan: #00D4FF;
 }
 
+.dark {
+  --background: 222 25% 9%;
+  --foreground: 220 14% 94%;
+  --card: 222 22% 11%;
+  --card-foreground: 220 14% 94%;
+  --popover: 222 22% 11%;
+  --popover-foreground: 220 14% 94%;
+  --primary: 213 90% 62%;
+  --primary-foreground: 222 25% 9%;
+  --secondary: 222 20% 14%;
+  --secondary-foreground: 220 14% 94%;
+  --muted: 222 18% 18%;
+  --muted-foreground: 220 9% 60%;
+  --accent: 262 80% 58%;
+  --accent-foreground: 220 14% 94%;
+  --destructive: 0 72% 51%;
+  --destructive-foreground: 220 14% 94%;
+  --border: 222 18% 18%;
+  --input: 222 18% 18%;
+  --ring: 213 90% 62%;
+}
+
+
 * { box-sizing: border-box; }
-body { background: var(--bg); color: var(--text); }
+body { 
+  background-color: hsl(var(--background)); 
+  color: hsl(var(--foreground));
+  font-feature-settings: "rlig" 1, "calt" 1;
+}
 
 /* Gradient text */
 .text-gradient {
-  background: linear-gradient(135deg, var(--accent), var(--purple));
+  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-/* Hero glow */
+/* Hero glow adjustments */
 .hero-glow {
-  background: radial-gradient(ellipse 60% 40% at 50% 20%, rgba(37,99,235,.15), transparent);
+  background: radial-gradient(ellipse 60% 40% at 50% 20%, hsla(var(--primary), .08), transparent);
 }
 
-/* Glass card */
+/* Glass card — Integrated with professional palette */
 .glass {
-  background: rgba(255,255,255,.03);
-  border: 1px solid var(--border);
+  background: hsla(var(--card), 0.7);
+  border: 1px solid hsl(var(--border));
   backdrop-filter: blur(12px);
 }
+
 
 /* Animations */
 @keyframes fadeUp {
