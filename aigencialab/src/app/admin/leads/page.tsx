@@ -1,303 +1,141 @@
-'use client';
+import { createClient } from '@supabase/supabase-js';
+import Link from 'next/link';
 
-import React, { useEffect, useState, useCallback } from 'react';
-import { 
-  Plus, 
-  Search, 
-  Filter, 
-  Download, 
-  LayoutGrid, 
-  List, 
-  Calendar, 
-  User, 
-  Building2, 
-  Tag,
-  Loader2,
-  ChevronRight,
-  ChevronLeft,
-  MoreHorizontal,
-  ArrowRight
-} from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
-import { 
-  Table, 
-  TableHeader, 
-  TableBody, 
-  TableRow, 
-  TableCell, 
-  TableHead 
-} from '@/components/ui/Table';
-import { Badge } from '@/components/ui/Badge';
+export const dynamic = 'force-dynamic';
 
-type LeadStatus = 'new' | 'contacted' | 'qualified' | 'closed' | 'lost';
+export default async function AdminLeads({
+  searchParams,
+}: {
+  searchParams: { [key: string]: string | undefined };
+}) {
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 
-interface Lead {
-  id: string;
-  contact_name: string;
-  email: string;
-  company: string;
-  status: LeadStatus;
-  created_at: string;
-  client_id: string;
-  client?: { company_name: string };
-}
+  const clientFilter = searchParams?.client;
+  const statusFilter = searchParams?.status;
 
-const statusOptions: { label: string, value: LeadStatus, color: string }[] = [
-  { label: 'Nuevo', value: 'new', color: 'bg-blue-500' },
-  { label: 'Contactado', value: 'contacted', color: 'bg-orange-500' },
-  { label: 'Calificado', value: 'qualified', color: 'bg-purple-500' },
-  { label: 'Cerrado', value: 'closed', color: 'bg-emerald-500' },
-  { label: 'Perdido', value: 'lost', color: 'bg-red-500' },
-];
+  let query = supabase
+    .from('leads')
+    .select(`
+      id, name, email, status, created_at, last_message,
+      clients(id, email, company_name)
+    `)
+    .order('created_at', { ascending: false })
+    .limit(200);
 
-export default function LeadsCRM() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [view, setView] = useState<'table' | 'kanban'>('table');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [dateRange, setDateRange] = useState('30d');
-  const supabase = createClient();
+  if (clientFilter) query = query.eq('client_id', clientFilter);
+  if (statusFilter) query = query.eq('status', statusFilter);
 
-  const fetchLeads = useCallback(async () => {
-    setLoading(true);
-    try {
-      let query = supabase
-        .from('leads')
-        .select(`
-          *,
-          client:clients (company_name)
-        `);
+  const { data: leads } = await query;
 
-      if (searchTerm) {
-        query = query.or(`contact_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,company.ilike.%${searchTerm}%`);
-      }
-      if (statusFilter !== 'all') {
-        query = query.eq('status', statusFilter);
-      }
+  // Get client list for filter dropdown
+  const { data: clientList } = await supabase
+    .from('clients')
+    .select('id, company_name, email')
+    .order('company_name');
 
-      const { data, error } = await query.order('created_at', { ascending: false });
+  // Export CSV link (server action result)
+  const csvRows = (leads ?? []).map(l => [
+    new Date(l.created_at).toLocaleDateString('es-CL'),
+    l.name ?? '',
+    l.email ?? '',
+    (l.clients as any)?.company_name ?? '',
+    l.status ?? '',
+    l.last_message ?? '',
+  ]);
 
-      if (error) throw error;
-      setLeads(data as unknown as Lead[]);
-    } catch (error) {
-      console.error('Error fetching leads:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [searchTerm, statusFilter, supabase]);
-
-  useEffect(() => {
-    fetchLeads();
-  }, [fetchLeads]);
-
-  const updateLeadStatus = async (leadId: string, newStatus: LeadStatus) => {
-    const { error } = await supabase
-      .from('leads')
-      .update({ status: newStatus })
-      .eq('id', leadId);
-    
-    if (!error) fetchLeads();
-  };
-
-  const exportToCSV = () => {
-    const headers = ['Nombre', 'Email', 'Empresa', 'Cliente AIgenciaLab', 'Fecha', 'Estado'];
-    const csvContent = [
-      headers.join(','),
-      ...leads.map(l => [
-        l.contact_name,
-        l.email,
-        l.company,
-        l.client?.company_name || 'N/A',
-        format(new Date(l.created_at), 'yyyy-MM-dd'),
-        l.status
-      ].join(','))
-    ].join('\n');
-
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `leads_aigencialab_${format(new Date(), 'yyyyMMdd')}.csv`;
-    link.click();
-  };
-
-  const getStatusBadge = (status: LeadStatus) => {
-    switch (status) {
-      case 'closed': return 'success';
-      case 'lost': return 'danger';
-      case 'qualified': return 'primary';
-      case 'contacted': return 'warning';
-      default: return 'secondary';
-    }
+  const statusBadge = (status: string | null) => {
+    const map: Record<string, string> = {
+      new: 'bg-blue-100 text-blue-700',
+      contacted: 'bg-yellow-100 text-yellow-700',
+      qualified: 'bg-green-100 text-green-700',
+      lost: 'bg-gray-100 text-gray-500',
+    };
+    return (
+      <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${map[status ?? ''] ?? 'bg-gray-100 text-gray-500'}`}>
+        {status ?? 'new'}
+      </span>
+    );
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div>
+      <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">CRM de Leads</h1>
-          <p className="text-muted-foreground">Vista unificada de todos los leads capturados por el ecosistema.</p>
+          <h1 className="text-3xl font-bold text-gray-900">Leads Global</h1>
+          <p className="text-gray-500 mt-1">{leads?.length ?? 0} leads encontrados</p>
         </div>
-        <div className="flex items-center gap-3">
-          <div className="flex bg-secondary p-1 rounded-xl border border-border">
-            <button 
-              onClick={() => setView('table')}
-              className={`p-2 rounded-lg transition-colors ${view === 'table' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              <List size={18} />
-            </button>
-            <button 
-              onClick={() => setView('kanban')}
-              className={`p-2 rounded-lg transition-colors ${view === 'kanban' ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}
-            >
-              <LayoutGrid size={18} />
-            </button>
-          </div>
-          <button 
-            onClick={exportToCSV}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-secondary text-foreground border border-border hover:bg-muted transition-colors font-medium text-sm"
-          >
-            <Download size={16} /> Exportar CSV
-          </button>
-        </div>
-      </div>
-
-      {/* Filters */}
-      <div className="bg-card rounded-2xl p-4 border border-border flex flex-wrap gap-4 items-center shadow-sm">
-        <div className="flex-1 min-w-[300px] relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <input 
-            type="text" 
-            placeholder="Buscar leads por nombre, email o empresa..." 
-            className="w-full bg-secondary border border-border rounded-xl py-2 pl-12 pr-4 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all text-sm font-medium"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <select 
-          className="bg-secondary border border-border rounded-xl py-2 px-4 text-foreground text-sm font-medium focus:outline-none"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
+        <a
+          href={`/api/leads/export?client=${clientFilter ?? ''}`}
+          className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-700 transition"
         >
-          <option value="all">Todos los estados</option>
-          {statusOptions.map(opt => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
-        </select>
-        <select className="bg-secondary border border-border rounded-xl py-2 px-4 text-foreground text-sm font-medium focus:outline-none">
-          <option value="30d">Últimos 30 días</option>
-          <option value="90d">Últimos 90 días</option>
-          <option value="all">Siempre</option>
-        </select>
+          📥 Exportar CSV
+        </a>
       </div>
 
-      {loading ? (
-        <div className="flex justify-center p-12">
-          <Loader2 className="w-8 h-8 text-primary animate-spin" />
-        </div>
-      ) : view === 'table' ? (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Lead</TableHead>
-              <TableHead>Empresa</TableHead>
-              <TableHead>Cliente Captura</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Fecha</TableHead>
-              <TableHead className="text-right">Acción</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {leads.map(lead => (
-              <TableRow key={lead.id}>
-                <TableCell>
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-foreground">{lead.contact_name}</span>
-                    <span className="text-xs text-muted-foreground">{lead.email}</span>
-                  </div>
-                </TableCell>
-                <TableCell className="text-foreground/80 font-medium">{lead.company}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                     <Building2 size={14} className="text-primary" />
-                     <span className="text-sm text-foreground/90 uppercase tracking-tight font-bold">{lead.client?.company_name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <select 
-                    value={lead.status}
-                    onChange={(e) => updateLeadStatus(lead.id, e.target.value as LeadStatus)}
-                    className="bg-transparent text-foreground focus:outline-none cursor-pointer"
-                  >
-                    {statusOptions.map(opt => (
-                      <option key={opt.value} value={opt.value} className="bg-popover text-popover-foreground">
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {format(new Date(lead.created_at), 'dd MMM yyyy')}
-                </TableCell>
-                <TableCell className="text-right">
-                  <button className="p-2 hover:bg-muted text-muted-foreground hover:text-foreground rounded-lg transition-colors">
-                    <MoreHorizontal size={18} />
-                  </button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 h-[calc(100vh-350px)] overflow-x-auto pb-4">
-          {statusOptions.map(col => (
-             <div key={col.value} className="flex flex-col gap-4 min-w-[280px]">
-                <div className="flex items-center justify-between px-2">
-                  <div className="flex items-center gap-2">
-                    <div className={`w-2 h-2 rounded-full ${col.color}`}></div>
-                    <h3 className="font-bold text-white uppercase text-xs tracking-widest">{col.label}</h3>
-                  </div>
-                  <span className="text-xs font-bold text-[var(--muted)] bg-white/5 px-2 py-0.5 rounded-md">
-                    {leads.filter(l => l.status === col.value).length}
-                  </span>
-                </div>
-                
-                <div className="flex-1 space-y-3 p-2 bg-gradient-to-b from-white/[0.02] to-transparent rounded-3xl border border-dashed border-white/5 overflow-y-auto">
-                    {leads.filter(l => l.status === col.value).map(lead => (
-                      <div key={lead.id} className="glass p-4 rounded-2xl border border-border hover:border-blue-500/50 transition-all cursor-grab active:cursor-grabbing group">
-                        <div className="flex justify-between items-start mb-2">
-                          <h4 className="font-bold text-white text-sm group-hover:text-blue-400 transition-colors uppercase tracking-tight">{lead.contact_name}</h4>
-                          <button className="text-[var(--muted)] hover:text-white"><MoreHorizontal className="w-4 h-4" /></button>
-                        </div>
-                        <p className="text-[10px] text-[var(--muted)] mb-3 flex items-center gap-1"><Tag className="w-3 h-3" /> {lead.company}</p>
-                        <div className="flex items-center justify-between pt-3 border-t border-white/5">
-                          <div className="flex items-center gap-1">
-                            <Building2 className="w-3 h-3 text-[var(--muted)]" />
-                            <span className="text-[9px] font-bold text-[var(--sub)] uppercase">{lead.client?.company_name}</span>
-                          </div>
-                          <button 
-                            onClick={() => {
-                               const currentIndex = statusOptions.findIndex(o => o.value === col.value);
-                               if (currentIndex < statusOptions.length - 1) {
-                                 updateLeadStatus(lead.id, statusOptions[currentIndex + 1].value);
-                               }
-                            }}
-                            className="p-1 hover:bg-blue-500/10 text-[var(--muted)] hover:text-blue-400 rounded-md transition-colors"
-                          >
-                            <ArrowRight className="w-3 h-3" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                    {leads.filter(l => l.status === col.value).length === 0 && (
-                      <div className="h-20 flex items-center justify-center text-[var(--muted)] text-[10px] uppercase font-bold tracking-widest opacity-30">Vacío</div>
-                    )}
-                </div>
-             </div>
+      {/* FILTERS */}
+      <form method="GET" className="flex flex-wrap gap-4 mb-6 bg-white p-4 rounded-xl border border-gray-100 shadow-sm">
+        <select name="client" defaultValue={clientFilter ?? ''} className="border border-gray-200 rounded-lg px-3 py-2 text-sm">
+          <option value="">Todos los clientes</option>
+          {(clientList ?? []).map(c => (
+            <option key={c.id} value={c.id}>{c.company_name ?? c.email}</option>
           ))}
-        </div>
-      )}
+        </select>
+        <select name="status" defaultValue={statusFilter ?? ''} className="border border-gray-200 rounded-lg px-3 py-2 text-sm">
+          <option value="">Todos los estados</option>
+          <option value="new">Nuevo</option>
+          <option value="contacted">Contactado</option>
+          <option value="qualified">Calificado</option>
+          <option value="lost">Perdido</option>
+        </select>
+        <button type="submit" className="bg-purple-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition">
+          Filtrar
+        </button>
+      </form>
+
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <table className="w-full text-sm text-left">
+          <thead className="bg-gray-50 border-b border-gray-100 text-gray-500 font-semibold uppercase text-xs tracking-wider">
+            <tr>
+              <th className="px-6 py-4">Fecha</th>
+              <th className="px-6 py-4">Lead</th>
+              <th className="px-6 py-4">Cliente dueño</th>
+              <th className="px-6 py-4">Estado</th>
+              <th className="px-6 py-4">Última conversación</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-50">
+            {(leads ?? []).map(l => {
+              const client = (l.clients as any);
+              return (
+                <tr key={l.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 text-xs text-gray-400">
+                    {new Date(l.created_at).toLocaleDateString('es-CL')}
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="font-semibold text-gray-900">{l.name ?? '—'}</div>
+                    <div className="text-gray-400 text-xs">{l.email}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <Link href={`/admin/clientes`} className="text-purple-600 hover:underline text-xs">
+                      {client?.company_name ?? client?.email ?? '—'}
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4">{statusBadge(l.status)}</td>
+                  <td className="px-6 py-4 text-xs text-gray-500 max-w-xs truncate">
+                    {l.last_message ?? '—'}
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+        {!leads?.length && (
+          <div className="py-16 text-center text-gray-400">No hay leads con los filtros actuales.</div>
+        )}
+      </div>
     </div>
   );
 }
