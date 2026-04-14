@@ -100,14 +100,16 @@ export async function generateStaticParams() {
   return Object.keys(POSTS).map(slug => ({ slug }))
 }
 
-export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
-  const post = POSTS[params.slug]
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params
+  const post = POSTS[slug]
   if (!post) return {}
   return { title: `${post.title} — Blog AIgenciaLab`, description: post.content[0]?.slice(0, 160) }
 }
 
-export default function BlogPost({ params }: { params: { slug: string } }) {
-  const post = POSTS[params.slug]
+export default async function BlogPost({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params
+  const post = POSTS[slug]
   if (!post) notFound()
 
   const CATEGORY_COLORS: Record<string, string> = {
