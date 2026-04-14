@@ -26,11 +26,26 @@ export async function middleware(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  const isProtected =
-    pathname.startsWith('/dashboard') ||
-    pathname.startsWith('/admin')
+  // Bug 1 fix: /admin requires auth + role=admin check
+  // /dashboard requires auth only
+  if (pathname.startsWith('/admin')) {
+    if (!user) {
+      return NextResponse.redirect(new URL('/login', request.url))
+    }
+    // Check admin role via app_metadata (set by Supabase Auth Admin API)
+    // or fallback to checking clients.status column
+    const isAdmin =
+      user.app_metadata?.role === 'admin' ||
+      user.user_metadata?.role === 'admin'
 
-  if (isProtected && !user) {
+    if (!isAdmin) {
+      // Not an admin → redirect to their dashboard
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+    return response
+  }
+
+  if (pathname.startsWith('/dashboard') && !user) {
     return NextResponse.redirect(new URL('/login', request.url))
   }
 

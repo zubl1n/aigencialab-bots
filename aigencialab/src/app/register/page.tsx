@@ -4,7 +4,8 @@ import { useState, Suspense } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Bot, Building2, Globe, Mail, User, CheckCircle2, Loader2, ArrowRight } from 'lucide-react';
+import { Bot, Building2, Globe, Mail, User, Eye, EyeOff, CheckCircle2, Loader2, ArrowRight, Lock } from 'lucide-react';
+import { PLANS } from '@/lib/plans';
 
 function RegisterForm() {
   const router = useRouter();
@@ -14,13 +15,16 @@ function RegisterForm() {
   const supabase = createClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
 
   const [formData, setFormData] = useState({
     fullName: '',
     companyName: '',
     email: '',
     website: '',
+    password: '',
+    confirmPassword: '',
     plan: 'Starter'
   });
 
@@ -34,12 +38,24 @@ function RegisterForm() {
     setLoading(true);
     setError(null);
 
-    const { fullName, companyName, email, website, plan } = formData;
+    const { fullName, companyName, email, website, password, confirmPassword, plan } = formData;
+
+    if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres.');
+      setLoading(false);
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError('Las contraseñas no coinciden.');
+      setLoading(false);
+      return;
+    }
 
     try {
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email,
-        password: Math.random().toString(36).slice(-12),
+        password,
         options: {
           emailRedirectTo: `${window.location.origin}/auth/callback`,
           data: {
@@ -53,7 +69,25 @@ function RegisterForm() {
       });
 
       if (signUpError) throw signUpError;
-      setSuccess(true);
+
+      // Bug 2 fix: If session exists (email confirmation disabled), ensure client row exists.
+      // The auth trigger is the primary path; this is a fallback upsert.
+      if (data.user) {
+        await supabase.from('clients').upsert({
+          id: data.user.id,
+          email: data.user.email,
+          company_name: companyName,
+          plan: plan,
+          status: 'pending',
+          tenant_id: data.user.id, // required NOT NULL, same as id for single-owner
+        }, { onConflict: 'id' });
+      }
+
+      if (data.session) {
+        router.push('/dashboard/onboarding');
+      } else {
+        router.push('/login?registered=1');
+      }
     } catch (err: any) {
       setError(err.message || 'Error al registrarse. Por favor intenta de nuevo.');
     } finally {
@@ -61,54 +95,31 @@ function RegisterForm() {
     }
   };
 
-  if (success) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center animate-fade-up">
-          <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-6">
-            <CheckCircle2 className="w-8 h-8 text-accent" />
-          </div>
-          <h2 className="text-2xl font-bold text-white mb-2">¡Casi listo!</h2>
-          <p className="text-slate-400 mb-6">
-            Hemos enviado un enlace de confirmación a <span className="text-primary">{formData.email}</span>. 
-            Confirma tu email para comenzar con el onboarding.
-          </p>
-          <button 
-            onClick={() => router.push('/login')}
-            className="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 rounded-xl transition-all"
-          >
-            Ir al Login
-          </button>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none -z-10">
         <div className="absolute top-1/4 -left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px]" />
-        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-purple/20 rounded-full blur-[128px]" />
+        <div className="absolute bottom-1/4 -right-1/4 w-96 h-96 bg-purple-500/20 rounded-full blur-[128px]" />
       </div>
 
       <div className="max-w-xl w-full">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-primary text-sm font-medium mb-4 animate-fade-up">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-primary text-sm font-medium mb-4">
             <Bot className="w-4 h-4" />
             <span>AIgenciaLab SaaS Platform</span>
           </div>
-          <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2 animate-fade-up" style={{ animationDelay: '0.1s' }}>
+          <h1 className="text-4xl font-extrabold text-white tracking-tight mb-2">
             Crea tu cuenta empresarial
           </h1>
-          <p className="text-slate-400 animate-fade-up" style={{ animationDelay: '0.2s' }}>
+          <p className="text-slate-400">
             Activa tu asistente IA en menos de 5 minutos
           </p>
         </div>
 
         <form 
           onSubmit={handleRegister}
-          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 space-y-5 animate-fade-up"
-          style={{ animationDelay: '0.3s' }}
+          className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6 md:p-8 space-y-5"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div className="space-y-2">
@@ -170,15 +181,65 @@ function RegisterForm() {
             />
           </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-primary" /> Contraseña
+              </label>
+              <div className="relative">
+                <input
+                  required
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleInputChange}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  placeholder="Mín. 8 caracteres"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <Lock className="w-4 h-4 text-primary" /> Confirmar Contraseña
+              </label>
+              <div className="relative">
+                <input
+                  required
+                  type={showConfirm ? 'text' : 'password'}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleInputChange}
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 pr-12 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  placeholder="Repite tu contraseña"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowConfirm(!showConfirm)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                >
+                  {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">Plan de Suscripción</label>
             <div className="grid grid-cols-3 gap-3">
-              {['Starter', 'Pro', 'Enterprise'].map((plan) => (
+              {/* Bug 9: plan options from plans.ts — single source of truth */}
+              {(Object.values(PLANS) as typeof PLANS[keyof typeof PLANS][]).map((plan) => (
                 <label 
-                  key={plan}
+                  key={plan.name}
                   className={`
-                    relative flex items-center justify-center p-3 rounded-xl border cursor-pointer transition-all
-                    ${formData.plan === plan 
+                    relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all
+                    ${formData.plan === plan.name 
                       ? 'bg-primary/20 border-primary text-primary' 
                       : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}
                   `}
@@ -186,33 +247,35 @@ function RegisterForm() {
                   <input
                     type="radio"
                     name="plan"
-                    value={plan}
-                    checked={formData.plan === plan}
+                    value={plan.name}
+                    checked={formData.plan === plan.name}
                     onChange={handleInputChange}
                     className="sr-only"
                   />
-                  <span className="text-sm font-semibold">{plan}</span>
+                  <span className="text-sm font-bold">{plan.name}</span>
+                  <span className="text-[10px] mt-0.5 opacity-70">{plan.priceDisplay}</span>
                 </label>
               ))}
             </div>
           </div>
 
           {error && (
-            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm">
+            <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
               {error}
             </div>
           )}
 
           <button
+            id="register-submit-btn"
             disabled={loading}
             type="submit"
-            className="w-full bg-primary hover:bg-primary-dark disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2 group"
+            className="w-full bg-primary hover:bg-primary/80 disabled:opacity-50 text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center justify-center gap-2 group"
           >
             {loading ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
-                Comenzar Registro <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                Crear Cuenta Gratis <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </>
             )}
           </button>

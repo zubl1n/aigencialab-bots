@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
-import Link from 'next/link'
+import Link from 'next/link';
+import { MainLayout } from '@/components/landing/MainLayout';
 
 export const metadata: Metadata = {
   title: 'AigenciaLab.cl — Automatización IA para Empresas Chile',
@@ -25,24 +26,9 @@ export default function LandingPage() {
   const waNumber = process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56912345678'
 
   return (
-    <div className="min-h-screen">
+    <MainLayout>
       {/* ── HEADER ── */}
-      <header className="fixed top-0 inset-x-0 z-50 border-b border-white/5 bg-slate-950/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="text-xl font-bold tracking-tight">
-            Aigencia<span className="text-gradient">Lab.cl</span>
-          </div>
-          <nav className="hidden md:flex items-center gap-6 text-sm text-slate-400">
-            <a href="#servicios" className="hover:text-white transition-colors">Agentes</a>
-            <a href="#pricing"   className="hover:text-white transition-colors">Planes</a>
-            <a href="#seguridad" className="hover:text-white transition-colors">Seguridad</a>
-            <Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link>
-            <Link href="/audit" className="bg-gradient-to-r from-primary to-purple text-white px-4 py-2 rounded-lg font-medium hover:opacity-90 transition-opacity">
-              🔍 Auditoría Gratis
-            </Link>
-          </nav>
-        </div>
-      </header>
+      
 
       <main className="pt-16">
         {/* ── HERO ── */}
@@ -157,11 +143,11 @@ export default function LandingPage() {
                   <div className="text-4xl font-bold mb-1">{p.price === 'A medida' ? p.price : `$${p.price}`}</div>
                   {p.price !== 'A medida' && <div className="text-slate-500 text-sm mb-4">CLP / mes</div>}
                   <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1">{p.desc}</p>
-                  <a href={`https://wa.me/${waNumber}?text=${encodeURIComponent(`Hola! Me interesa el plan ${p.name} de AigenciaLab.cl`)}`}
-                     target="_blank" rel="noreferrer"
+                  {/* Button QA: pricing CTAs → /register */}
+                  <Link href="/register"
                      className={`text-center py-3 rounded-xl font-semibold transition-all ${p.highlight ? 'bg-blue-600 text-white hover:bg-blue-500' : 'border border-white/10 text-slate-300 hover:border-white/20'}`}>
                     {p.cta}
-                  </a>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -235,17 +221,7 @@ export default function LandingPage() {
       </main>
 
       {/* ── FOOTER ── */}
-      <footer className="border-t border-white/5 py-12 mt-10">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <div className="text-xl font-bold">Aigencia<span className="text-gradient">Lab.cl</span></div>
-          <p className="text-slate-500 text-sm">© 2026 AigenciaLab.cl · Santiago, Chile · Ley N°21.663 · Ley N°19.628</p>
-          <div className="flex gap-4 text-sm text-slate-500">
-            <Link href="/audit" className="hover:text-slate-300 transition-colors">Auditoría Gratis</Link>
-            <Link href="/dashboard" className="hover:text-slate-300 transition-colors">Dashboard</Link>
-            <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer" className="hover:text-slate-300 transition-colors">WhatsApp</a>
-          </div>
-        </div>
-      </footer>
-    </div>
+      
+    </MainLayout>
   )
 }

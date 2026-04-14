@@ -27,7 +27,7 @@ const nextConfig: NextConfig = {
   trailingSlash: false,
   async redirects() {
     return [
-      { source: '/admin',     destination: '/dashboard', permanent: false },
+      // Bug 7 fix: removed /admin → /dashboard redirect so /admin is reachable directly
       { source: '/panel',     destination: '/dashboard', permanent: false },
       { source: '/auditoria', destination: '/audit',     permanent: false },
     ]
