@@ -3,6 +3,10 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
+export async function generateStaticParams() {
+  return Object.keys(POSTS).map(slug => ({ slug }))
+}
+
 const POSTS: Record<string, {
   title: string; category: string; date: string; readTime: string;
   content: string[]; emoji: string;
