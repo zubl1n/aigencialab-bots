@@ -15,47 +15,75 @@ export default function LoginPage() {
     e.preventDefault()
     setLoading(true); setError('')
     const supabase = createClient()
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+    const { data, error: err } = await supabase.auth.signInWithPassword({ email, password })
     if (err) { setError(err.message); setLoading(false); return }
-    router.push('/dashboard')
+
+    // Route based on role
+    const user = data?.user
+    const isAdmin =
+      user?.app_metadata?.role === 'admin' ||
+      user?.user_metadata?.role === 'admin'
+    
+    router.push(isAdmin ? '/admin' : '/dashboard')
+    router.refresh()
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4" style={{background:'linear-gradient(135deg,#080a12 0%,#0d1020 100%)'}}>
+    <div className="min-h-screen flex items-center justify-center px-4 bg-[#0A0A0F]">
       <div className="w-full max-w-sm">
         <div className="text-center mb-8">
-          <Link href="/" className="text-2xl font-bold">Aigencia<span className="text-gradient">Lab.cl</span></Link>
-          <p className="text-slate-400 text-sm mt-2">Accede al panel operativo</p>
+          <Link href="/" className="text-2xl font-bold text-[#F1F0F5]">
+            Aigencia<span className="text-gradient">Lab.cl</span>
+          </Link>
+          <p className="text-[#A09CB0] text-sm mt-2">Accede al panel operativo</p>
         </div>
 
-        <div className="glass rounded-2xl p-8">
-          <h1 className="text-xl font-bold mb-6">Iniciar sesión</h1>
+        <div className="bg-[#16161E] border border-white/8 rounded-2xl p-8 shadow-xl">
+          <h1 className="text-xl font-bold mb-6 text-[#F1F0F5]">Iniciar sesión</h1>
           {error && (
             <div className="bg-red-500/10 border border-red-500/30 text-red-300 rounded-xl p-3 mb-5 text-sm">{error}</div>
           )}
           <form onSubmit={handleLogin} className="space-y-4">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Email</label>
-              <input type="email" required value={email} onChange={e => setEmail(e.target.value)}
-                placeholder="admin@aigencialab.cl"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"/>
+              <label className="block text-sm text-[#A09CB0] mb-2">Email</label>
+              <input
+                id="login-email"
+                type="email"
+                required
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="tu@empresa.cl"
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[#F1F0F5] placeholder-[#6B6480] focus:outline-none focus:border-[#7C3AED] transition-colors"
+              />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Contraseña</label>
-              <input type="password" required value={password} onChange={e => setPassword(e.target.value)}
+              <label className="block text-sm text-[#A09CB0] mb-2">Contraseña</label>
+              <input
+                id="login-password"
+                type="password"
+                required
+                value={password}
+                onChange={e => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-600 focus:outline-none focus:border-blue-500 transition-colors"/>
+                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-[#F1F0F5] placeholder-[#6B6480] focus:outline-none focus:border-[#7C3AED] transition-colors"
+              />
             </div>
-            <button type="submit" disabled={loading}
-              className="w-full bg-gradient-to-r from-blue-600 to-violet-600 text-white py-3 rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50">
-              {loading ? 'Ingresando...' : 'Ingresar al Dashboard →'}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-[#7C3AED] hover:bg-[#6D28D9] text-white py-3 rounded-xl font-semibold transition-all disabled:opacity-50"
+            >
+              {loading ? 'Ingresando...' : 'Ingresar →'}
             </button>
           </form>
-          <p className="text-center text-xs text-slate-600 mt-6">
-            ¿Sin cuenta? <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56912345678'}`} className="text-blue-400 hover:underline">Contactar ventas</a>
+          <p className="text-center text-xs text-[#6B6480] mt-6">
+            ¿Sin cuenta?{' '}
+            <Link href="/register" className="text-[#C084FC] hover:underline">Registrarse gratis</Link>
+            {' · '}
+            <Link href="/audit" className="text-[#C084FC] hover:underline">Auditoría gratis</Link>
           </p>
         </div>
-        <p className="text-center text-xs text-slate-700 mt-6">🔒 Ley N°19.628 · AigenciaLab.cl</p>
+        <p className="text-center text-xs text-[#6B6480] mt-6">© AIgenciaLab · Ley N°19.628</p>
       </div>
     </div>
   )

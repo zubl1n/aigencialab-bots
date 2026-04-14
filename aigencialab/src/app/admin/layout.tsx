@@ -8,6 +8,7 @@ const navItems = [
   { href: '/admin/leads', label: 'Leads Global', icon: '💬' },
   { href: '/admin/pagos', label: 'Pagos', icon: '💳' },
   { href: '/admin/alertas', label: 'Alertas', icon: '🔔', badgeCount: 3 },
+  { href: '/admin/auditorias', label: 'Auditorías', icon: '📋' },
 ];
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
