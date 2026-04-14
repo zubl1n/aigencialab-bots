@@ -3,9 +3,6 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
-export async function generateStaticParams() {
-  return Object.keys(POSTS).map(slug => ({ slug }))
-}
 
 const POSTS: Record<string, {
   title: string; category: string; date: string; readTime: string;
@@ -97,6 +94,10 @@ const POSTS: Record<string, {
       'El porcentaje de usuarios que continúan la conversación después del segundo mensaje. Una retención sobre el 70% indica que el agente está generando engagement efectivo.',
     ],
   },
+}
+
+export async function generateStaticParams() {
+  return Object.keys(POSTS).map(slug => ({ slug }))
 }
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
