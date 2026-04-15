@@ -64,9 +64,10 @@ export async function GET(req: NextRequest) {
     supabase.from('clients')
       .select('id, email, company, company_name, contact_name, whatsapp, url, plan, status, rubro, channels, config, created_at')
       .eq('id', userId)
-      .single(),
+      .maybeSingle(),   // Use maybeSingle to avoid 406 when no record found
     supabase.from('bot_configs')
-      .select('id, bot_name, name, active, widget_color, welcome_message, language, llm_config, instructions')
+      // DB uses both 'name' and 'bot_name' depending on migration stage — select both
+      .select('id, bot_name, name, active, widget_color, welcome_message, language, llm_config, instructions, system_prompt')
       .eq('client_id', userId)
       .maybeSingle(),
     supabase.from('subscriptions')
@@ -75,14 +76,33 @@ export async function GET(req: NextRequest) {
       .maybeSingle(),
   ])
 
-  if (clientRes.error || !clientRes.data) {
-    return NextResponse.json({ error: 'Client not found' }, { status: 404 })
+  if (clientRes.error) {
+    console.error('[client/config GET] DB error:', clientRes.error)
+    return NextResponse.json({ error: 'Error al cargar configuración', details: clientRes.error.message }, { status: 500 })
   }
+
+  if (!clientRes.data) {
+    // User exists in auth but not in clients table — return empty state instead of 404
+    return NextResponse.json({
+      data: {
+        client: null,
+        bot: botRes.data ?? null,
+        subscription: subRes.data ?? null,
+        _notice: 'Client profile not yet created. Save your configuration to initialize it.',
+      },
+    })
+  }
+
+  // Normalize bot config: prefer bot_name over name
+  const bot = botRes.data ? {
+    ...botRes.data,
+    bot_name: botRes.data.bot_name || botRes.data.name || 'Asistente IA',
+  } : null
 
   return NextResponse.json({
     data: {
       client: clientRes.data,
-      bot: botRes.data ?? null,
+      bot,
       subscription: subRes.data ?? null,
     },
   })
@@ -136,24 +156,58 @@ export async function POST(req: NextRequest) {
   const { bot, ...clientFields } = parsed.data
   const supabase = getAdminSupabase()
 
-  // Update client row
+  // Update client row — exclude updated_at to avoid column not exist error
   if (Object.keys(clientFields).length > 0) {
-    const { error: clientErr } = await supabase.from('clients')
-      .update({ ...clientFields, updated_at: new Date().toISOString() })
-      .eq('id', userId)
-    if (clientErr) {
-      console.error('[client/config] client update error:', clientErr)
-      return NextResponse.json({ error: 'Error al guardar perfil' }, { status: 500 })
+    // First check if client record exists
+    const { data: existing } = await supabase.from('clients')
+      .select('id').eq('id', userId).maybeSingle()
+
+    if (!existing) {
+      // Client record doesn't exist — create it
+      const { error: insertErr } = await supabase.from('clients').insert({
+        id: userId,
+        ...clientFields,
+        plan: 'Starter',
+        status: 'onboarding',
+      })
+      if (insertErr) {
+        console.error('[client/config] client insert error:', insertErr)
+        return NextResponse.json({ error: 'Error al crear perfil: ' + insertErr.message }, { status: 500 })
+      }
+    } else {
+      // Update existing record — don't include updated_at column
+      const { error: clientErr } = await supabase.from('clients')
+        .update({ ...clientFields })
+        .eq('id', userId)
+      if (clientErr) {
+        console.error('[client/config] client update error:', clientErr)
+        return NextResponse.json({ error: 'Error al guardar perfil: ' + clientErr.message }, { status: 500 })
+      }
     }
   }
 
-  // Update bot_configs row (upsert by client_id)
+  // Update bot_configs row — handle both 'name' and 'bot_name' columns
   if (bot && Object.keys(bot).length > 0) {
+    const botPayload: Record<string, unknown> = { client_id: userId }
+
+    // Map to actual DB column names (schema uses 'name' but code uses 'bot_name')
+    if (bot.bot_name !== undefined) {
+      botPayload.bot_name = bot.bot_name
+      botPayload.name = bot.bot_name  // keep both in sync
+    }
+    if (bot.welcome_message !== undefined) botPayload.welcome_message = bot.welcome_message
+    if (bot.widget_color !== undefined) botPayload.widget_color = bot.widget_color
+    if (bot.language !== undefined) botPayload.language = bot.language
+    if (bot.instructions !== undefined) {
+      botPayload.instructions = bot.instructions
+      botPayload.system_prompt = bot.instructions  // keep both in sync
+    }
+
     const { error: botErr } = await supabase.from('bot_configs')
-      .upsert({ client_id: userId, ...bot }, { onConflict: 'client_id' })
+      .upsert(botPayload, { onConflict: 'client_id' })
     if (botErr) {
       console.error('[client/config] bot upsert error:', botErr)
-      return NextResponse.json({ error: 'Error al guardar configuración del bot' }, { status: 500 })
+      return NextResponse.json({ error: 'Error al guardar bot: ' + botErr.message }, { status: 500 })
     }
   }
 

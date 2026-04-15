@@ -113,6 +113,20 @@ export async function POST(req: NextRequest) {
 
   const supabase = getAdminSupabase()
 
+  // Verify the user has a client record first (FK constraint check)
+  const { data: clientExists } = await supabase
+    .from('clients')
+    .select('id')
+    .eq('id', userId)
+    .maybeSingle()
+
+  if (!clientExists) {
+    return NextResponse.json(
+      { error: 'Tu perfil de cliente no está configurado aún. Por favor completa tu configuración antes de abrir un ticket.' },
+      { status: 422 }
+    )
+  }
+
   // Rate limiting: max 10 open tickets per client at a time
   const { count: openCount } = await supabase
     .from('support_tickets')

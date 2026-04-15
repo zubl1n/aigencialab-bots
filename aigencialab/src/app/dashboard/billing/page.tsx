@@ -40,40 +40,74 @@ export default function BillingPage() {
 
   useEffect(() => {
     async function fetchData() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) { setLoading(false); return; }
 
-      const [clientRes, subRes, billingRes, invRes] = await Promise.all([
-        supabase.from('clients').select('*').eq('id', user.id).single(),
-        supabase.from('subscriptions').select('*').eq('client_id', user.id).single(),
-        supabase.from('billing_profiles').select('*').eq('client_id', user.id).single(),
-        supabase.from('invoices').select('*').eq('client_id', user.id).order('issued_at', { ascending: false })
-      ]);
+        // Use maybeSingle() instead of single() to avoid 406 errors
+        const [clientRes, subRes, billingRes] = await Promise.all([
+          supabase.from('clients').select('*').eq('id', user.id).maybeSingle(),
+          supabase.from('subscriptions').select('*').eq('client_id', user.id).maybeSingle(),
+          supabase.from('billing_profiles').select('*').eq('client_id', user.id).maybeSingle(),
+        ]);
 
-      if (clientRes.data) setClient(clientRes.data);
+        if (clientRes.data) setClient(clientRes.data);
 
-      if (subRes.data) {
-        setSubscription(subRes.data);
-        // FASE 1 Bug 7: trial from subscriptions.trial_ends_at with fallback
-        const trialEndDate = subRes.data.trial_ends_at ?? clientRes.data?.trial_ends_at ?? null;
-        if (trialEndDate) {
-          const daysLeft = Math.max(0, Math.ceil((new Date(trialEndDate).getTime() - Date.now()) / 86400000));
+        if (subRes.data) {
+          setSubscription(subRes.data);
+          // FASE 1 Bug 7: trial from subscriptions.trial_ends_at with fallback
+          const trialEndDate = subRes.data.trial_ends_at ?? clientRes.data?.trial_ends_at ?? null;
+          if (trialEndDate) {
+            const daysLeft = Math.max(0, Math.ceil((new Date(trialEndDate).getTime() - Date.now()) / 86400000));
+            setTrialDaysLeft(daysLeft);
+          }
+        } else if (clientRes.data?.trial_ends_at) {
+          const daysLeft = Math.max(0, Math.ceil((new Date(clientRes.data.trial_ends_at).getTime() - Date.now()) / 86400000));
           setTrialDaysLeft(daysLeft);
         }
-      } else if (clientRes.data?.trial_ends_at) {
-        const daysLeft = Math.max(0, Math.ceil((new Date(clientRes.data.trial_ends_at).getTime() - Date.now()) / 86400000));
-        setTrialDaysLeft(daysLeft);
-      }
 
-      if (billingRes.data) setBillingProfile(billingRes.data);
-      if (invRes.data) setInvoices(invRes.data);
-      setLoading(false);
+        if (billingRes.data) setBillingProfile(billingRes.data);
+
+        // Invoices table may not exist — handle gracefully
+        try {
+          const invRes = await supabase
+            .from('invoices')
+            .select('*')
+            .eq('client_id', user.id)
+            .order('issued_at', { ascending: false });
+          if (invRes.data) setInvoices(invRes.data);
+        } catch {
+          // invoices table doesn't exist yet — ignore
+        }
+      } catch (err) {
+        console.error('[billing] fetchData error:', err);
+      } finally {
+        setLoading(false);
+      }
     }
     fetchData();
   }, []);
 
-  if (loading || !client) {
+  if (loading) {
     return <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 text-blue-500 animate-spin" /></div>;
+  }
+
+  // If no client record yet, show a setup state  
+  if (!client) {
+    return (
+      <div className="flex flex-col items-center gap-6 py-24 text-center">
+        <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center border border-blue-500/20">
+          <span className="text-2xl">💳</span>
+        </div>
+        <h2 className="text-2xl font-bold text-white">Configurá tu perfil primero</h2>
+        <p className="text-slate-400 max-w-sm">
+          Antes de gestionar tu suscripción, completa tu perfil en Configuración.
+        </p>
+        <a href="/dashboard/settings" className="px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold transition-all">
+          Ir a Configuración →
+        </a>
+      </div>
+    );
   }
 
   const plan = client.plan || 'Starter';
