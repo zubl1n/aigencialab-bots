@@ -1,82 +1,84 @@
-import Link from 'next/link';
+import Link from 'next/link'
+
+const footerLinks = {
+  Productos: [
+    { label: 'Agente de Ventas',   href: '/productos/agente-ventas' },
+    { label: 'Atención al Cliente',href: '/productos/atencion-cliente' },
+    { label: 'Captura de Leads',   href: '/productos/captura-leads' },
+    { label: 'IA Conversacional',  href: '/productos/ia-conversacional' },
+    { label: 'Widget para Web',    href: '/productos/widget-web' },
+    { label: 'Integraciones',      href: '/productos/integraciones' },
+  ],
+  Soluciones: [
+    { label: 'E-commerce',         href: '/soluciones/ecommerce' },
+    { label: 'Inmobiliarias',      href: '/soluciones/inmobiliarias' },
+    { label: 'Educación',          href: '/soluciones/educacion' },
+    { label: 'Salud y Clínicas',   href: '/soluciones/salud' },
+    { label: 'Agencias Digitales', href: '/soluciones/agencias' },
+  ],
+  Recursos: [
+    { label: 'Blog',               href: '/blog' },
+    { label: 'Casos de éxito',     href: '/casos-exito' },
+    { label: '✨ Auditoría Gratis',href: '/audit' },
+    { label: 'Precios',            href: '/precios' },
+    { label: 'Nosotros',           href: '/nosotros' },
+    { label: 'Contacto',           href: '/contacto' },
+  ],
+}
 
 export function Footer() {
   return (
-    <footer className="bg-white border-t border-gray-100 text-gray-700">
+    <footer className="bg-[#06060A] border-t border-white/[0.06] text-[#6B6480]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 lg:gap-8">
-          
+
+          {/* Brand */}
           <div className="lg:col-span-2">
-            <Link href="/" className="text-2xl font-bold flex items-center gap-2 mb-4 text-gray-900">
-              <span className="bg-purple-600 text-white rounded-md p-1.5 leading-none">AI</span>
-              genciaLab
+            <Link href="/" className="flex items-center gap-2 mb-5">
+              <span className="bg-[#7C3AED] text-white rounded-md px-2 py-1 text-sm font-bold leading-none">AI</span>
+              <span className="text-[#F1F0F5] font-bold text-lg">genciaLab</span>
             </Link>
-            <p className="text-gray-500 mb-6 max-w-sm">
-              Automatiza tus ventas y servicio al cliente con agentes impulsados por IA conversacional avanzada.
+            <p className="text-[#6B6480] text-sm leading-relaxed max-w-xs mb-6">
+              Automatiza tus ventas y servicio al cliente con agentes IA conversacionales avanzados para el mercado latinoamericano.
             </p>
-            <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-100 hover:text-purple-600 transition-colors">
-                <span className="sr-only">LinkedIn</span>
-                <span aria-hidden="true">in</span>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-100 hover:text-purple-600 transition-colors">
-                <span className="sr-only">Twitter</span>
-                <span aria-hidden="true">𝕏</span>
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center hover:bg-purple-100 hover:text-purple-600 transition-colors">
-                <span className="sr-only">Instagram</span>
-                <span aria-hidden="true">ig</span>
-              </a>
+            <div className="flex gap-3">
+              {[{ label: 'Li', title: 'LinkedIn' }, { label: '𝕏', title: 'X/Twitter' }, { label: 'ig', title: 'Instagram' }].map(s => (
+                <a key={s.title} href="#" title={s.title}
+                  className="w-9 h-9 rounded-full bg-white/5 border border-white/8 flex items-center justify-center text-sm hover:bg-[#7C3AED]/20 hover:border-[#7C3AED]/40 hover:text-[#C084FC] transition-all">
+                  {s.label}
+                </a>
+              ))}
             </div>
           </div>
 
-          <div>
-            <h3 className="font-bold text-gray-900 mb-4">Productos</h3>
-            <ul className="space-y-3">
-              <li><Link href="/productos/agente-ventas" className="hover:text-purple-600 transition-colors">Agente de Ventas</Link></li>
-              <li><Link href="/productos/atencion-cliente" className="hover:text-purple-600 transition-colors">Atención al Cliente</Link></li>
-              <li><Link href="/productos/captura-leads" className="hover:text-purple-600 transition-colors">Captura de Leads</Link></li>
-              <li><Link href="/productos/ia-conversacional" className="hover:text-purple-600 transition-colors">IA Conversacional</Link></li>
-              <li><Link href="/productos/widget-web" className="hover:text-purple-600 transition-colors">Widget para Web</Link></li>
-              <li><Link href="/productos/integraciones" className="hover:text-purple-600 transition-colors">Integraciones</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-bold text-gray-900 mb-4">Soluciones</h3>
-            <ul className="space-y-3">
-              <li><Link href="/soluciones/ecommerce" className="hover:text-purple-600 transition-colors">E-commerce</Link></li>
-              <li><Link href="/soluciones/inmobiliarias" className="hover:text-purple-600 transition-colors">Inmobiliarias</Link></li>
-              <li><Link href="/soluciones/educacion" className="hover:text-purple-600 transition-colors">Educación</Link></li>
-              <li><Link href="/soluciones/salud" className="hover:text-purple-600 transition-colors">Salud y Clínicas</Link></li>
-              <li><Link href="/soluciones/agencias" className="hover:text-purple-600 transition-colors">Agencias Digitales</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="font-bold text-gray-900 mb-4">Empresa</h3>
-            <ul className="space-y-3">
-              <li><Link href="/nosotros" className="hover:text-purple-600 transition-colors">Nosotros</Link></li>
-              <li><Link href="/blog" className="hover:text-purple-600 transition-colors">Blog</Link></li>
-              <li><Link href="/contacto" className="hover:text-purple-600 transition-colors">Contacto</Link></li>
-              <li><a href="#" className="hover:text-purple-600 transition-colors">Términos del Servicio</a></li>
-              <li><a href="#" className="hover:text-purple-600 transition-colors">Política de Privacidad</a></li>
-            </ul>
-          </div>
-
+          {/* Link columns */}
+          {Object.entries(footerLinks).map(([section, links]) => (
+            <div key={section}>
+              <h3 className="text-[#F1F0F5] font-semibold text-sm mb-4">{section}</h3>
+              <ul className="space-y-3">
+                {links.map(l => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="text-sm text-[#6B6480] hover:text-[#C084FC] transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </div>
-      </div>
 
-      <div className="border-t border-gray-100 bg-gray-50 py-6 text-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-4 text-gray-500">
-          <div>© 2025 AIgenciaLab. Todos los derechos reservados.</div>
-          <div className="flex gap-6">
-            <a href="#" className="hover:text-purple-600 transition-colors">Términos</a>
-            <a href="#" className="hover:text-purple-600 transition-colors">Privacidad</a>
-            <span className="flex items-center gap-1 font-medium">Hecho en Chile <span aria-hidden="true">🇨🇱</span></span>
+        <div className="border-t border-white/[0.06] mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-[#3D3952]">
+            © 2026 AIgenciaLab SpA · RUT: 77.000.000-0 · Cumple Ley N°19.628 protección de datos · Ley N°21.663
+          </p>
+          <div className="flex gap-6 text-xs">
+            <Link href="/legal/privacidad" className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Privacidad</Link>
+            <Link href="/legal/terminos"  className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Términos</Link>
+            <Link href="/legal/cookies"   className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Cookies</Link>
           </div>
         </div>
       </div>
     </footer>
-  );
+  )
 }

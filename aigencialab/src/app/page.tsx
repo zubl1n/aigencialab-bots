@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link';
 import { MainLayout } from '@/components/landing/MainLayout';
+import { ImpactSection } from '@/components/landing/ImpactSection';
 
 export const metadata: Metadata = {
   title: 'AigenciaLab.cl — Automatización IA para Empresas Chile',
@@ -220,8 +221,10 @@ export default function LandingPage() {
         </section>
       </main>
 
-      {/* ── FOOTER ── */}
-      
+      {/* Impact Section — "El costo de no tener IA" */}
+      <ImpactSection />
+
+      {/* Footer via MainLayout */}
     </MainLayout>
   )
 }

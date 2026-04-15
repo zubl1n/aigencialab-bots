@@ -1,63 +1,47 @@
 import { MainLayout } from '@/components/landing/MainLayout'
-import Link from 'next/link'
-
-export default function ProductPage() {
+import { ProductPageTemplate } from '@/components/landing/ProductPageTemplate'
+export const metadata = { title: 'Widget IA para Web — AIgenciaLab', description: 'Instala tu agente IA en tu sitio web en 2 minutos.' }
+export default function Page() {
   return (
     <MainLayout>
-      <div className="bg-white">
-        <header className="py-20 px-6 sm:px-12 text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">Widget para Web</h1>
-          <p className="text-lg text-gray-600 mb-8">Integra el agente en tu sitio web con una línea de código.</p>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Probar gratis</Link>
-        </header>
-
-        <section className="py-16 px-6 sm:px-12 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Beneficios</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                'Solución automatizada 24/7',
-                'Personalización completa con tu marca',
-                'Integración rápida en 5 minutos',
-                'Soporte dedicado'
-              ].map((b, i) => (
-                <div key={i} className="flex items-center space-x-4 bg-white p-6 rounded-xl shadow-sm">
-                  <div className="bg-green-100 p-2 rounded-full text-green-600">✓</div>
-                  <span className="font-medium">{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 sm:px-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12">Cómo funciona</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-left">
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">1</div>
-                <h3 className="font-bold mb-2">Regístrate</h3>
-                <p className="text-gray-600">Crea tu cuenta en segundos.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">2</div>
-                <h3 className="font-bold mb-2">Configura tu IA</h3>
-                <p className="text-gray-600">Dale contexto y ajusta el comportamiento.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">3</div>
-                <h3 className="font-bold mb-2">Instala en tu web</h3>
-                <p className="text-gray-600">Copia el widget y comienza a interactuar.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 text-center bg-purple-50">
-          <h2 className="text-3xl font-bold mb-8">¿Listo para transformar tu negocio?</h2>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Comenzar ahora gratis</Link>
-        </section>
-      </div>
+      <ProductPageTemplate
+        badge="Producto · Widget Web"
+        emoji="⚡"
+        title="Widget IA para tu sitio web en **2 minutos**"
+        subtitle="Sin código. Sin complicaciones. Copia 2 líneas de código y tu agente IA aparece en tu sitio respondiendo consultas al instante. Compatible con cualquier plataforma."
+        metrics={[
+          { value: '2min', label: 'Tiempo de instalación' },
+          { value: '100%', label: 'Compatible con cualquier CMS' },
+          { value: '99.9%',label: 'Uptime garantizado' },
+        ]}
+        benefits={[
+          'Instalación con un snippet de 2 líneas (copy & paste)',
+          'Compatible con WordPress, Shopify, Wix, Squarespace, HTML puro',
+          'Aparece en mobile y desktop con diseño responsive automático',
+          'Personaliza colores, posición, avatar y mensaje de bienvenida',
+          'Carga asíncrona — no afecta la velocidad de tu sitio (PageSpeed)',
+          'Modo oscuro y claro según sistema operativo del visitante',
+          'Múltiples idiomas con detección automática del navegador',
+          'Analytics integrado: sesiones, conversiones, leads capturados',
+        ]}
+        steps={[
+          { number: '01', title: 'Crea tu agente en el panel', body: 'Define nombre, tono, instrucciones y conecta tu base de conocimiento. Solo toma minutos.' },
+          { number: '02', title: 'Copia el snippet', body: 'Te entregamos 2 líneas de JavaScript. Pegalas antes del cierre de </body> en tu sitio.' },
+          { number: '03', title: 'Tu agente está activo', body: 'En segundos el widget aparece en tu web y comienza a atender visitantes automáticamente.' },
+        ]}
+        useCases={[
+          { icon: '🛍️', title: 'Tienda Online', body: 'Aparece en páginas de producto con preguntas específicas. Aumenta el tiempo en sitio y la tasa de conversión.' },
+          { icon: '💼', title: 'Sitio Corporativo B2B', body: 'Califica prospectos que visitan la web corporativa y agenda demos con el equipo comercial automáticamente.' },
+          { icon: '🎓', title: 'Landing Pages de Cursos', body: 'Resuelve dudas sobre el contenido, el precio y la metodología. Convierte tráfico pagado en matrículas.' },
+        ]}
+        faqs={[
+          { q: '¿Afecta el widget la velocidad de mi sitio?', a: 'No. El widget carga de forma asíncrona y diferida. El impacto en PageSpeed Insights es menor a 1 punto.' },
+          { q: '¿Puedo personalizar los colores del widget?', a: 'Sí. Paleta completa de colores, logo, avatar del agente, posición (esquina derecha/izquierda) y mensaje de bienvenida.' },
+          { q: '¿Funciona en dispositivos móviles?', a: 'Sí. El widget tiene diseño responsive y está optimizado para la experiencia en móvil (80% del tráfico web hoy).' },
+          { q: '¿Puedo instalarlo en múltiples sitios?', a: 'Cada plan incluye un snippet por dominio. Para múltiples dominios puedes crear agentes separados o contactar a nuestro equipo.' },
+          { q: '¿Se puede ocultar en páginas específicas?', a: 'Sí. Puedes configurar reglas de visibilidad por URL exact match, prefijo o patrón regex desde el panel.' },
+        ]}
+      />
     </MainLayout>
   )
 }

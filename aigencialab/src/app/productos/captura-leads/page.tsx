@@ -1,63 +1,47 @@
 import { MainLayout } from '@/components/landing/MainLayout'
-import Link from 'next/link'
-
-export default function ProductPage() {
+import { ProductPageTemplate } from '@/components/landing/ProductPageTemplate'
+export const metadata = { title: 'Captura de Leads Automática IA — AIgenciaLab', description: 'Convierte visitantes en leads calificados con IA conversacional.' }
+export default function Page() {
   return (
     <MainLayout>
-      <div className="bg-white">
-        <header className="py-20 px-6 sm:px-12 text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">Captura de Leads</h1>
-          <p className="text-lg text-gray-600 mb-8">Automatiza la recolección y calificación de prospectos.</p>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Probar gratis</Link>
-        </header>
-
-        <section className="py-16 px-6 sm:px-12 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Beneficios</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                'Solución automatizada 24/7',
-                'Personalización completa con tu marca',
-                'Integración rápida en 5 minutos',
-                'Soporte dedicado'
-              ].map((b, i) => (
-                <div key={i} className="flex items-center space-x-4 bg-white p-6 rounded-xl shadow-sm">
-                  <div className="bg-green-100 p-2 rounded-full text-green-600">✓</div>
-                  <span className="font-medium">{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 sm:px-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12">Cómo funciona</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-left">
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">1</div>
-                <h3 className="font-bold mb-2">Regístrate</h3>
-                <p className="text-gray-600">Crea tu cuenta en segundos.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">2</div>
-                <h3 className="font-bold mb-2">Configura tu IA</h3>
-                <p className="text-gray-600">Dale contexto y ajusta el comportamiento.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">3</div>
-                <h3 className="font-bold mb-2">Instala en tu web</h3>
-                <p className="text-gray-600">Copia el widget y comienza a interactuar.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 text-center bg-purple-50">
-          <h2 className="text-3xl font-bold mb-8">¿Listo para transformar tu negocio?</h2>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Comenzar ahora gratis</Link>
-        </section>
-      </div>
+      <ProductPageTemplate
+        badge="Producto · Lead Generation"
+        emoji="🎯"
+        title="**Captura Leads** de forma automática las 24hs"
+        subtitle="El 97% de los visitantes de tu sitio se van sin dejar sus datos. Tu agente IA los intercepta, inicia conversación y captura sus datos en el momento de mayor intención."
+        metrics={[
+          { value: '97%', label: 'Visitantes que se van sin datos' },
+          { value: '25-40%', label: 'Tasa de captura con IA' },
+          { value: '3x', label: 'Más leads por el mismo tráfico' },
+        ]}
+        benefits={[
+          'Activa la conversación proactivamente después de X segundos en página',
+          'Hace las 3 preguntas clave para cualificar el lead automáticamente',
+          'Guarda nombre, email, teléfono y contexto en tu CRM',
+          'Envía notificación inmediata a tu equipo cuando llega un lead calificado',
+          'Segmenta leads por industria, tamaño de empresa e intención de compra',
+          'Activa secuencias de follow-up automático por email o WhatsApp',
+          'A/B testing de mensajes de entrada para maximizar conversión',
+          'Reportes diarios de leads capturados y tasa de conversión',
+        ]}
+        steps={[
+          { number: '01', title: 'Defines cuándo activarse', body: 'Configuras triggers: tiempo en página, scroll, intento de salida, o páginas específicas de alto valor.' },
+          { number: '02', title: 'El agente inicia conversación', body: 'De forma natural y personalizada según la página donde está el visitante. Sin formularios tradicionales.' },
+          { number: '03', title: 'El lead entra a tu pipeline', body: 'Con nombre, datos de contacto y contexto de intención de compra. Listo para ser contactado por tu equipo.' },
+        ]}
+        useCases={[
+          { icon: '📊', title: 'SaaS B2B', body: 'Captura demo requests cualificados. El agente pregunta por empresa, cargo, problema específico y presupuesto antes de agendar.' },
+          { icon: '🏠', title: 'Inmobiliaria', body: 'Detecta visitantes en páginas de propiedades con alta intención. Captura datos y toman agenda de visita automáticamente.' },
+          { icon: '📚', title: 'Educación Online', body: 'Convierte visitantes de landing pages en matrículas. El agente resuelve dudas académicas y guía el proceso de inscripción.' },
+        ]}
+        faqs={[
+          { q: '¿Cómo sabe el agente cuándo activar la conversación?', a: 'Configuras los triggers desde el panel: tiempo mínimo en página, porcentaje de scroll, intentos de salida, o páginas específicas.' },
+          { q: '¿Se pueden sincronizar los leads con mi CRM?', a: 'Sí. Integración nativa con HubSpot, Salesforce, Pipedrive, Zoho y cualquier CRM con webhook o API.' },
+          { q: '¿Qué pasa si el visitante no quiere dar sus datos?', a: 'El agente continúa la conversación ofreciendo valor (respuestas, demos, recursos) sin presionar por datos de contacto.' },
+          { q: '¿Puedo ver los leads capturados en tiempo real?', a: 'Sí. El panel de leads de AIgenciaLab muestra cada lead con su historial de conversación, datos y score de calificación.' },
+          { q: '¿El agente puede hacer seguimiento después de la primera conversación?', a: 'Sí. Puedes configurar secuencias automáticas de seguimiento por WhatsApp o email para leads que no convirtieron.' },
+        ]}
+      />
     </MainLayout>
   )
 }

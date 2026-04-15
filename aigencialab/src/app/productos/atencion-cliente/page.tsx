@@ -1,63 +1,47 @@
 import { MainLayout } from '@/components/landing/MainLayout'
-import Link from 'next/link'
-
-export default function ProductPage() {
+import { ProductPageTemplate } from '@/components/landing/ProductPageTemplate'
+export const metadata = { title: 'Atención al Cliente 24/7 IA — AIgenciaLab', description: 'Resuelve el 80% de tickets sin intervención humana con IA conversacional.' }
+export default function Page() {
   return (
     <MainLayout>
-      <div className="bg-white">
-        <header className="py-20 px-6 sm:px-12 text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">Atención al Cliente 24/7</h1>
-          <p className="text-lg text-gray-600 mb-8">Resuelve consultas de tus clientes instantáneamente en cualquier momento.</p>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Probar gratis</Link>
-        </header>
-
-        <section className="py-16 px-6 sm:px-12 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Beneficios</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                'Solución automatizada 24/7',
-                'Personalización completa con tu marca',
-                'Integración rápida en 5 minutos',
-                'Soporte dedicado'
-              ].map((b, i) => (
-                <div key={i} className="flex items-center space-x-4 bg-white p-6 rounded-xl shadow-sm">
-                  <div className="bg-green-100 p-2 rounded-full text-green-600">✓</div>
-                  <span className="font-medium">{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 sm:px-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12">Cómo funciona</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-left">
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">1</div>
-                <h3 className="font-bold mb-2">Regístrate</h3>
-                <p className="text-gray-600">Crea tu cuenta en segundos.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">2</div>
-                <h3 className="font-bold mb-2">Configura tu IA</h3>
-                <p className="text-gray-600">Dale contexto y ajusta el comportamiento.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">3</div>
-                <h3 className="font-bold mb-2">Instala en tu web</h3>
-                <p className="text-gray-600">Copia el widget y comienza a interactuar.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 text-center bg-purple-50">
-          <h2 className="text-3xl font-bold mb-8">¿Listo para transformar tu negocio?</h2>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Comenzar ahora gratis</Link>
-        </section>
-      </div>
+      <ProductPageTemplate
+        badge="Producto · Soporte IA"
+        emoji="💬"
+        title="Atención al Cliente **Automatizada** 24/7"
+        subtitle="Tu equipo de soporte nunca duerme. Resuelve el 80% de consultas sin intervención humana y escala los casos complejos con contexto completo."
+        metrics={[
+          { value: '80%', label: 'Tickets resueltos automáticamente' },
+          { value: '60%', label: 'Reducción en costos de soporte' },
+          { value: '4.8', label: 'CSAT promedio (sobre 5)' },
+        ]}
+        benefits={[
+          'Resuelve consultas frecuentes en segundos, sin cola de espera',
+          'Aprende de tu base de conocimiento y documentación',
+          'Escala a humano con contexto completo de la conversación',
+          'Compatible con WhatsApp, web widget y email',
+          'FAQ dinámica que se actualiza automáticamente',
+          'Métricas de satisfacción y tiempos de resolución en tiempo real',
+          'Historial completo de interacciones por cliente',
+          'Multiidioma: español, inglés y portugués',
+        ]}
+        steps={[
+          { number: '01', title: 'Carga tu base de conocimiento', body: 'Sube tus FAQs, manuales, políticas y preguntas frecuentes. El agente aprende en minutos.' },
+          { number: '02', title: 'El agente aprende tu negocio', body: 'Usando IA, el agente puede responder variaciones de preguntas con lenguaje natural, sin scripts rígidos.' },
+          { number: '03', title: 'Resuelve el 80% de tickets', body: 'Sin intervención humana. Los casos complejos se escalan con todo el historial al agente correcto.' },
+        ]}
+        useCases={[
+          { icon: '🛒', title: 'Tienda Online', body: 'Estado de pedido, política de devoluciones, compatibilidad de productos — resuelto instantáneamente.' },
+          { icon: '💻', title: 'SaaS / Tech', body: 'Soporte técnico básico, reseteo de contraseñas, estado de servicios y onboarding de usuarios nuevos.' },
+          { icon: '🏥', title: 'Salud y Clínicas', body: 'Preguntas de pacientes sobre preparación de exámenes, cobertura, horarios y reagendamiento.' },
+        ]}
+        faqs={[
+          { q: '¿Qué pasa con preguntas que el agente no sabe responder?', a: 'El agente detecta cuando no tiene respuesta y escala al equipo humano con el contexto completo, sin que el cliente lo note.' },
+          { q: '¿Puede escalar a un humano en tiempo real?', a: 'Sí. Con un click puede transferir la conversación a un operador humano con todo el historial visible.' },
+          { q: '¿Cuántos idiomas soporta?', a: 'Actualmente español, inglés y portugués con planes de expandir a más idiomas en la hoja de ruta 2026.' },
+          { q: '¿Con qué frecuencia se actualiza la base de conocimiento?', a: 'Puedes actualizar tu base de conocimiento cuando quieras desde el panel. Los cambios se aplican en tiempo real.' },
+          { q: '¿Se integra con mi sistema de tickets actual?', a: 'Compatible con Zendesk, Freshdesk, Intercom y cualquier plataforma con API REST.' },
+        ]}
+      />
     </MainLayout>
   )
 }

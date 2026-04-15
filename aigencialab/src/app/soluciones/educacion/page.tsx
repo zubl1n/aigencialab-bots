@@ -1,63 +1,47 @@
 import { MainLayout } from '@/components/landing/MainLayout'
-import Link from 'next/link'
-
-export default function SolutionPage() {
+import { ProductPageTemplate } from '@/components/landing/ProductPageTemplate'
+export const metadata = { title: 'IA para Educación — AIgenciaLab', description: 'Automatiza matrículas y atención a estudiantes con IA.' }
+export default function Page() {
   return (
     <MainLayout>
-      <div className="bg-white">
-        <header className="py-20 px-6 sm:px-12 text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">AIgenciaLab para Educación</h1>
-          <p className="text-lg text-gray-600 mb-8">Información inmediata sobre cursos, matrículas y becas.</p>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Probar gratis</Link>
-        </header>
-
-        <section className="py-16 px-6 sm:px-12 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Beneficios</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                'Solución automatizada 24/7',
-                'Personalización completa con tu marca',
-                'Integración rápida en 5 minutos',
-                'Soporte dedicado'
-              ].map((b, i) => (
-                <div key={i} className="flex items-center space-x-4 bg-white p-6 rounded-xl shadow-sm">
-                  <div className="bg-green-100 p-2 rounded-full text-green-600">✓</div>
-                  <span className="font-medium">{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 sm:px-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12">Cómo funciona</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-left">
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">1</div>
-                <h3 className="font-bold mb-2">Regístrate</h3>
-                <p className="text-gray-600">Crea tu cuenta en segundos.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">2</div>
-                <h3 className="font-bold mb-2">Configura tu IA</h3>
-                <p className="text-gray-600">Dale contexto y ajusta el comportamiento.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">3</div>
-                <h3 className="font-bold mb-2">Instala en tu web</h3>
-                <p className="text-gray-600">Copia el widget y comienza a interactuar.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 text-center bg-purple-50">
-          <h2 className="text-3xl font-bold mb-8">¿Listo para transformar tu negocio?</h2>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Comenzar ahora gratis</Link>
-        </section>
-      </div>
+      <ProductPageTemplate
+        badge="Solución · Educación"
+        emoji="📚"
+        title="IA Educativa: **Más matrículas**, menos fricción"
+        subtitle="Cada consulta de un prospecto sin responder rápida es una matrícula perdida. Un agente IA convierte el interés en inscripción — 24/7, sin esperar a que tu equipo esté disponible."
+        metrics={[
+          { value: '22%', label: 'Aumento en conversión matrícula' },
+          { value: '60%', label: 'Reducción en consultas manuales' },
+          { value: '24/7',label: 'Disponibilidad para prospectos' },
+        ]}
+        benefits={[
+          'Atiende consultas de programas, mallas, vacantes y requisitos de admisión',
+          'Guía al prospecto por el proceso de postulación paso a paso',
+          'Captura datos y los registra en tu CRM educativo',
+          'Envía material (brochures, videos) por WhatsApp automáticamente',
+          'Agenda visitas a campus o clases de prueba',
+          'Follow-up automatizado a prospectos que no completaron el proceso',
+          'Gestión de listas de espera y notificación de cupos disponibles',
+          'Multiidioma para programas internacionales',
+        ]}
+        steps={[
+          { number: '01', title: 'Configuras tu oferta académica', body: 'Subes información de programas, requisitos, precios, becas y modalidades. El agente lo aprende todo.' },
+          { number: '02', title: 'El agente asesora a cada prospecto', body: 'Responde preguntas específicas, compara programas según perfil del interesado y lo guía en el proceso.' },
+          { number: '03', title: 'La matrícula se completa', body: 'El agente lleva al prospecto hasta el link de pago o formulario de inscripción, con seguimiento post-registro.' },
+        ]}
+        useCases={[
+          { icon: '🎓', title: 'Universidades e Institutos', body: 'Atiende cientos de consultas simultáneas durante el período de admisión sin saturar el call center.' },
+          { icon: '💼', title: 'Escuelas de Negocios', body: 'Cualifica candidatos a MBA y posgrados por perfil profesional, experiencia y motivación de carrera.' },
+          { icon: '🖥️', title: 'Cursos Online y Bootcamps', body: 'Convierte tráfico de redes y Google Ads en inscripciones. Responde objeciones de precio e integra pagos.' },
+        ]}
+        faqs={[
+          { q: '¿Funciona durante el peak de admisiones?', a: 'Sí. La arquitectura de AIgenciaLab escala automáticamente. Sin límite de conversaciones simultáneas en planes Business+.' },
+          { q: '¿Puede el agente hablar sobre becas y financiamiento?', a: 'Sí. Lo configuras con la información de becas, CAE, créditos internos y repactaciones disponibles.' },
+          { q: '¿Se integra con nuestro sistema de gestión académica?', a: 'Integramos con Banner (Ellucian), SIGA y sistemas propios via API. Consulta con nuestro equipo tu caso específico.' },
+          { q: '¿Puede gestionar listas de espera?', a: 'Sí. El agente puede registrar interesados en lista de espera y notificarlos automáticamente cuando se liberen cupos.' },
+          { q: '¿Cómo se mide el impacto en matrículas?', a: 'El panel de analytics muestra el funnel completo desde primera interacción hasta matrícula confirmada.' },
+        ]}
+      />
     </MainLayout>
   )
 }

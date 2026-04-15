@@ -1,63 +1,47 @@
 import { MainLayout } from '@/components/landing/MainLayout'
-import Link from 'next/link'
-
-export default function ProductPage() {
+import { ProductPageTemplate } from '@/components/landing/ProductPageTemplate'
+export const metadata = { title: 'Integraciones IA — AIgenciaLab', description: 'Conecta tu agente IA con WhatsApp, CRM, Transbank y más.' }
+export default function Page() {
   return (
     <MainLayout>
-      <div className="bg-white">
-        <header className="py-20 px-6 sm:px-12 text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">Integraciones</h1>
-          <p className="text-lg text-gray-600 mb-8">Conecta con tus herramientas favoritas como CRM y plataformas de pago.</p>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Probar gratis</Link>
-        </header>
-
-        <section className="py-16 px-6 sm:px-12 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Beneficios</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                'Solución automatizada 24/7',
-                'Personalización completa con tu marca',
-                'Integración rápida en 5 minutos',
-                'Soporte dedicado'
-              ].map((b, i) => (
-                <div key={i} className="flex items-center space-x-4 bg-white p-6 rounded-xl shadow-sm">
-                  <div className="bg-green-100 p-2 rounded-full text-green-600">✓</div>
-                  <span className="font-medium">{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 sm:px-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12">Cómo funciona</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-left">
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">1</div>
-                <h3 className="font-bold mb-2">Regístrate</h3>
-                <p className="text-gray-600">Crea tu cuenta en segundos.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">2</div>
-                <h3 className="font-bold mb-2">Configura tu IA</h3>
-                <p className="text-gray-600">Dale contexto y ajusta el comportamiento.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">3</div>
-                <h3 className="font-bold mb-2">Instala en tu web</h3>
-                <p className="text-gray-600">Copia el widget y comienza a interactuar.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 text-center bg-purple-50">
-          <h2 className="text-3xl font-bold mb-8">¿Listo para transformar tu negocio?</h2>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Comenzar ahora gratis</Link>
-        </section>
-      </div>
+      <ProductPageTemplate
+        badge="Producto · Integraciones"
+        emoji="🔗"
+        title="**Integraciones** que conectan tu IA con todo tu stack"
+        subtitle="Tu agente IA no es una isla. Se conecta nativamente con WhatsApp, tu CRM, sistemas de pago, ERP y cualquier herramienta que ya usas en tu empresa."
+        metrics={[
+          { value: '20+',  label: 'Integraciones nativas' },
+          { value: '5min', label: 'Tiempo de conexión promedio' },
+          { value: 'API', label: 'Acceso completo para devs' },
+        ]}
+        benefits={[
+          'WhatsApp Business API oficial — mensajes entrantes y salientes (HSM)',
+          'Integración con HubSpot, Salesforce, Pipedrive y Zoho CRM',
+          '≠nlink con Defontana, Buk, Transbank y MercadoPago',
+          'Webhooks y API REST para cualquier sistema propio',
+          'Zapier / Make / n8n para automatizaciones sin código',
+          'Google Calendar y Calendly para agendamiento',
+          'Métricas exportables a Google Sheets o Looker Studio',
+          'Shopify y WooCommerce: stock, precios y tracking de pedidos',
+        ]}
+        steps={[
+          { number: '01', title: 'Elige tu integración', body: 'Desde el panel de integraciones seleccionas el servicio que quieres conectar. Interfaz guiada paso a paso.' },
+          { number: '02', title: 'Autoriza con OAuth o API Key', body: 'La mayoría de integraciones se conectan en un click via OAuth. Sin tocar código ni servidores.' },
+          { number: '03', title: 'El agente opera con datos reales', body: 'Ahora tu agente puede consultar stock, crear tickets, registrar leads y enviar mensajes directamente.' },
+        ]}
+        useCases={[
+          { icon: '📱', title: 'WhatsApp Business', body: 'Tu agente atiende por WhatsApp 24/7. Envía mensajes de seguimiento, promos y confirmaciones directamente desde la plataforma.' },
+          { icon: '💳', title: 'E-commerce + Transbank', body: 'Consulta estado de pagos y pedidos en tiempo real. El agente responde "¿Cuándo llega mi pedido?" conectado a tu plataforma.' },
+          { icon: '📊', title: 'CRM + Automatizaciones', body: 'Cada lead capturado se registra automáticamente en tu CRM y activa la secuencia de seguimiento correspondiente.' },
+        ]}
+        faqs={[
+          { q: '¿Soportan algún sistema de ERP chileno?', a: 'Sí. Tenemos integración nativa con Defontana, y conectores para SAP B1, Buk y SII via API.' },
+          { q: '¿Puedo crear integraciones personalizadas?', a: 'Sí. La API de AIgenciaLab es REST y documentada. También puedes usar webhooks para conectar cualquier sistema.' },
+          { q: '¿La integración con WhatsApp requiere aprobación de Meta?', a: 'La cuenta de WhatsApp Business API debe estar verificada por Meta. Nuestro equipo te ayuda en el proceso sin costo adicional.' },
+          { q: '¿Cuántas integraciones puedo tener activas simultáneamente?', a: 'Unlimited en planes Pro y Business. Starter incluye widget web + 1 integración adicional.' },
+          { q: '¿Qué pasa si la integración externa falla?', a: 'El agente opera normalmente. Recibís una alerta en el panel cuando alguna integración tiene problemas de conectividad.' },
+        ]}
+      />
     </MainLayout>
   )
 }

@@ -1,63 +1,47 @@
 import { MainLayout } from '@/components/landing/MainLayout'
-import Link from 'next/link'
-
-export default function SolutionPage() {
+import { ProductPageTemplate } from '@/components/landing/ProductPageTemplate'
+export const metadata = { title: 'IA para Salud y Clínicas — AIgenciaLab', description: 'Agendamiento médico y atención a pacientes automatizado.' }
+export default function Page() {
   return (
     <MainLayout>
-      <div className="bg-white">
-        <header className="py-20 px-6 sm:px-12 text-center max-w-4xl mx-auto">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-gray-900 mb-6">AIgenciaLab para Salud y Clínicas</h1>
-          <p className="text-lg text-gray-600 mb-8">Agenda de horas médicas, atención de dudas frecuentes y confirmaciones.</p>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Probar gratis</Link>
-        </header>
-
-        <section className="py-16 px-6 sm:px-12 bg-gray-50">
-          <div className="max-w-6xl mx-auto">
-            <h2 className="text-3xl font-bold text-center mb-12">Beneficios</h2>
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                'Solución automatizada 24/7',
-                'Personalización completa con tu marca',
-                'Integración rápida en 5 minutos',
-                'Soporte dedicado'
-              ].map((b, i) => (
-                <div key={i} className="flex items-center space-x-4 bg-white p-6 rounded-xl shadow-sm">
-                  <div className="bg-green-100 p-2 rounded-full text-green-600">✓</div>
-                  <span className="font-medium">{b}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        <section className="py-16 px-6 sm:px-12">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold mb-12">Cómo funciona</h2>
-            <div className="grid md:grid-cols-3 gap-8 text-left">
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">1</div>
-                <h3 className="font-bold mb-2">Regístrate</h3>
-                <p className="text-gray-600">Crea tu cuenta en segundos.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">2</div>
-                <h3 className="font-bold mb-2">Configura tu IA</h3>
-                <p className="text-gray-600">Dale contexto y ajusta el comportamiento.</p>
-              </div>
-              <div className="p-6">
-                <div className="text-purple-600 font-bold text-2xl mb-4">3</div>
-                <h3 className="font-bold mb-2">Instala en tu web</h3>
-                <p className="text-gray-600">Copia el widget y comienza a interactuar.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="py-20 text-center bg-purple-50">
-          <h2 className="text-3xl font-bold mb-8">¿Listo para transformar tu negocio?</h2>
-          <Link href="/register" className="bg-purple-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-purple-700 transition">Comenzar ahora gratis</Link>
-        </section>
-      </div>
+      <ProductPageTemplate
+        badge="Solución · Salud"
+        emoji="🏥"
+        title="IA para Clínicas: **Agendamiento médico** sin espera"
+        subtitle="Tus pacientes no pueden esperar. Un agente IA agenda horas, responde preguntas de preparación y envía recordatorios automáticos — liberando a tu recepción del 80% de llamadas repetitivas."
+        metrics={[
+          { value: '500+', label: 'Horas agendadas/mes automáticamente' },
+          { value: '80%',  label: 'Reducción en llamadas a recepción' },
+          { value: '4.9★', label: 'Satisfacción de pacientes' },
+        ]}
+        benefits={[
+          'Agendamiento de horas 24/7 sin intervención de recepción',
+          'Envío de instrucciones de preparación para exámenes automáticamente',
+          'Recordatorio de cita 24h y 1h antes por WhatsApp y SMS',
+          'Gestión de reagendamientos y cancelaciones sin llamadas',
+          'Responde preguntas sobre coberturas de isapres y fonasa',
+          'Verificación de disponibilidad en tiempo real por especialidad',
+          'Derivación inteligente al profesional correcto según síntoma declarado',
+          'Cumplimiento RGPD y Ley N°19.628 en el manejo de datos de salud',
+        ]}
+        steps={[
+          { number: '01', title: 'Conectas tu agenda médica', body: 'Integramos con tu sistema de agenda (SIAP, iMedic, Doctoralia, o Google Calendar). Disponibilidad en tiempo real.' },
+          { number: '02', title: 'El agente atiende al paciente', body: 'Pregunta por especialidad, síntoma o médico preferido. Muestra horarios disponibles y confirma la cita.' },
+          { number: '03', title: 'El paciente recibe confirmación', body: 'Confirmación inmediata por WhatsApp con instrucciones de preparación, dirección y recordatorio automático.' },
+        ]}
+        useCases={[
+          { icon: '🦷', title: 'Clínicas Dentales', body: '500 horas agendadas al mes sin que recepción toque el teléfono. Recordatorios con instrucciones por especialidad.' },
+          { icon: '🔬', title: 'Centros de Diagnósticos', body: 'Agendamiento de exámenes con instrucciones de ayuno, preparación y logística enviadas automáticamente.' },
+          { icon: '🧠', title: 'Salud Mental', body: 'Primera consulta pactada de forma anónima y discreta. El agente maneja la sensibilidad del área con protocolos específicos.' },
+        ]}
+        faqs={[
+          { q: '¿Con qué sistemas de agenda médica se integra?', a: 'Nativo con Doctoralia, iMedic y Google Calendar. Para sistemas propios o ClínicaLab usamos API o integración manual.' },
+          { q: '¿Cómo maneja el agente información sensible de salud?', a: 'Cumplimos GDPR, Ley N°19.628 y protocolos de datos sensibles. Los datos de salud nunca se usan para entrenar modelos externos.' },
+          { q: '¿Puede el agente hacer triage básico?', a: 'Puede hacer un pre-triage por síntomas declarados para derivar a la especialidad correcta, pero no hace diagnóstico médico.' },
+          { q: '¿Funciona para clínicas con múltiples especialidades?', a: 'Sí. Puedes configurar múltiples especialidades, con reglas de derivación y disponibilidades independientes por médico.' },
+          { q: '¿Qué pasa con cancelaciones de último minuto?', a: 'El sistema notifica al paciente siguiente en lista de espera automáticamente cuando se libera un cupo.' },
+        ]}
+      />
     </MainLayout>
   )
 }
