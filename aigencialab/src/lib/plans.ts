@@ -161,12 +161,16 @@ export const PLAN_MRR: Record<string, number> = {
   Enterprise: 0,
 }
 
-/** Format price for display */
-export function formatPrice(
-  plan: Plan,
-  currency: Currency,
-  billing: Billing
-): string {
+/** Format price for display — accepts Plan+currency+billing OR legacy number */
+export function formatPrice(plan: Plan, currency: Currency, billing: Billing): string
+export function formatPrice(amountUSD: number): string
+export function formatPrice(planOrAmount: Plan | number, currency?: Currency, billing?: Billing): string {
+  if (typeof planOrAmount === 'number') {
+    // Legacy: display USD amount
+    if (planOrAmount === 0) return 'Gratis'
+    return `$${planOrAmount.toLocaleString('en-US')} USD`
+  }
+  const plan = planOrAmount
   if (plan.isContact) return 'A consultar'
   const usd = billing === 'annual' ? plan.annualUSD : plan.monthlyUSD
   const clp = billing === 'annual' ? plan.annualCLP : plan.monthlyCLP
