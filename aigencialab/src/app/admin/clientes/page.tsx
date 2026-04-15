@@ -4,71 +4,116 @@ import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
 
+const PAGE_SIZE = 20;
+
+/* ── Badge Components ──────────────────────────────────────── */
+
+function StatusBadge({ status, trialEnd }: { status: string | null; trialEnd?: string | null }) {
+  const now = new Date();
+  const isTrialExpired = trialEnd && new Date(trialEnd) < now;
+
+  let label: string;
+  let cls: string;
+
+  if (status === 'active') {
+    label = '✓ Activo';
+    cls = 'bg-emerald-100 text-emerald-700';
+  } else if (status === 'suspended') {
+    label = '⛔ Suspendido';
+    cls = 'bg-red-100 text-red-700';
+  } else if (isTrialExpired) {
+    label = '⏰ Vencido';
+    cls = 'bg-orange-100 text-orange-700';
+  } else if (status === 'trialing' || status === 'pending' || status === 'onboarding') {
+    label = '🧪 Trial';
+    cls = 'bg-blue-100 text-blue-700';
+  } else {
+    label = status ?? 'Sin estado';
+    cls = 'bg-gray-100 text-gray-600';
+  }
+
+  return (
+    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${cls}`}>
+      {label}
+    </span>
+  );
+}
+
 function PaymentBadge({ status }: { status: string | null }) {
   const map: Record<string, { label: string; cls: string }> = {
     approved: { label: '✓ Verificado', cls: 'bg-green-100 text-green-700' },
     pending:  { label: '⏳ Pendiente', cls: 'bg-yellow-100 text-yellow-700' },
     failed:   { label: '✗ Fallido',   cls: 'bg-red-100 text-red-700' },
   };
-  const s = map[status ?? ''] ?? { label: '— Trial', cls: 'bg-gray-100 text-gray-600' };
+  const s = map[status ?? ''] ?? { label: '— Sin MP', cls: 'bg-gray-100 text-gray-600' };
   return <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${s.cls}`}>{s.label}</span>;
 }
 
-function SubStatusBadge({ status }: { status: string | null }) {
-  const map: Record<string, string> = {
-    active:   'bg-green-100 text-green-700',
-    trialing: 'bg-blue-100 text-blue-700',
-    past_due: 'bg-red-100 text-red-700',
-    canceled: 'bg-gray-200 text-gray-600',
-  };
-  return (
-    <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${map[status ?? ''] ?? 'bg-gray-100 text-gray-500'}`}>
-      {status ?? 'sin plan'}
-    </span>
-  );
-}
+/* ── Main Page ─────────────────────────────────────────────── */
 
 export default async function AdminClientes({
   searchParams,
 }: {
-  searchParams: { [key: string]: string | undefined };
+  searchParams: Promise<{ [key: string]: string | undefined }>;
 }) {
+  const params = await searchParams;
+
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  const { data: clients } = await supabase
+  // Parse params
+  const search     = (params?.q ?? '').toLowerCase();
+  const planFilter = params?.plan ?? '';
+  const statusFilter = params?.status ?? '';
+  const currentPage = Math.max(0, parseInt(params?.page ?? '0', 10));
+
+  // Build query
+  let query = supabase
     .from('clients')
     .select(`
-      id, email, company_name, full_name, phone, plan, status, created_at,
-      subscriptions(status, current_period_end, plan),
+      id, email, company_name, company, full_name, contact_name, phone, plan, status, created_at,
+      subscriptions(status, current_period_end, plan, trial_ends_at),
       bot_configs(id, active, created_at),
       billing_profiles(payment_status, card_brand, card_last4, mp_customer_id),
       api_keys(key),
       leads(id)
-    `)
-    .order('created_at', { ascending: false });
+    `, { count: 'exact' });
 
-  const planFilter = searchParams?.plan;
-  const payFilter  = searchParams?.payment;
-  const search     = searchParams?.q?.toLowerCase() ?? '';
+  // Server-side filters
+  if (search) {
+    query = query.or(`email.ilike.%${search}%,company_name.ilike.%${search}%,company.ilike.%${search}%,contact_name.ilike.%${search}%,full_name.ilike.%${search}%`);
+  }
+  if (planFilter) {
+    query = query.eq('plan', planFilter);
+  }
+  if (statusFilter) {
+    query = query.eq('status', statusFilter);
+  }
 
-  const filtered = (clients ?? []).filter(c => {
-    if (search && !c.email?.toLowerCase().includes(search) && !c.company_name?.toLowerCase().includes(search)) return false;
-    if (planFilter && c.plan !== planFilter) return false;
-    const payStatus = (c.billing_profiles as any[])?.[0]?.payment_status;
-    if (payFilter && payStatus !== payFilter) return false;
-    return true;
-  });
+  const { data: clients, count: totalCount } = await query
+    .order('created_at', { ascending: false })
+    .range(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE - 1);
+
+  const total = totalCount ?? 0;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const rows = clients ?? [];
 
   return (
     <div>
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Clientes</h1>
-          <p className="text-gray-500 mt-1">{filtered.length} clientes encontrados</p>
+          <p className="text-gray-500 mt-1">{total} clientes en total · Página {currentPage + 1} de {Math.max(1, totalPages)}</p>
         </div>
+        <a
+          href="/api/admin/export/clients"
+          className="flex items-center gap-2 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-semibold transition shadow-sm"
+        >
+          ⬇️ Exportar CSV
+        </a>
       </div>
 
       {/* FILTERS */}
@@ -79,21 +124,29 @@ export default async function AdminClientes({
           placeholder="Buscar por nombre o email…"
           className="flex-1 min-w-48 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300"
         />
-        <select name="plan" defaultValue={planFilter ?? ''} className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+        <select name="plan" defaultValue={planFilter} className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
           <option value="">Todos los planes</option>
           <option value="Starter">Starter</option>
           <option value="Pro">Pro</option>
+          <option value="Business">Business</option>
           <option value="Enterprise">Enterprise</option>
         </select>
-        <select name="payment" defaultValue={payFilter ?? ''} className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
-          <option value="">Todos los estados de pago</option>
-          <option value="approved">Verificado</option>
-          <option value="pending">Pendiente</option>
-          <option value="failed">Fallido</option>
+        <select name="status" defaultValue={statusFilter} className="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
+          <option value="">Todos los estados</option>
+          <option value="active">Activo</option>
+          <option value="pending">Pendiente/Trial</option>
+          <option value="onboarding">Onboarding</option>
+          <option value="suspended">Suspendido</option>
+          <option value="paused">Pausado</option>
         </select>
         <button type="submit" className="bg-purple-600 text-white px-5 py-2 rounded-lg text-sm font-semibold hover:bg-purple-700 transition">
           Filtrar
         </button>
+        {(search || planFilter || statusFilter) && (
+          <Link href="/admin/clientes" className="text-sm text-gray-400 hover:text-gray-600 self-center">
+            Limpiar filtros
+          </Link>
+        )}
       </form>
 
       {/* TABLE */}
@@ -104,29 +157,35 @@ export default async function AdminClientes({
               <th className="px-6 py-4">#</th>
               <th className="px-6 py-4">Cliente</th>
               <th className="px-6 py-4">Plan</th>
-              <th className="px-6 py-4">Suscripción</th>
+              <th className="px-6 py-4">Estado</th>
               <th className="px-6 py-4">Pago MP</th>
               <th className="px-6 py-4">Bot</th>
               <th className="px-6 py-4">Leads</th>
               <th className="px-6 py-4">Registrado</th>
+              <th className="px-6 py-4">Último acceso</th>
               <th className="px-6 py-4">Acciones</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50">
-            {filtered.map((c, i) => {
-              const sub    = (c.subscriptions as any[])?.[0];
-              const bot    = (c.bot_configs as any[])?.[0];
+            {rows.map((c: any, i: number) => {
+              const sub     = (c.subscriptions as any[])?.[0];
+              const bot     = (c.bot_configs as any[])?.[0];
               const billing = (c.billing_profiles as any[])?.[0];
-              const apiKey  = (c.api_keys as any[])?.[0]?.key;
               const leadsCount = (c.leads as any[])?.length ?? 0;
               const plan = PLANS[c.plan as keyof typeof PLANS];
+              const displayName = c.company_name || c.company || c.full_name || c.contact_name || '—';
+              const displayEmail = c.email ?? '—';
+              const trialEnd = sub?.trial_ends_at ?? sub?.current_period_end;
+              const subStatus = sub?.status ?? c.status;
 
               return (
                 <tr key={c.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 text-gray-400 font-mono text-xs">{i + 1}</td>
+                  <td className="px-6 py-4 text-gray-400 font-mono text-xs">{currentPage * PAGE_SIZE + i + 1}</td>
                   <td className="px-6 py-4">
-                    <div className="font-semibold text-gray-900">{c.company_name ?? c.full_name ?? '—'}</div>
-                    <div className="text-gray-400 text-xs">{c.email}</div>
+                    <Link href={`/admin/clientes/${c.id}`} className="group">
+                      <div className="font-semibold text-gray-900 group-hover:text-purple-600 transition-colors">{displayName}</div>
+                      <div className="text-gray-400 text-xs">{displayEmail}</div>
+                    </Link>
                     {billing?.mp_customer_id && (
                       <a
                         href={`https://www.mercadopago.cl/subscriptions/${billing.mp_customer_id}`}
@@ -145,10 +204,10 @@ export default async function AdminClientes({
                     {plan && <div className="text-xs text-gray-400 mt-1">{formatPrice(plan.price)}</div>}
                   </td>
                   <td className="px-6 py-4">
-                    <SubStatusBadge status={sub?.status ?? null} />
-                    {sub?.current_period_end && (
+                    <StatusBadge status={subStatus} trialEnd={trialEnd} />
+                    {trialEnd && (
                       <div className="text-xs text-gray-400 mt-1">
-                        hasta {new Date(sub.current_period_end).toLocaleDateString('es-CL')}
+                        hasta {new Date(trialEnd).toLocaleDateString('es-CL')}
                       </div>
                     )}
                   </td>
@@ -174,6 +233,9 @@ export default async function AdminClientes({
                   <td className="px-6 py-4 text-xs text-gray-400">
                     {new Date(c.created_at).toLocaleDateString('es-CL')}
                   </td>
+                  <td className="px-6 py-4 text-xs text-gray-400">
+                    —
+                  </td>
                   <td className="px-6 py-4">
                     <div className="flex flex-col gap-1.5 min-w-[120px]">
                       <form action="/api/admin/toggle-bot" method="POST" className="inline">
@@ -184,10 +246,10 @@ export default async function AdminClientes({
                         </button>
                       </form>
                       <Link
-                        href={`/admin/leads?client=${c.id}`}
-                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-blue-100 text-blue-700 hover:bg-blue-200 transition text-center"
+                        href={`/admin/clientes/${c.id}`}
+                        className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition text-center"
                       >
-                        Ver Leads
+                        Ver Detalle
                       </Link>
                     </div>
                   </td>
@@ -196,10 +258,44 @@ export default async function AdminClientes({
             })}
           </tbody>
         </table>
-        {filtered.length === 0 && (
+        {rows.length === 0 && (
           <div className="py-16 text-center text-gray-400">No se encontraron clientes con los filtros actuales.</div>
         )}
       </div>
+
+      {/* PAGINATION */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 mt-6">
+          {currentPage > 0 && (
+            <Link
+              href={`/admin/clientes?page=${currentPage - 1}${search ? `&q=${search}` : ''}${planFilter ? `&plan=${planFilter}` : ''}${statusFilter ? `&status=${statusFilter}` : ''}`}
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+            >
+              ← Anterior
+            </Link>
+          )}
+          {Array.from({ length: Math.min(totalPages, 10) }, (_, i) => {
+            const pageNum = i;
+            return (
+              <Link
+                key={pageNum}
+                href={`/admin/clientes?page=${pageNum}${search ? `&q=${search}` : ''}${planFilter ? `&plan=${planFilter}` : ''}${statusFilter ? `&status=${statusFilter}` : ''}`}
+                className={`px-3 py-2 text-sm font-medium rounded-lg transition ${pageNum === currentPage ? 'bg-purple-600 text-white' : 'text-gray-600 bg-white border border-gray-200 hover:bg-gray-50'}`}
+              >
+                {pageNum + 1}
+              </Link>
+            );
+          })}
+          {currentPage < totalPages - 1 && (
+            <Link
+              href={`/admin/clientes?page=${currentPage + 1}${search ? `&q=${search}` : ''}${planFilter ? `&plan=${planFilter}` : ''}${statusFilter ? `&status=${statusFilter}` : ''}`}
+              className="px-4 py-2 text-sm font-medium text-gray-600 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+            >
+              Siguiente →
+            </Link>
+          )}
+        </div>
+      )}
     </div>
   );
 }

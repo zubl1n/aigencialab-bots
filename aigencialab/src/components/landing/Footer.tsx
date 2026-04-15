@@ -2,29 +2,35 @@ import Link from 'next/link'
 
 const footerLinks = {
   Productos: [
-    { label: 'Agente de Ventas',   href: '/productos/agente-ventas' },
-    { label: 'Atención al Cliente',href: '/productos/atencion-cliente' },
-    { label: 'Captura de Leads',   href: '/productos/captura-leads' },
-    { label: 'IA Conversacional',  href: '/productos/ia-conversacional' },
-    { label: 'Widget para Web',    href: '/productos/widget-web' },
-    { label: 'Integraciones',      href: '/productos/integraciones' },
+    { label: 'Agente de Ventas',    href: '/productos/agente-ventas' },
+    { label: 'Atención al Cliente', href: '/productos/atencion-cliente' },
+    { label: 'Captura de Leads',    href: '/productos/captura-leads' },
+    { label: 'IA Conversacional',   href: '/productos/ia-conversacional' },
+    { label: 'Widget para Web',     href: '/productos/widget-web' },
+    { label: 'Integraciones',       href: '/productos/integraciones' },
   ],
   Soluciones: [
-    { label: 'E-commerce',         href: '/soluciones/ecommerce' },
-    { label: 'Inmobiliarias',      href: '/soluciones/inmobiliarias' },
-    { label: 'Educación',          href: '/soluciones/educacion' },
-    { label: 'Salud y Clínicas',   href: '/soluciones/salud' },
-    { label: 'Agencias Digitales', href: '/soluciones/agencias' },
+    { label: 'E-commerce',          href: '/soluciones/ecommerce' },
+    { label: 'Inmobiliarias',       href: '/soluciones/inmobiliarias' },
+    { label: 'Educación',           href: '/soluciones/educacion' },
+    { label: 'Salud y Clínicas',    href: '/soluciones/salud' },
+    { label: 'Agencias Digitales',  href: '/soluciones/agencias' },
   ],
   Recursos: [
-    { label: 'Blog',               href: '/blog' },
-    { label: 'Casos de éxito',     href: '/casos-exito' },
-    { label: '✨ Auditoría Gratis',href: '/audit' },
-    { label: 'Precios',            href: '/precios' },
-    { label: 'Nosotros',           href: '/nosotros' },
-    { label: 'Contacto',           href: '/contacto' },
+    { label: 'Blog IA',             href: '/blog' },
+    { label: 'Casos de éxito',      href: '/casos-exito' },
+    { label: '✨ Auditoría Gratis', href: '/audit' },
+    { label: 'Precios',             href: '/precios' },
+    { label: 'Nosotros',            href: '/nosotros' },
+    { label: 'Contacto',            href: '/contacto' },
   ],
 }
+
+const SOCIALS = [
+  { label: 'in', title: 'LinkedIn',   href: 'https://linkedin.com/company/aigencialab' },
+  { label: '𝕏',  title: 'X / Twitter', href: 'https://twitter.com/aigencialab' },
+  { label: 'ig', title: 'Instagram',  href: 'https://instagram.com/aigencialab' },
+]
 
 export function Footer() {
   return (
@@ -39,12 +45,19 @@ export function Footer() {
               <span className="text-[#F1F0F5] font-bold text-lg">genciaLab</span>
             </Link>
             <p className="text-[#6B6480] text-sm leading-relaxed max-w-xs mb-6">
-              Automatiza tus ventas y servicio al cliente con agentes IA conversacionales avanzados para el mercado latinoamericano.
+              Automatiza ventas y atención al cliente con agentes IA conversacionales
+              para empresas chilenas y latinoamericanas. Resultados desde el primer mes.
             </p>
             <div className="flex gap-3">
-              {[{ label: 'Li', title: 'LinkedIn' }, { label: '𝕏', title: 'X/Twitter' }, { label: 'ig', title: 'Instagram' }].map(s => (
-                <a key={s.title} href="#" title={s.title}
-                  className="w-9 h-9 rounded-full bg-white/5 border border-white/8 flex items-center justify-center text-sm hover:bg-[#7C3AED]/20 hover:border-[#7C3AED]/40 hover:text-[#C084FC] transition-all">
+              {SOCIALS.map(s => (
+                <a
+                  key={s.title}
+                  href={s.href}
+                  title={s.title}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-9 h-9 rounded-full bg-white/5 border border-white/[0.08] flex items-center justify-center text-xs hover:bg-[#7C3AED]/20 hover:border-[#7C3AED]/40 hover:text-[#C084FC] transition-all duration-200"
+                >
                   {s.label}
                 </a>
               ))}
@@ -54,11 +67,14 @@ export function Footer() {
           {/* Link columns */}
           {Object.entries(footerLinks).map(([section, links]) => (
             <div key={section}>
-              <h3 className="text-[#F1F0F5] font-semibold text-sm mb-4">{section}</h3>
+              <h3 className="text-[#F1F0F5] font-semibold text-sm mb-4 tracking-wide">{section}</h3>
               <ul className="space-y-3">
                 {links.map(l => (
                   <li key={l.href}>
-                    <Link href={l.href} className="text-sm text-[#6B6480] hover:text-[#C084FC] transition-colors">
+                    <Link
+                      href={l.href}
+                      className="text-sm text-[#6B6480] hover:text-[#C084FC] transition-colors duration-150"
+                    >
                       {l.label}
                     </Link>
                   </li>
@@ -68,14 +84,16 @@ export function Footer() {
           ))}
         </div>
 
+        {/* Bottom bar */}
         <div className="border-t border-white/[0.06] mt-12 pt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-[#3D3952]">
-            © 2026 AIgenciaLab SpA · RUT: 77.000.000-0 · Cumple Ley N°19.628 protección de datos · Ley N°21.663
+            © {new Date().getFullYear()} AIgenciaLab SpA · Chile
+            {' '}· Cumple Ley N°19.628 (datos personales) y Ley N°21.663 (IA)
           </p>
           <div className="flex gap-6 text-xs">
             <Link href="/legal/privacidad" className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Privacidad</Link>
-            <Link href="/legal/terminos"  className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Términos</Link>
-            <Link href="/legal/cookies"   className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Cookies</Link>
+            <Link href="/legal/terminos"   className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Términos</Link>
+            <Link href="/legal/cookies"    className="text-[#3D3952] hover:text-[#6B6480] transition-colors">Cookies</Link>
           </div>
         </div>
       </div>

@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link';
 import { MainLayout } from '@/components/landing/MainLayout';
 import { ImpactSection } from '@/components/landing/ImpactSection';
+import { LandingPricing } from '@/components/landing/LandingPricing';
 
 export const metadata: Metadata = {
   title: 'AigenciaLab.cl — Automatización IA para Empresas Chile',
@@ -17,11 +18,7 @@ const services = [
   { icon: '🤖', title: 'RPA Inteligente', desc: 'Facturación automática en SII, conciliaciones ERP financieras y reportes automáticos.', tags: ['RPA','SII','Defontana'] },
 ]
 
-const plans = [
-  { name: 'STARTER', price: '149.990', desc: '1 agente · 1.000 msgs/mes · Soporte email', cta: 'Empezar gratis', highlight: false },
-  { name: 'ADVANCED', price: '299.990', desc: '3 agentes · 5.000 msgs/mes · Dashboard + CRM · Soporte prioritario', cta: 'Lo más popular', highlight: true },
-  { name: 'ENTERPRISE', price: 'A medida', desc: 'Agentes ilimitados · SLA garantizado · Integración ERP · CISO dedicado', cta: 'Agendar reunión', highlight: false },
-]
+// Pricing data now sourced from PLANS_LIST via LandingPricing component
 
 export default function LandingPage() {
   const waNumber = process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56912345678'
@@ -128,63 +125,8 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ── PRICING ── */}
-        <section id="pricing" className="py-20 border-t border-white/5 bg-slate-900">
-          <div className="max-w-5xl mx-auto px-6">
-            <div className="text-center mb-14">
-              <div className="inline-block text-xs font-semibold uppercase tracking-widest text-violet-400 bg-violet-400/10 px-3 py-1 rounded-full mb-4">Planes</div>
-              <h2 className="text-3xl md:text-4xl font-bold">Precio claro, <span className="text-gradient">valor real</span></h2>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              {plans.map(p => (
-                <div key={p.name}
-                  className={`rounded-2xl p-8 flex flex-col ${p.highlight ? 'bg-gradient-to-b from-blue-600/20 to-violet-600/10 border-2 border-blue-500/40' : 'glass'}`}>
-                  {p.highlight && <div className="text-xs font-bold text-blue-300 uppercase tracking-widest mb-4">⭐ Más popular</div>}
-                  <div className="text-sm text-slate-400 uppercase tracking-widest mb-1">{p.name}</div>
-                  <div className="text-4xl font-bold mb-1">{p.price === 'A medida' ? p.price : `$${p.price}`}</div>
-                  {p.price !== 'A medida' && <div className="text-slate-500 text-sm mb-4">CLP / mes</div>}
-                  <p className="text-slate-400 text-sm leading-relaxed mb-6 flex-1">{p.desc}</p>
-                  {/* Button QA: pricing CTAs → /register */}
-                  <Link href="/register"
-                     className={`text-center py-3 rounded-xl font-semibold transition-all ${p.highlight ? 'bg-blue-600 text-white hover:bg-blue-500' : 'border border-white/10 text-slate-300 hover:border-white/20'}`}>
-                    {p.cta}
-                  </Link>
-                </div>
-              ))}
-            </div>
-
-            {/* TABLA COMPARATIVA SEO/GEO */}
-            <div className="mt-16 glass rounded-2xl overflow-hidden border border-white/10 hidden md:block">
-              <table id="comparativa-ecommerce-agentes" className="w-full text-left text-sm">
-                <thead>
-                  <tr className="bg-white/5 border-b border-white/10 text-slate-300">
-                    <th className="p-4 font-semibold w-1/3">Métrica Operativa</th>
-                    <th className="p-4 font-semibold w-1/3">Operación Humana Tradicional</th>
-                    <th className="p-4 font-semibold text-blue-400 w-1/3">AigenciaLab IA Automática</th>
-                  </tr>
-                </thead>
-                <tbody className="text-slate-400">
-                  <tr className="border-b border-white/5">
-                    <td className="p-4">Tiempo Medio de Respuesta (TMO)</td>
-                    <td className="p-4">~2 a 4 horas laborables</td>
-                    <td className="p-4 text-emerald-400 font-medium">Bajo 3 segundos (24/7)</td>
-                  </tr>
-                  <tr className="border-b border-white/5">
-                    <td className="p-4">Gestión de Logística (Starken/Chilexpress)</td>
-                    <td className="p-4">Búsqueda manual en portales</td>
-                    <td className="p-4 text-emerald-400 font-medium">Webhooks instantáneos y Alertas Wa</td>
-                  </tr>
-                  <tr>
-                    <td className="p-4">Conciliación ERP/SII</td>
-                    <td className="p-4">Digitalización manual mensual</td>
-                    <td className="p-4 text-emerald-400 font-medium">RPA Inyectado en tiempo real</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-
-          </div>
-        </section>
+        {/* ── PRICING — Synced with /precios via PLANS_LIST ── */}
+        <LandingPricing />
 
         {/* ── SEGURIDAD ── */}
         <section id="seguridad" className="py-20 border-t border-white/5">
@@ -223,6 +165,44 @@ export default function LandingPage() {
 
       {/* Impact Section — "El costo de no tener IA" */}
       <ImpactSection />
+
+      {/* Schema.org JSON-LD structured data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify([
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            "name": "AIgenciaLab",
+            "url": "https://aigencialab.cl",
+            "logo": "https://aigencialab.cl/og-image.png",
+            "description": "Plataforma SaaS de agentes IA autónomos para empresas chilenas. Automatiza ventas, soporte y backoffice.",
+            "address": { "@type": "PostalAddress", "addressCountry": "CL" },
+            "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "availableLanguage": "Spanish" },
+            "sameAs": ["https://aigencialab.cl"]
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "SoftwareApplication",
+            "name": "AIgenciaLab",
+            "applicationCategory": "BusinessApplication",
+            "operatingSystem": "Web",
+            "url": "https://aigencialab.cl",
+            "description": "Agentes IA conversacionales para automatizar ventas, soporte y captación de leads en empresas chilenas.",
+            "offers": {
+              "@type": "Offer",
+              "price": "45",
+              "priceCurrency": "USD",
+              "priceValidUntil": "2027-12-31"
+            },
+            "aggregateRating": {
+              "@type": "AggregateRating",
+              "ratingValue": "4.8",
+              "reviewCount": "47"
+            }
+          }
+        ]) }}
+      />
 
       {/* Footer via MainLayout */}
     </MainLayout>

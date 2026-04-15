@@ -1,91 +1,92 @@
 -- ============================================================
--- AIgenciaLab — Usuario de Prueba Completo
--- Ejecutar en ORDEN después de crear el usuario en Supabase Auth
--- URL: Supabase Dashboard → Authentication → Users → Add User
--- Email: cliente.prueba@aigencialab.cl
--- Password: TestAIgencia2026!
--- Auto Confirm: ✅ 
+-- AIgenciaLab — Test User (Corregido para schema real)
+-- Email: test@aigencialab.cl | Pass: TestAIgencia2026!
+-- Plan: Trial 14 días | Bot: inactivo
+-- 
+-- INSTRUCCIONES:
+-- 1. Crear usuario en Supabase Dashboard → Authentication → Add User:
+--    Email: test@aigencialab.cl
+--    Password: TestAIgencia2026!
+--    Auto Confirm: ✅
+-- 2. Copiar el UUID generado
+-- 3. Reemplazar <USER_ID> con ese UUID
+-- 4. Ejecutar este SQL
 -- ============================================================
 
--- PASO 1: Obtén el UUID del usuario recién creado
--- SELECT id FROM auth.users WHERE email = 'cliente.prueba@aigencialab.cl';
--- Reemplaza <USER_ID> con ese UUID en todos los INSERT abajo.
-
--- PASO 2: Insertar en clients
-INSERT INTO clients (id, nombre, empresa, email, rubro, telefono, sitio_web, created_at)
+-- Insertar en clients (usa columnas del schema real + SaaS)
+INSERT INTO public.clients (
+  id, email, company_name, company, contact_name, full_name,
+  plan, status, tenant_id, rubro, created_at
+)
 VALUES (
   '<USER_ID>',
-  'Carlos Mendoza',
-  'E-commerce Prueba SpA',
-  'cliente.prueba@aigencialab.cl',
+  'test@aigencialab.cl',
+  'TestCorp SpA',
+  'TestCorp SpA',
+  'Test Admin',
+  'Test Admin',
+  'Starter',
+  'pending',
+  '<USER_ID>',
   'E-commerce',
-  '+56912345678',
-  'https://ecommerce-prueba.cl',
   NOW()
 )
 ON CONFLICT (id) DO UPDATE SET
-  nombre     = EXCLUDED.nombre,
-  empresa    = EXCLUDED.empresa,
-  rubro      = EXCLUDED.rubro,
-  telefono   = EXCLUDED.telefono,
-  sitio_web  = EXCLUDED.sitio_web;
+  email = EXCLUDED.email,
+  company_name = EXCLUDED.company_name,
+  company = EXCLUDED.company,
+  contact_name = EXCLUDED.contact_name,
+  plan = EXCLUDED.plan;
 
--- PASO 3: Insertar bot_config (INACTIVO inicialmente)
-INSERT INTO bot_configs (client_id, active, nombre_bot, instrucciones, modelo, temperatura, created_at)
+-- Bot config (INACTIVO)
+INSERT INTO public.bot_configs (client_id, active, name, created_at)
 VALUES (
   '<USER_ID>',
   false,
-  'Asistente E-commerce',
-  'Eres un asistente de ventas amigable para una tienda online. Ayudas a los clientes a encontrar productos, resolver dudas sobre envíos y pagos, y capturas sus datos de contacto cuando muestran intención de compra. Siempre terminas las conversaciones preguntando si puedes ayudar en algo más. Nunca inventes información sobre precios o stock — si no sabes, dices que verificarás con el equipo.',
-  'claude-3-haiku-20240307',
-  0.7,
+  'Asistente IA Test',
   NOW()
 )
 ON CONFLICT (client_id) DO UPDATE SET
-  nombre_bot    = EXCLUDED.nombre_bot,
-  instrucciones = EXCLUDED.instrucciones,
-  active        = false;
+  active = false,
+  name = EXCLUDED.name;
 
--- PASO 4: Suscripción en trial
-INSERT INTO subscriptions (client_id, plan_id, status, trial_start, trial_end, created_at)
+-- Suscripción en trial
+INSERT INTO public.subscriptions (
+  client_id, plan, status, trial_ends_at, current_period_end, created_at
+)
 VALUES (
   '<USER_ID>',
-  'starter',
-  'trial',
-  NOW(),
+  'Starter',
+  'trialing',
+  NOW() + INTERVAL '14 days',
   NOW() + INTERVAL '14 days',
   NOW()
 )
 ON CONFLICT (client_id) DO UPDATE SET
-  status     = 'trial',
-  trial_end  = NOW() + INTERVAL '14 days';
+  status = 'trialing',
+  trial_ends_at = NOW() + INTERVAL '14 days',
+  current_period_end = NOW() + INTERVAL '14 days';
 
--- PASO 5: API Key
-INSERT INTO api_keys (client_id, key_hash, key_preview, active, created_at)
-VALUES (
-  '<USER_ID>',
-  encode(sha256(('agl_test_' || '<USER_ID>' || '_2026')::bytea), 'hex'),
-  'agl_test_****',
-  true,
-  NOW()
-)
+-- API Key
+INSERT INTO public.api_keys (client_id)
+VALUES ('<USER_ID>')
 ON CONFLICT DO NOTHING;
 
--- PASO 6: Billing profile
-INSERT INTO billing_profiles (client_id, gateway, created_at)
-VALUES ('<USER_ID>', 'mercadopago', NOW())
+-- Billing profile
+INSERT INTO public.billing_profiles (client_id)
+VALUES ('<USER_ID>')
 ON CONFLICT DO NOTHING;
 
 -- ============================================================
--- VERIFICACIÓN: ejecutar para confirmar que todo está bien
+-- VERIFICACIÓN
 -- ============================================================
 SELECT 
-  c.id, c.nombre, c.empresa, c.email,
-  s.plan_id, s.status, s.trial_end,
-  bc.active as bot_active, bc.nombre_bot,
-  ak.key_preview
-FROM clients c
-LEFT JOIN subscriptions s ON s.client_id = c.id
-LEFT JOIN bot_configs bc ON bc.client_id = c.id
-LEFT JOIN api_keys ak ON ak.client_id = c.id
-WHERE c.email = 'cliente.prueba@aigencialab.cl';
+  c.id, c.email, c.company_name, c.plan, c.status,
+  s.status as sub_status, s.trial_ends_at,
+  bc.active as bot_active, bc.name as bot_name,
+  ak.key as api_key
+FROM public.clients c
+LEFT JOIN public.subscriptions s ON s.client_id = c.id
+LEFT JOIN public.bot_configs bc ON bc.client_id = c.id
+LEFT JOIN public.api_keys ak ON ak.client_id = c.id
+WHERE c.email = 'test@aigencialab.cl';

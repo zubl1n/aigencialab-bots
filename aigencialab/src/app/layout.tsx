@@ -19,8 +19,15 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl'),
   openGraph: {
     type: 'website', locale: 'es_CL', siteName: 'AigenciaLab.cl',
-    title: 'AigenciaLab.cl — Automatización IA para Empresas',
+    title: 'AigenciaLab.cl — IA que convierte visitas en clientes',
     description: 'Audita tu negocio gratis y descubre cuánto estás perdiendo sin IA.',
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'AIgenciaLab — IA que convierte visitas en clientes' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'AigenciaLab.cl — IA que convierte visitas en clientes',
+    description: 'Agentes de IA autónomos para ecommerce, clínicas, logística y más.',
+    images: ['/og-image.png'],
   },
 }
 
