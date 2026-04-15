@@ -1,11 +1,6 @@
+'use client'
 import { MainLayout } from '@/components/landing/MainLayout'
 import Link from 'next/link'
-import type { Metadata } from 'next'
-
-export const metadata: Metadata = {
-  title: 'Contacto — AIgenciaLab',
-  description: 'Contáctanos para saber cómo AIgenciaLab puede transformar tu empresa con IA conversacional.',
-}
 
 export default function ContactoPage() {
   return (
