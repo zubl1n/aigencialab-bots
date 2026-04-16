@@ -1,11 +1,15 @@
 /**
- * src/lib/emails.ts — Transactional emails via Resend
- * All templates use AIgenciaLab dark/neon brand: #0A0A0F bg, #7C3AED accent
+ * src/lib/emails.ts — Full transactional email system via Resend
+ * ALL templates:
+ * - Professional HTML with AIgenciaLab dark/neon branding
+ * - BCC to admin@aigencialab.cl on every client email
+ * - Dynamic variables (name, plan, amount, date, etc.)
+ * Covers all 13 required flows.
  */
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl'
-const FROM      = process.env.RESEND_FROM_EMAIL   ?? 'noreply@aigencialab.cl'
-const ADMIN_TO  = process.env.ADMIN_NOTIFICATION_EMAIL ?? 'admin@aigencialab.cl'
+const SITE_URL  = process.env.NEXT_PUBLIC_SITE_URL        ?? 'https://aigencialab.cl'
+const FROM      = process.env.RESEND_FROM_EMAIL            ?? 'noreply@aigencialab.cl'
+const ADMIN_BCC = process.env.ADMIN_NOTIFICATION_EMAIL     ?? 'admin@aigencialab.cl'
 
 function getResend() {
   const key = process.env.RESEND_API_KEY
@@ -15,186 +19,458 @@ function getResend() {
   return new Resend(key)
 }
 
-const BASE_STYLE = `font-family:Inter,'Plus Jakarta Sans',sans-serif;max-width:580px;margin:0 auto;background:#0A0A0F;color:#F1F0F5;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);`
-const HEADER_STYLE = `background:linear-gradient(135deg,#1e40af,#7C3AED);padding:36px 32px;text-align:center;`
-const BODY_STYLE   = `padding:36px 32px;`
-const FOOTER_STYLE = `padding:20px 32px;text-align:center;background:#111118;color:#6B6480;font-size:12px;border-top:1px solid rgba(255,255,255,0.05);`
-const BTN_STYLE    = `display:inline-block;background:#7C3AED;color:#fff;padding:14px 32px;border-radius:10px;text-decoration:none;font-weight:700;font-size:16px;`
-const MUTED        = `color:#A09CB0;line-height:1.7;`
+// ─── Base styles ─────────────────────────────────────────────
+const BASE = `font-family:Inter,'Plus Jakarta Sans',sans-serif;max-width:600px;margin:0 auto;background:#0A0A0F;color:#F1F0F5;border-radius:16px;overflow:hidden;border:1px solid rgba(255,255,255,0.08);`
+const HDR  = `background:linear-gradient(135deg,#1e3a8a,#7C3AED);padding:40px 36px;text-align:center;`
+const BDY  = `padding:36px 36px 28px;`
+const FTR  = `padding:20px 36px;text-align:center;background:#0d0d14;color:#6B6480;font-size:11px;border-top:1px solid rgba(255,255,255,0.05);line-height:1.8;`
+const BTN  = `display:inline-block;background:#7C3AED;color:#fff!important;padding:15px 36px;border-radius:10px;text-decoration:none;font-weight:700;font-size:15px;letter-spacing:-0.3px;`
+const MUTED= `color:#A09CB0;line-height:1.75;font-size:14px;`
+const H1   = `margin:0;color:#fff;font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1.2;`
+const SUB  = `color:rgba(255,255,255,0.7);margin:10px 0 0;font-size:14px;`
+const BOX_P= `background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:22px;margin:24px 0;`
+const BOX_G= `background:rgba(16,185,129,0.07);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:22px;margin:24px 0;`
+const BOX_R= `background:rgba(239,68,68,0.07);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:22px;margin:24px 0;`
+const BOX_Y= `background:rgba(245,158,11,0.07);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:22px;margin:24px 0;`
 
-function wrap(header: string, body: string, footer?: string) {
-  return `<div style="${BASE_STYLE}">
-    <div style="${HEADER_STYLE}">${header}</div>
-    <div style="${BODY_STYLE}">${body}</div>
-    <div style="${FOOTER_STYLE}">${footer ?? 'AIgenciaLab.cl · Plataforma de Agentes IA · ' + new Date().getFullYear() + '<br>Cumple Ley N°19.628 y N°21.663 Chile'}</div>
+function footer(extra?: string) {
+  return `${extra ? `<p style="color:#A09CB0;font-size:13px;margin-top:28px;padding-top:20px;border-top:1px solid rgba(255,255,255,0.06);">${extra}</p>` : ''}
+    <p style="${MUTED}font-size:12px">¿Tienes dudas? Escríbenos a <a href="mailto:hola@aigencialab.cl" style="color:#C084FC">hola@aigencialab.cl</a></p>`
+}
+
+function wrap(hdr: string, body: string, footerExtra?: string): string {
+  return `<div style="${BASE}">
+    <div style="${HDR}">${hdr}</div>
+    <div style="${BDY}">${body}${footer(footerExtra)}</div>
+    <div style="${FTR}">AIgenciaLab.cl · Plataforma de Agentes IA para Empresas · ${new Date().getFullYear()}<br>
+    Cumple Ley N°19.628 y N°21.663 Chile · <a href="${SITE_URL}/privacidad" style="color:#6B6480">Política de Privacidad</a></div>
   </div>`
 }
 
-/* ── 1. Bienvenida al registrarse ──────────────────────────── */
+function row(label: string, value: string, color = '#F1F0F5') {
+  return `<tr><td style="padding:8px 0;color:#A09CB0;width:42%;font-size:13px;">${label}</td><td style="color:${color};font-weight:600;font-size:13px;">${value}</td></tr>`
+}
+
+// ─── Helper: send with BCC to admin ──────────────────────────
+async function sendEmail(opts: {
+  to: string
+  subject: string
+  html: string
+  bccAdmin?: boolean  // default true
+}) {
+  const r = getResend()
+  if (!r) { console.warn('[emails] RESEND_API_KEY not set — email not sent'); return }
+  
+  try {
+    await r.emails.send({
+      from: FROM,
+      to: [opts.to],
+      bcc: opts.bccAdmin !== false ? [ADMIN_BCC] : [],
+      subject: opts.subject,
+      html: opts.html,
+    })
+  } catch (err) {
+    console.error('[emails] send error:', err)
+  }
+}
+
+async function sendAdminEmail(subject: string, html: string) {
+  const r = getResend()
+  if (!r) return
+  try {
+    await r.emails.send({ from: FROM, to: [ADMIN_BCC], subject, html })
+  } catch (err) {
+    console.error('[emails] admin send error:', err)
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   1. BIENVENIDA POST-REGISTRO
+   ══════════════════════════════════════════════════════════════ */
 export async function sendWelcomeEmail(data: {
   email: string; name: string; company: string; plan: string
 }) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [data.email],
-    subject: `🎉 Bienvenido a AIgenciaLab, ${data.company}`,
+  await sendEmail({
+    to: data.email,
+    subject: `🎉 Bienvenido/a a AIgenciaLab, ${data.company}`,
     html: wrap(
-      `<h1 style="margin:0;color:#fff;font-size:26px">¡Bienvenido, ${data.name}!</h1>
-       <p style="color:rgba(255,255,255,0.75);margin:8px 0 0">Tu cuenta en AIgenciaLab está lista</p>`,
-      `<p style="${MUTED}">Hola <strong>${data.name}</strong>,</p>
-       <p style="${MUTED}">Tu empresa <strong>${data.company}</strong> ha sido registrada con el plan <strong>${data.plan.toUpperCase()}</strong>. Tienes 14 días de prueba gratuita.</p>
-       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard" style="${BTN_STYLE}">🚀 Ir a mi Dashboard</a></p>
-       <p style="${MUTED}">¿Dudas? Escríbenos a <a href="mailto:hola@aigencialab.cl" style="color:#C084FC">hola@aigencialab.cl</a></p>`
-    )
+      `<h1 style="${H1}">¡Bienvenido/a, ${data.name}! 🎉</h1>
+       <p style="${SUB}">Tu cuenta en AIgenciaLab está lista</p>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Tu empresa <strong style="color:#C084FC">${data.company}</strong> ha sido registrada con el plan <strong style="color:#34d399">${data.plan.toUpperCase()}</strong>. Tienes <strong>14 días de prueba gratuita</strong>.</p>
+       <div style="${BOX_G}">
+         <div style="text-align:center;font-size:32px;margin-bottom:8px">🚀</div>
+         <table style="width:100%;border-collapse:collapse">
+           ${row('Plan activo', data.plan.toUpperCase(), '#34d399')}
+           ${row('Trial', '14 días gratuitos')}
+           ${row('Soporte', 'Incluido en todos los planes')}
+         </table>
+       </div>
+       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard" style="${BTN}">🚀 Ir a mi Dashboard</a></p>`,
+      'Puedes cancelar en cualquier momento sin cargos adicionales.'
+    ),
   })
+
+  // Admin notification
+  await sendAdminEmail(`🎉 Nuevo registro: ${data.company} (${data.plan})`,
+    wrap(
+      `<h1 style="${H1}">Nuevo Cliente Registrado</h1>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('Empresa', data.company, '#C084FC')}
+         ${row('Contacto', data.name)}
+         ${row('Email', data.email)}
+         ${row('Plan', data.plan.toUpperCase(), '#34d399')}
+       </table>
+       <p style="text-align:center;margin:24px 0"><a href="${SITE_URL}/admin/clientes" style="${BTN}">Ver en Panel Admin</a></p>`
+    )
+  )
 }
 
-/* ── 2. Pago aprobado ──────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   2. PAGO APROBADO / SUSCRIPCIÓN ACTIVA
+   ══════════════════════════════════════════════════════════════ */
 export async function sendPaymentApprovedEmail(data: {
-  email: string; name: string; company: string; plan: string; nextBillingDate: string
+  email: string; name: string; company: string; plan: string
+  amountCLP?: number; nextBillingDate: string
 }) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [data.email],
+  const amount = data.amountCLP ? `$${data.amountCLP.toLocaleString('es-CL')} CLP` : 'Ver factura'
+  await sendEmail({
+    to: data.email,
     subject: `✅ Pago confirmado — Plan ${data.plan} activado`,
     html: wrap(
-      `<h1 style="margin:0;color:#fff;font-size:26px">¡Pago confirmado! ✅</h1>
-       <p style="color:rgba(255,255,255,0.75);margin:8px 0 0">${data.company}</p>`,
-      `<p style="${MUTED}">Hola <strong>${data.name}</strong>,</p>
-       <p style="${MUTED}">Tu pago para el plan <strong>${data.plan.toUpperCase()}</strong> fue procesado correctamente.</p>
-       <div style="background:rgba(124,58,237,0.1);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:20px;margin:24px 0">
-         <div style="display:flex;justify-content:space-between;margin-bottom:8px">
-           <span style="color:#A09CB0">Plan</span><span style="font-weight:700;color:#C084FC">${data.plan}</span>
-         </div>
-         <div style="display:flex;justify-content:space-between">
-           <span style="color:#A09CB0">Próximo cobro</span><span style="font-weight:700;color:#F1F0F5">${data.nextBillingDate}</span>
-         </div>
+      `<h1 style="${H1}">¡Pago confirmado! ✅</h1>
+       <p style="${SUB}">${data.company}</p>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Tu pago fue procesado correctamente. Tu plan <strong style="color:#C084FC">${data.plan.toUpperCase()}</strong> está activo.</p>
+       <div style="${BOX_G}">
+         <table style="width:100%;border-collapse:collapse">
+           ${row('Plan', data.plan.toUpperCase(), '#34d399')}
+           ${row('Monto', amount)}
+           ${row('Próximo cobro', data.nextBillingDate)}
+           ${row('Estado', '🟢 Activo')}
+         </table>
        </div>
-       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard" style="${BTN_STYLE}">Ver mi suscripción</a></p>
-       <p style="${MUTED}">Tu agente IA estará listo para activarse pronto. Nuestro equipo te contactará en las próximas horas.</p>`
-    )
+       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard/billing" style="${BTN}">Ver mi suscripción</a></p>`
+    ),
   })
 }
 
-/* ── 3. Bot activado por admin ─────────────────────────────── */
-export async function sendBotActivatedEmail(data: {
-  email: string; name: string; company: string; botName: string
-}) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [data.email],
-    subject: `🤖 ¡Tu Agente IA "${data.botName}" ya está activo!`,
-    html: wrap(
-      `<h1 style="margin:0;color:#fff;font-size:26px">¡Bot Activado! 🤖</h1>
-       <p style="color:rgba(255,255,255,0.75);margin:8px 0 0">${data.company}</p>`,
-      `<p style="${MUTED}">Hola <strong>${data.name}</strong>,</p>
-       <p style="${MUTED}">Grandes noticias: tu Agente IA <strong>"${data.botName}"</strong> fue activado por nuestro equipo y ya está atendiendo visitas.</p>
-       <div style="background:rgba(16,185,129,0.08);border:1px solid rgba(16,185,129,0.2);border-radius:12px;padding:20px;margin:24px 0;text-align:center">
-         <div style="font-size:36px">🟢</div>
-         <div style="color:#34d399;font-weight:700;margin-top:8px">AGENTE ACTIVO Y OPERANDO</div>
-       </div>
-       <h3 style="color:#C084FC">Próximo paso: Instalación</h3>
-       <p style="${MUTED}">Copia el snippet de instalación desde tu dashboard y pégalo en tu sitio web.</p>
-       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard/installation" style="${BTN_STYLE}">📋 Obtener snippet de instalación</a></p>`
-    )
-  })
-}
-
-/* ── 4. Trial vence en 3 días ──────────────────────────────── */
-export async function sendTrialExpiringEmail(data: {
-  email: string; name: string; company: string; expiresOn: string
-}) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [data.email],
-    subject: `⚠️ Tu prueba gratuita vence el ${data.expiresOn}`,
-    html: wrap(
-      `<h1 style="margin:0;color:#fff;font-size:26px">Tu trial termina pronto ⏰</h1>`,
-      `<p style="${MUTED}">Hola <strong>${data.name}</strong>,</p>
-       <p style="${MUTED}">Tu prueba gratuita de AIgenciaLab vence el <strong>${data.expiresOn}</strong>. Para continuar usando tu agente IA sin interrupciones, activa tu suscripción ahora.</p>
-       <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2);border-radius:12px;padding:20px;margin:24px 0">
-         <p style="color:#fbbf24;font-weight:600;text-align:center;margin:0">🔒 Después del vencimiento tu bot se pausará automáticamente</p>
-       </div>
-       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/precios" style="${BTN_STYLE}">Elegir mi plan</a></p>`,
-      'AIgenciaLab.cl · Puedes cancelar en cualquier momento sin cargos adicionales'
-    )
-  })
-}
-
-/* ── 5. Pago fallido ───────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   3. PAGO FALLIDO
+   ══════════════════════════════════════════════════════════════ */
 export async function sendPaymentFailedEmail(data: {
   email: string; name: string; company: string; plan: string
 }) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [data.email],
-    subject: `⚠️ Problema con tu pago — Acción requerida`,
+  await sendEmail({
+    to: data.email,
+    subject: `⚠️ Problema con tu pago — Acción requerida urgente`,
     html: wrap(
-      `<h1 style="margin:0;color:#fff;font-size:26px">Problema con tu suscripción</h1>`,
-      `<p style="${MUTED}">Hola <strong>${data.name}</strong>,</p>
-       <p style="${MUTED}">No pudimos procesar el pago de tu plan <strong>${data.plan}</strong>. Para evitar interrupciones en tu servicio, actualiza tu método de pago.</p>
-       <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:12px;padding:20px;margin:24px 0">
-         <p style="color:#f87171;font-weight:600;text-align:center;margin:0">⛔ Tu agente puede pausarse en las próximas 24 horas</p>
+      `<h1 style="${H1}">Problema con tu pago ⚠️</h1>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">No pudimos procesar el pago de tu plan <strong style="color:#C084FC">${data.plan}</strong>. Para evitar interrupciones en tu agente IA, actualiza tu método de pago.</p>
+       <div style="${BOX_R}">
+         <p style="color:#f87171;font-weight:700;text-align:center;margin:0;font-size:14px">⛔ Tu agente puede pausarse en las próximas 24 horas</p>
        </div>
-       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard/billing" style="${BTN_STYLE}">Actualizar método de pago</a></p>`
-    )
+       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard/billing" style="${BTN}">Actualizar método de pago</a></p>`
+    ),
   })
 }
 
-/* ── 6. Notificación admin: nuevo cliente ──────────────────── */
-export async function sendAdminNewClientEmail(data: {
-  company: string; email: string; plan: string; clientId: string
+/* ══════════════════════════════════════════════════════════════
+   4. BOT ACTIVADO
+   ══════════════════════════════════════════════════════════════ */
+export async function sendBotActivatedEmail(data: {
+  email: string; name: string; company: string; botName: string
 }) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [ADMIN_TO],
-    subject: `🎉 Nuevo cliente: ${data.company} (${data.plan})`,
+  await sendEmail({
+    to: data.email,
+    subject: `🤖 ¡Tu Agente IA "${data.botName}" ya está activo!`,
     html: wrap(
-      `<h1 style="margin:0;color:#fff;font-size:22px">🎉 Nuevo Cliente Registrado</h1>`,
-      `<table style="width:100%;border-collapse:collapse">
-         <tr><td style="padding:8px 0;color:#A09CB0;width:40%">Empresa</td><td style="color:#F1F0F5;font-weight:600">${data.company}</td></tr>
-         <tr><td style="padding:8px 0;color:#A09CB0">Email</td><td style="color:#F1F0F5">${data.email}</td></tr>
-         <tr><td style="padding:8px 0;color:#A09CB0">Plan</td><td style="color:#C084FC;font-weight:700">${data.plan}</td></tr>
-       </table>
-       <p style="text-align:center;margin:24px 0"><a href="${SITE_URL}/admin/clientes/${data.clientId}" style="${BTN_STYLE}">Ver en Panel Admin</a></p>`
-    )
+      `<h1 style="${H1}">¡Bot Activado! 🤖</h1>
+       <p style="${SUB}">${data.company} · Listo para operar</p>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Grandes noticias: tu Agente IA <strong style="color:#C084FC">"${data.botName}"</strong> fue activado y ya está atendiendo visitas en tiempo real.</p>
+       <div style="${BOX_G}">
+         <div style="text-align:center;font-size:40px;margin-bottom:10px">🟢</div>
+         <p style="color:#34d399;font-weight:800;text-align:center;margin:0;font-size:16px">AGENTE ACTIVO Y OPERANDO</p>
+       </div>
+       <h3 style="color:#C084FC;font-size:15px">📋 Próximo paso: Instalar en tu sitio</h3>
+       <p style="${MUTED}">Copia el snippet de 1 línea desde tu dashboard e instálalo en tu web.</p>
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}/dashboard/installation" style="${BTN}">Obtener snippet de instalación</a></p>`
+    ),
   })
 }
 
-/* ── 7. Notificación admin: pago fallido ───────────────────── */
-export async function sendAdminPaymentFailedEmail(data: {
-  company: string; email: string; plan: string; clientId: string
-}) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [ADMIN_TO],
-    subject: `🚨 URGENTE — Pago fallido: ${data.company}`,
-    html: wrap(
-      `<h1 style="margin:0;color:#f87171;font-size:22px">⚠️ Pago Fallido — Acción Requerida</h1>`,
-      `<table style="width:100%;border-collapse:collapse">
-         <tr><td style="padding:8px 0;color:#A09CB0;width:40%">Empresa</td><td style="color:#F1F0F5;font-weight:700">${data.company}</td></tr>
-         <tr><td style="padding:8px 0;color:#A09CB0">Email</td><td style="color:#F1F0F5">${data.email}</td></tr>
-         <tr><td style="padding:8px 0;color:#A09CB0">Plan</td><td style="color:#f87171;font-weight:700">${data.plan}</td></tr>
-       </table>
-       <p style="text-align:center;margin:24px 0"><a href="${SITE_URL}/admin/clientes/${data.clientId}" style="${BTN_STYLE}">Gestionar cliente</a></p>`
-    )
-  })
-}
-
-/* ── 8. Bot desactivado ────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════
+   5. BOT DESACTIVADO
+   ══════════════════════════════════════════════════════════════ */
 export async function sendBotDeactivatedEmail(data: {
   email: string; name: string; company: string; reason?: string
 }) {
-  const r = getResend(); if (!r) return
-  await r.emails.send({
-    from: FROM, to: [data.email],
+  await sendEmail({
+    to: data.email,
     subject: `⏸ Tu agente IA ha sido pausado`,
     html: wrap(
-      `<h1 style="margin:0;color:#fff;font-size:26px">Agente pausado ⏸</h1>`,
-      `<p style="${MUTED}">Hola <strong>${data.name}</strong>,</p>
-       <p style="${MUTED}">Tu agente IA de <strong>${data.company}</strong> ha sido pausado temporalmente.${data.reason ? ` Motivo: ${data.reason}` : ''}</p>
-       <p style="${MUTED}">Para reactivarlo, contacta a nuestro equipo o accede a tu panel.</p>
-       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard" style="${BTN_STYLE}">Ir a mi dashboard</a></p>`
-    )
+      `<h1 style="${H1}">Agente pausado ⏸</h1>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Tu agente IA de <strong style="color:#C084FC">${data.company}</strong> ha sido pausado temporalmente.${data.reason ? ` <br><strong>Motivo:</strong> ${data.reason}` : ''}</p>
+       <p style="${MUTED}">Para reactivarlo, verifica tu suscripción o contacta a nuestro equipo.</p>
+       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard/billing" style="${BTN}">Verificar suscripción</a></p>`
+    ),
   })
+}
+
+/* ══════════════════════════════════════════════════════════════
+   6. TRIAL POR VENCER
+   ══════════════════════════════════════════════════════════════ */
+export async function sendTrialExpiringEmail(data: {
+  email: string; name: string; company: string; expiresOn: string; daysLeft: number
+}) {
+  await sendEmail({
+    to: data.email,
+    subject: `⏰ Tu trial vence en ${data.daysLeft} días — Toma acción ahora`,
+    html: wrap(
+      `<h1 style="${H1}">Tu trial termina pronto ⏰</h1>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Tu prueba gratuita vence el <strong style="color:#fbbf24">${data.expiresOn}</strong>. Para continuar usando tu agente IA sin interrupciones, activa tu suscripción ahora.</p>
+       <div style="${BOX_Y}">
+         <p style="color:#fbbf24;font-weight:700;text-align:center;margin:0;font-size:14px">⚠️ Quedan ${data.daysLeft} días · Después tu bot se pausará automáticamente</p>
+       </div>
+       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/precios" style="${BTN}">Elegir mi plan →</a></p>`,
+      'Puedes cancelar en cualquier momento. Sin cargos ocultos.'
+    ),
+  })
+}
+
+/* ══════════════════════════════════════════════════════════════
+   7. CANCELACIÓN DE SUSCRIPCIÓN
+   ══════════════════════════════════════════════════════════════ */
+export async function sendCancellationEmail(data: {
+  email: string; name: string; company: string; plan: string; endsOn: string
+}) {
+  await sendEmail({
+    to: data.email,
+    subject: `❌ Suscripción cancelada — Plan ${data.plan}`,
+    html: wrap(
+      `<h1 style="${H1}">Suscripción cancelada</h1>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Hemos cancelado tu suscripción al plan <strong style="color:#C084FC">${data.plan}</strong>. Tu acceso continuará activo hasta el <strong>${data.endsOn}</strong>.</p>
+       <div style="${BOX_Y}">
+         <table style="width:100%;border-collapse:collapse">
+           ${row('Empresa', data.company)}
+           ${row('Plan', data.plan.toUpperCase(), '#C084FC')}
+           ${row('Acceso hasta', data.endsOn, '#fbbf24')}
+         </table>
+       </div>
+       <p style="${MUTED}">Lamentamos verte partir. Si fue un error o quieres reactivar, puedes hacerlo en cualquier momento.</p>
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}/precios" style="${BTN}">Reactivar suscripción</a></p>`,
+      '¿Podemos mejorar algo? Escríbenos a hola@aigencialab.cl — leemos cada mensaje.'
+    ),
+  })
+  // Admin notification
+  await sendAdminEmail(`❌ Cancelación: ${data.company} (${data.plan})`,
+    wrap(`<h1 style="${H1}">Suscripción Cancelada</h1>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('Empresa', data.company, '#f87171')}
+         ${row('Email', data.email)}
+         ${row('Plan', data.plan.toUpperCase())}
+         ${row('Acceso hasta', data.endsOn)}
+       </table>`
+    )
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════
+   8. NUEVO TICKET → ADMIN
+   ══════════════════════════════════════════════════════════════ */
+export async function sendNewTicketAdminEmail(data: {
+  ticketId: string; company: string; email: string
+  subject: string; body: string; priority: string
+}) {
+  await sendAdminEmail(`🎫 Nuevo ticket [${data.priority.toUpperCase()}]: ${data.subject}`,
+    wrap(
+      `<h1 style="${H1}">🎫 Nuevo Ticket de Soporte</h1>
+       <p style="${SUB}">${data.company}</p>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('Empresa', data.company, '#C084FC')}
+         ${row('Email', data.email)}
+         ${row('Asunto', data.subject)}
+         ${row('Prioridad', data.priority.toUpperCase(), data.priority === 'urgent' ? '#f87171' : data.priority === 'high' ? '#fbbf24' : '#A09CB0')}
+       </table>
+       <div style="${BOX_P}">
+         <p style="color:#A09CB0;font-size:12px;margin:0 0 8px;text-transform:uppercase;font-weight:600">Mensaje del cliente:</p>
+         <p style="color:#F1F0F5;margin:0;font-size:14px;line-height:1.6">${data.body}</p>
+       </div>
+       <p style="text-align:center;margin:24px 0"><a href="${SITE_URL}/admin/soporte/${data.ticketId}" style="${BTN}">Responder Ticket</a></p>`
+    )
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════
+   9. TICKET RESPONDIDO → CLIENTE
+   ══════════════════════════════════════════════════════════════ */
+export async function sendTicketReplyEmail(data: {
+  email: string; name: string; ticketId: string; subject: string
+  agentName: string; replyBody: string; newStatus?: string
+}) {
+  await sendEmail({
+    to: data.email,
+    subject: `💬 Respuesta a tu ticket: "${data.subject}"`,
+    html: wrap(
+      `<h1 style="${H1}">Respuesta a tu ticket 💬</h1>
+       <p style="${SUB}">${data.subject}</p>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">El equipo de soporte de AIgenciaLab ha respondido tu ticket.</p>
+       <div style="${BOX_P}">
+         <p style="color:#A09CB0;font-size:11px;margin:0 0 8px;text-transform:uppercase;font-weight:600">Respuesta de ${data.agentName}:</p>
+         <p style="color:#F1F0F5;margin:0;font-size:14px;line-height:1.65">${data.replyBody}</p>
+       </div>
+       ${data.newStatus ? `<p style="${MUTED}">Estado actualizado: <strong style="color:#34d399">${data.newStatus}</strong></p>` : ''}
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}/dashboard/tickets/${data.ticketId}" style="${BTN}">Ver hilo completo</a></p>`
+    ),
+  })
+}
+
+/* ══════════════════════════════════════════════════════════════
+   10. CAMBIO DE ESTADO DE TICKET → CLIENTE
+   ══════════════════════════════════════════════════════════════ */
+export async function sendTicketStatusEmail(data: {
+  email: string; name: string; ticketId: string; subject: string; newStatus: string
+}) {
+  const statusLabel: Record<string, string> = {
+    in_progress: '🔵 En progreso',
+    resolved: '✅ Resuelto',
+    closed: '🔒 Cerrado',
+  }
+  await sendEmail({
+    to: data.email,
+    subject: `📋 Estado actualizado: "${data.subject}" → ${statusLabel[data.newStatus] ?? data.newStatus}`,
+    html: wrap(
+      `<h1 style="${H1}">Estado de ticket actualizado 📋</h1>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">El estado de tu ticket <strong>"${data.subject}"</strong> ha sido actualizado.</p>
+       <div style="${BOX_G}">
+         <p style="text-align:center;font-size:20px;margin:0;font-weight:800;color:#34d399">${statusLabel[data.newStatus] ?? data.newStatus}</p>
+       </div>
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}/dashboard/tickets/${data.ticketId}" style="${BTN}">Ver mi ticket</a></p>`
+    ),
+  })
+}
+
+/* ══════════════════════════════════════════════════════════════
+   11. FORMULARIO DE CONTACTO RECIBIDO
+   ══════════════════════════════════════════════════════════════ */
+export async function sendContactFormEmail(data: {
+  name: string; email: string; company?: string; message: string; phone?: string
+}) {
+  // Confirmation to sender
+  await sendEmail({
+    to: data.email,
+    subject: `Hemos recibido tu mensaje — AIgenciaLab`,
+    bccAdmin: false,
+    html: wrap(
+      `<h1 style="${H1}">¡Recibimos tu mensaje! ✉️</h1>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Gracias por contactarnos. Nuestro equipo revisará tu mensaje y te responderá en a la brevedad (normalmente dentro de las 24 horas hábiles).</p>
+       <div style="${BOX_P}">
+         <p style="color:#A09CB0;font-size:12px;margin:0 0 8px;font-weight:600">Tu mensaje:</p>
+         <p style="color:#F1F0F5;font-size:13px;margin:0;line-height:1.6">${data.message.slice(0, 300)}${data.message.length > 300 ? '...' : ''}</p>
+       </div>
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}" style="${BTN}">Volver al sitio</a></p>`
+    ),
+  })
+  // Admin alert
+  await sendAdminEmail(`📩 Nuevo contacto: ${data.name}${data.company ? ` — ${data.company}` : ''}`,
+    wrap(`<h1 style="${H1}">Nuevo Formulario de Contacto</h1>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('Nombre', data.name, '#C084FC')}
+         ${row('Email', data.email)}
+         ${data.company ? row('Empresa', data.company) : ''}
+         ${data.phone ? row('Teléfono', data.phone) : ''}
+       </table>
+       <div style="${BOX_P}">
+         <p style="color:#A09CB0;font-size:12px;margin:0 0 8px;font-weight:600">Mensaje:</p>
+         <p style="color:#F1F0F5;font-size:13px;margin:0;line-height:1.6">${data.message}</p>
+       </div>
+       <p style="text-align:center"><a href="mailto:${data.email}?subject=Re: Tu consulta a AIgenciaLab&body=Hola ${encodeURIComponent(data.name)}," style="${BTN}">Responder</a></p>`
+    )
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════
+   12. NUEVO PARTNER → ADMIN
+   ══════════════════════════════════════════════════════════════ */
+export async function sendNewPartnerEmail(data: {
+  name: string; company: string; email: string; phone?: string
+  partnerType: string; message?: string
+}) {
+  await sendAdminEmail(`🤝 Nuevo Partner: ${data.company} (${data.partnerType})`,
+    wrap(
+      `<h1 style="${H1}">🤝 Nuevo Registro de Partner</h1>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('Empresa', data.company, '#C084FC')}
+         ${row('Contacto', data.name)}
+         ${row('Email', data.email)}
+         ${data.phone ? row('Teléfono', data.phone) : ''}
+         ${row('Tipo de partner', data.partnerType, '#34d399')}
+       </table>
+       ${data.message ? `<div style="${BOX_P}"><p style="color:#F1F0F5;font-size:13px;margin:0;line-height:1.6">${data.message}</p></div>` : ''}
+       <p style="text-align:center;margin:24px 0"><a href="mailto:${data.email}" style="${BTN}">Contactar partner</a></p>`
+    )
+  )
+  // Confirmation to partner
+  await sendEmail({
+    to: data.email,
+    subject: `Bienvenido al Programa de Partners — AIgenciaLab`,
+    bccAdmin: false,
+    html: wrap(
+      `<h1 style="${H1}">¡Gracias por unirte! 🤝</h1>
+       <p style="${SUB}">Programa de Partners AIgenciaLab</p>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Recibimos tu solicitud de <strong style="color:#C084FC">${data.company}</strong> para unirte como partner de tipo <strong>${data.partnerType}</strong>.</p>
+       <p style="${MUTED}">Nuestro equipo comercial te contactará en las próximas 24-48 horas hábiles para coordinar los detalles.</p>
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}/socios" style="${BTN}">Ver beneficios del programa</a></p>`
+    ),
+  })
+}
+
+/* ══════════════════════════════════════════════════════════════
+   13. ADMIN NUEVO CLIENTE (para admin dashboard)
+   ══════════════════════════════════════════════════════════════ */
+export async function sendAdminNewClientEmail(data: {
+  company: string; email: string; plan: string; clientId: string
+}) {
+  await sendAdminEmail(`🎉 Nuevo cliente: ${data.company} (${data.plan})`,
+    wrap(
+      `<h1 style="${H1}">Nuevo Cliente Registrado 🎉</h1>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('Empresa', data.company, '#C084FC')}
+         ${row('Email', data.email)}
+         ${row('Plan', data.plan.toUpperCase(), '#34d399')}
+       </table>
+       <p style="text-align:center;margin:24px 0"><a href="${SITE_URL}/admin/clientes/${data.clientId}" style="${BTN}">Ver en Panel Admin</a></p>`
+    )
+  )
+}
+
+/* ══════════════════════════════════════════════════════════════
+   14. ADMIN PAGO FALLIDO
+   ══════════════════════════════════════════════════════════════ */
+export async function sendAdminPaymentFailedEmail(data: {
+  company: string; email: string; plan: string; clientId: string
+}) {
+  await sendAdminEmail(`🚨 URGENTE — Pago fallido: ${data.company}`,
+    wrap(
+      `<h1 style="${H1}" style="color:#f87171">⚠️ Pago Fallido — Acción Requerida</h1>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('Empresa', data.company, '#f87171')}
+         ${row('Email', data.email)}
+         ${row('Plan', data.plan.toUpperCase())}
+       </table>
+       <div style="${BOX_R}">
+         <p style="color:#f87171;text-align:center;font-weight:700;margin:0">Contactar al cliente para regularizar el pago</p>
+       </div>
+       <p style="text-align:center;margin:24px 0"><a href="${SITE_URL}/admin/clientes/${data.clientId}" style="${BTN}">Gestionar cliente</a></p>`
+    )
+  )
 }

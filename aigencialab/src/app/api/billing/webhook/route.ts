@@ -6,6 +6,7 @@ import {
   sendAdminPaymentFailedEmail,
   sendBotActivatedEmail,
   sendBotDeactivatedEmail,
+  sendCancellationEmail,
 } from '@/lib/emails'
 
 export const dynamic = 'force-dynamic'
@@ -28,17 +29,19 @@ function getAdminSupabase() {
 }
 
 // ── Plan ID → name map ──────────────────────────────────────
-// Uses MP_PLAN_PRO_ID and MP_PLAN_ENTERPRISE_ID from env (confirmed in .env.mp.local)
+// Maps every MP preapproval_plan_id back to our internal plan name.
 function resolvePlanName(preapprovalPlanId: string | null): string {
   if (!preapprovalPlanId) return 'Starter'
   const map: Record<string, string> = {}
 
-  // Pro plan
-  const proId = process.env.MP_PLAN_PRO_ID
-  if (proId) map[proId] = 'Pro'
-
-  // Enterprise plan
+  const starterId    = process.env.MP_PLAN_STARTER_ID
+  const proId        = process.env.MP_PLAN_PRO_ID
+  const businessId   = process.env.MP_PLAN_BUSINESS_ID
   const enterpriseId = process.env.MP_PLAN_ENTERPRISE_ID
+
+  if (starterId)    map[starterId]    = 'Starter'
+  if (proId)        map[proId]        = 'Pro'
+  if (businessId)   map[businessId]   = 'Business'
   if (enterpriseId) map[enterpriseId] = 'Enterprise'
 
   return map[preapprovalPlanId] ?? 'Pro' // Default to Pro if unknown paid plan
@@ -146,6 +149,13 @@ export async function POST(request: NextRequest) {
         await supabase.from('bot_configs')
           .update({ active: false }).eq('client_id', clientId)
 
+        // Email: bot/subscription deactivated
+        if (subStatus === 'cancelled') {
+          sendCancellationEmail({
+            email, name: personName, company, plan: planName,
+            endsOn: new Date().toLocaleDateString('es-CL'),
+          }).catch(console.error)
+        }
         sendBotDeactivatedEmail({
           email, name: personName, company,
           reason: subStatus === 'cancelled' ? 'Suscripción cancelada' : 'Suscripción pausada',

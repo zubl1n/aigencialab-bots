@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Export AIgenciaLab Logos</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background: #e2e8f0; padding: 2rem; }
+    .card { background: white; padding: 2rem; border-radius: 12px; max-width: 600px; margin: 0 auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+    button { background: #9333ea; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 16px; font-weight: bold; margin-right: 10px; margin-bottom: 10px;}
+    button:hover { background: #7e22ce; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Download AIgenciaLab High-Res PNGs</h2>
+    <p>Haz clic en los botones para descargar las versiones en PNG de alta resolución (Escaladas a 4x: 1200x320px). (Corregido para funcionar offline).</p>
+    <div style="margin-top: 20px;">
+      <button onclick="downloadPNG('dark')">Descargar logo-dark.png</button>
+      <button onclick="downloadPNG('light')">Descargar logo-light.png</button>
+    </div>
+    
+    <div style="display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap;">
+      <div style="background: #0f172a; padding: 20px; border-radius: 8px;">
+        <p style="color: #94a3b8; margin-top: 0; font-size: 12px; font-weight: 600; text-transform: uppercase;">Preview (Dark)</p>
+        <div id="preview-dark"></div>
+      </div>
+      
+      <div style="background: #f8fafc; padding: 20px; border-radius: 8px; border: 1px solid #e2e8f0;">
+        <p style="color: #64748b; margin-top: 0; font-size: 12px; font-weight: 600; text-transform: uppercase;">Preview (Light)</p>
+        <div id="preview-light"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const svgs = {
+      dark: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80"><defs><linearGradient id="brandd" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7" /><stop offset="100%" stop-color="#7e22ce" /></linearGradient><filter id="glowd" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#9333ea" flood-opacity="0.3"/></filter></defs><rect x="10" y="15" width="66" height="50" rx="14" fill="url(#brandd)" filter="url(#glowd)" /><text x="43" y="50" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle" letter-spacing="-0.5">AI</text><text x="79" y="50" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="34" fill="#ffffff" letter-spacing="-1">genciaLab</text></svg>`,
+      light: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 80" width="300" height="80"><defs><linearGradient id="brandl" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#a855f7" /><stop offset="100%" stop-color="#7e22ce" /></linearGradient><filter id="glowl" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#9333ea" flood-opacity="0.2"/></filter></defs><rect x="10" y="15" width="66" height="50" rx="14" fill="url(#brandl)" filter="url(#glowl)" /><text x="43" y="50" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="900" font-size="28" fill="#ffffff" text-anchor="middle" letter-spacing="-0.5">AI</text><text x="79" y="50" font-family="'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-weight="800" font-size="34" fill="#0f172a" letter-spacing="-1">genciaLab</text></svg>`
+    };
+
+    // Agregar las imagenes de previsualización dinámicamente.
+    document.getElementById('preview-dark').innerHTML = svgs.dark;
+    document.getElementById('preview-light').innerHTML = svgs.light;
+
+    function downloadPNG(type) {
+      const svgCode = svgs[type];
+      
+      // Codificar el SVG adecuadamente para utilizarlo en 'src'
+      const encoded = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(svgCode);
+
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scale = 4;
+        canvas.width = 300 * scale;
+        canvas.height = 80 * scale;
+        
+        const ctx = canvas.getContext('2d');
+        // Aseguramos que la imagen no se recorte
+        ctx.scale(scale, scale);
+        ctx.drawImage(img, 0, 0, 300, 80);
+        
+        const a = document.createElement('a');
+        a.download = `logo-${type}.png`;
+        a.href = canvas.toDataURL('image/png');
+        document.body.appendChild(a); // Requerido en chrome/firefox
+        a.click();
+        document.body.removeChild(a);
+      };
+      
+      img.src = encoded;
+    }
+  </script>
+</body>
+</html>

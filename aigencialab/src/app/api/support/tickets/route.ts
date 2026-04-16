@@ -1,169 +1,100 @@
 /**
- * GET  /api/support/tickets  → list tickets for authenticated client
- * POST /api/support/tickets  → create a new support ticket
+ * POST /api/support/tickets — Create a ticket (client authenticated)
+ * GET  /api/support/tickets — List tickets for authenticated client
+ * Both use RLS: client sees only their own tickets
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { z } from 'zod'
+import { sendNewTicketAdminEmail } from '@/lib/emails'
 
 export const dynamic = 'force-dynamic'
 
-function getAdminSupabase() {
-  return createAdminClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-}
-
-async function getAuthenticatedUser(req: NextRequest): Promise<string | null> {
-  const authHeader = req.headers.get('Authorization')
-  if (authHeader?.startsWith('Bearer ')) {
-    const token = authHeader.slice(7)
-    const anonSupabase = createAdminClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      { global: { headers: { Authorization: `Bearer ${token}` } } }
-    )
-    const { data: { user } } = await anonSupabase.auth.getUser()
-    if (user) return user.id
-  }
-
+async function getAuthUserId(): Promise<string | null> {
   try {
     const cookieStore = await cookies()
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {
-          getAll() { return cookieStore.getAll() },
-          setAll() {},
-        },
-      }
+      { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
     )
     const { data: { user } } = await supabase.auth.getUser()
-    if (user) return user.id
-  } catch {}
-
-  return null
+    return user?.id ?? null
+  } catch { return null }
 }
 
-// GET /api/support/tickets
-export async function GET(req: NextRequest) {
-  const userId = await getAuthenticatedUser(req)
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  const { searchParams } = new URL(req.url)
-  const status = searchParams.get('status')
-  const limit  = Math.min(parseInt(searchParams.get('limit') ?? '50'), 200)
-
-  const supabase = getAdminSupabase()
-
-  let query = supabase
-    .from('support_tickets')
-    .select('*', { count: 'exact' })
-    .eq('client_id', userId)
-    .order('created_at', { ascending: false })
-    .limit(limit)
-
-  if (status) {
-    query = query.eq('status', status)
-  }
-
-  const { data, count, error } = await query
-
-  if (error) {
-    console.error('[support/tickets GET]', error)
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-
-  return NextResponse.json({ data: data ?? [], total: count ?? 0 })
+function adminClient() {
+  return createAdminClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  )
 }
 
-const createTicketSchema = z.object({
-  subject:     z.string().min(3, 'El asunto debe tener al menos 3 caracteres').max(200),
-  description: z.string().min(10, 'La descripción debe tener al menos 10 caracteres').max(5000),
-  priority:    z.enum(['low', 'medium', 'high', 'urgent']).default('medium'),
-})
+export async function GET(_req: NextRequest) {
+  const userId = await getAuthUserId()
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-// POST /api/support/tickets
-export async function POST(req: NextRequest) {
-  const userId = await getAuthenticatedUser(req)
-  if (!userId) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  }
-
-  let body: unknown
-  try {
-    body = await req.json()
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 })
-  }
-
-  const parsed = createTicketSchema.safeParse(body)
-  if (!parsed.success) {
-    return NextResponse.json(
-      { error: 'Datos inválidos', details: parsed.error.flatten() },
-      { status: 400 }
-    )
-  }
-
-  const supabase = getAdminSupabase()
-
-  // Verify the user has a client record first (FK constraint check)
-  const { data: clientExists } = await supabase
-    .from('clients')
-    .select('id')
-    .eq('id', userId)
-    .maybeSingle()
-
-  if (!clientExists) {
-    return NextResponse.json(
-      { error: 'Tu perfil de cliente no está configurado aún. Por favor completa tu configuración antes de abrir un ticket.' },
-      { status: 422 }
-    )
-  }
-
-  // Rate limiting: max 10 open tickets per client at a time
-  const { count: openCount } = await supabase
-    .from('support_tickets')
-    .select('id', { count: 'exact', head: true })
-    .eq('client_id', userId)
-    .in('status', ['open', 'in_progress'])
-
-  if ((openCount ?? 0) >= 10) {
-    return NextResponse.json(
-      { error: 'Límite de tickets abiertos alcanzado (máx. 10). Resuelve tickets existentes primero.' },
-      { status: 429 }
-    )
-  }
-
+  const supabase = adminClient()
   const { data, error } = await supabase
-    .from('support_tickets')
-    .insert({
-      client_id:   userId,
-      subject:     parsed.data.subject,
-      description: parsed.data.description,
-      priority:    parsed.data.priority,
-      status:      'open',
-    })
-    .select()
-    .single()
+    .from('tickets')
+    .select('id, subject, status, priority, unread_client, created_at, updated_at')
+    .eq('client_id', userId)
+    .order('updated_at', { ascending: false })
 
-  if (error) {
-    console.error('[support/tickets POST]', error)
-    return NextResponse.json({ error: 'Error al crear ticket' }, { status: 500 })
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+  return NextResponse.json({ tickets: data ?? [] })
+}
+
+export async function POST(req: NextRequest) {
+  const userId = await getAuthUserId()
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  const body = await req.json().catch(() => null)
+  if (!body?.subject?.trim() || !body?.message?.trim()) {
+    return NextResponse.json({ error: 'subject y message son requeridos' }, { status: 400 })
   }
 
-  // Audit log
-  await supabase.from('audit_logs').insert({
-    event: 'support_ticket_created',
-    module: 'support',
-    metadata: { client_id: userId, ticket_id: data.id, subject: parsed.data.subject, priority: parsed.data.priority },
+  const priority = ['low', 'normal', 'high', 'urgent'].includes(body.priority) ? body.priority : 'normal'
+  const supabase = adminClient()
+
+  // Get client info
+  const { data: client } = await supabase.from('clients')
+    .select('email, company_name, company, contact_name')
+    .eq('id', userId).maybeSingle()
+
+  const company = client?.company_name || client?.company || ''
+  const email   = client?.email ?? ''
+
+  // Create ticket
+  const { data: ticket, error } = await supabase.from('tickets').insert({
+    client_id: userId,
+    subject:   body.subject.trim(),
+    status:    'open',
+    priority,
+    unread_admin:  true,
+    unread_client: false,
+  }).select('id').single()
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+  // Save first message
+  await supabase.from('ticket_messages').insert({
+    ticket_id: ticket.id,
+    author_id: userId,
+    role: 'client',
+    body: body.message.trim(),
   })
 
-  return NextResponse.json({ data }, { status: 201 })
+  // Email admin
+  sendNewTicketAdminEmail({
+    ticketId: ticket.id,
+    company, email,
+    subject:  body.subject.trim(),
+    body:     body.message.trim(),
+    priority,
+  }).catch(console.error)
+
+  return NextResponse.json({ ok: true, ticketId: ticket.id })
 }
