@@ -88,35 +88,38 @@ export default function PartnersPage() {
       </section>
 
       {/* The Problem / Solution */}
-      <section className="py-24 bg-gray-50">
+      <section className="py-24 bg-gray-50 border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-gray-900">El Mercado Cambió. Tu Agencia también debe hacerlo.</h2>
-            <p className="mt-4 text-xl text-gray-600 max-w-3xl mx-auto">
-              Hoy los negocios en Chile no quieren solo una página web bonita o una campaña de Google Ads. Buscan algo que les garantice atender, vender y responder cuando ellos cierran la tienda.
+            <h2 className="text-sm uppercase tracking-widest text-blue-600 font-bold mb-3">La Realidad del Mercado B2B</h2>
+            <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">El mercado exige sistemas.<br/>Las agencias que solo venden "visitas" están perdiendo.</h3>
+            <p className="mt-6 text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+              Tus clientes corporativos ya no se conforman con un PDF y clics en Google. Buscan herramientas vivas que aseguren respuestas instantáneas y cierres de ventas a las 3:00 AM. <strong>Ahí es donde nuestra tecnología entra en acción.</strong>
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8 lg:gap-12 items-stretch">
             {/* Traditional Agency */}
-            <div className="bg-white p-8 rounded-2xl border border-gray-200 shadow-sm opacity-80">
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center text-red-600 mb-6 font-bold text-xl">✗</div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">La Agencia Tradicional</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start"><span className="text-red-500 mr-2 mt-1">✗</span> Vende sitios web estáticos que no consiguen clientes reales.</li>
-                <li className="flex items-start"><span className="text-red-500 mr-2 mt-1">✗</span> Cobra un precio único una sola vez y luego pierde el contacto con el cliente.</li>
-                <li className="flex items-start"><span className="text-red-500 mr-2 mt-1">✗</span> Genera tráfico con publicidad (Ads), pero el equipo del cliente tarda horas en responder y los posibles compradores se van.</li>
+            <div className="bg-white p-10 rounded-3xl border border-gray-200 shadow-sm relative overflow-hidden group hover:shadow-lg transition-all">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-red-50 rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110"></div>
+              <div className="w-14 h-14 bg-red-100/80 rounded-2xl flex items-center justify-center text-red-600 mb-8 font-bold text-2xl relative z-10 shadow-inner">✗</div>
+              <h4 className="text-2xl font-black text-gray-900 mb-6 relative z-10">La Agencia Tradicional (Estancada)</h4>
+              <ul className="space-y-5 relative z-10 text-gray-600">
+                <li className="flex items-start"><span className="text-red-500 mr-3 mt-1 font-bold">✗</span> Vende sitios web tipo "brochures digitales" que no transaccionan visitantes por sí solos.</li>
+                <li className="flex items-start"><span className="text-red-500 mr-3 mt-1 font-bold">✗</span> Desperdicia tráfico pagado porque el equipo comercial humano del cliente demora horas en responder.</li>
+                <li className="flex items-start"><span className="text-red-500 mr-3 mt-1 font-bold">✗</span> Compite por "Fees" bajos frente a agencias baratas o freelancers.</li>
               </ul>
             </div>
 
             {/* AIgencia Partner */}
-            <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 rounded-2xl border border-blue-500 shadow-xl text-white transform md:-translate-y-2">
-              <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center text-white mb-6 font-bold text-xl backdrop-blur-sm">✓</div>
-              <h3 className="text-2xl font-bold text-white mb-4">La Agencia del Futuro (Partner)</h3>
-              <ul className="space-y-4">
-                <li className="flex items-start"><CheckCircle2 className="text-blue-300 w-5 h-5 mr-3 mt-0.5 flex-shrink-0" /> Vende sitios web que incluyen "Vendedores Digitales 24/7".</li>
-                <li className="flex items-start"><CheckCircle2 className="text-blue-300 w-5 h-5 mr-3 mt-0.5 flex-shrink-0" /> Gana una comisión todos los meses solo porque su cliente utiliza la tecnología IA de AIgenciaLab.</li>
-                <li className="flex items-start"><CheckCircle2 className="text-blue-300 w-5 h-5 mr-3 mt-0.5 flex-shrink-0" /> Conecta los anuncios a un sistema de WhatsApp Automático que atiende a las personas en 3 segundos.</li>
+            <div className="bg-gradient-to-br from-blue-900 via-blue-800 to-indigo-900 p-10 rounded-3xl shadow-2xl text-white transform md:-translate-y-4 relative overflow-hidden group hover:shadow-[0_0_50px_rgba(59,130,246,0.4)] transition-all duration-500">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/20 rounded-full blur-3xl -mr-20 -mt-20"></div>
+              <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-blue-300 mb-8 font-bold text-2xl relative z-10 border border-blue-400/30 backdrop-blur-md shadow-[0_0_15px_rgba(59,130,246,0.5)]">✓</div>
+              <h4 className="text-2xl font-black text-white mb-6 relative z-10 flex items-center">El Partner Oficial de AIgenciaLab <span className="ml-3 bg-blue-500/30 text-blue-200 text-[10px] uppercase font-bold px-3 py-1 rounded-full border border-blue-400/50">Líder</span></h4>
+              <ul className="space-y-5 relative z-10 text-blue-100">
+                <li className="flex items-start"><CheckCircle2 className="text-blue-400 w-6 h-6 mr-3 flex-shrink-0" /> <span className="font-medium text-lg"><strong>Vende "Sistemas Integrales".</strong> Multiplica por 3 sus presupuestos vendiendo IA corporativa avanzada.</span></li>
+                <li className="flex items-start"><CheckCircle2 className="text-blue-400 w-6 h-6 mr-3 flex-shrink-0" /> <span className="font-medium text-lg"><strong>Garantiza un ROAS abrumador.</strong> Filtra perfiles y agenda reuniones en 2 segundos desde WhatsApp sin usar humanos.</span></li>
+                <li className="flex items-start"><CheckCircle2 className="text-blue-400 w-6 h-6 mr-3 flex-shrink-0" /> <span className="font-medium text-lg"><strong>Cobra ingresos residuales (MRR).</strong> Modela mantenimientos tecnológicos vitalicios, ganando ingresos automáticos mes a mes.</span></li>
               </ul>
             </div>
           </div>
@@ -126,9 +129,10 @@ export default function PartnersPage() {
       {/* Escenarios de Colaboración */}
       <section id="escenarios" className="py-24 bg-white border-y border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold text-gray-900 tracking-tight">4 Formas de Trabajar y Ganar Juntos</h2>
-            <p className="mt-4 text-xl text-gray-600 max-w-3xl">Tú traes al cliente o el diseño, nosotros la tecnología automática.</p>
+          <div className="mb-16 text-center">
+            <h2 className="text-sm uppercase tracking-widest text-blue-600 font-bold mb-3">Tus Posibilidades Económicas</h2>
+            <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">4 Rutas de Partnership Demostradas</h3>
+            <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">Toda agencia tiene un ADN distinto y todo acuerdo debe fluir naturalmente. Hemos mapeado cuatro infraestructuras de asociación. Tú pones tu especialidad, nosotros el brazo tecnológico pesado.</p>
           </div>
 
           <div className="space-y-6">
@@ -148,7 +152,7 @@ export default function PartnersPage() {
                     <div className="w-20 h-20 bg-blue-50/80 ring-1 ring-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-inner transform group-hover:scale-110 transition-transform duration-500">
                       <BarChart className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Agencias SEO & Marketing Integral</h3>
+                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Alianza Estratégica: Agencias SEO y Digitales 360</h3>
                     <div className="flex gap-2 mt-3">
                        <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Cero Código</span>
                        <span className="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Alta Retención</span>
@@ -218,7 +222,7 @@ export default function PartnersPage() {
                     <div className="w-20 h-20 bg-gray-50 ring-1 ring-gray-200 text-gray-900 rounded-2xl flex items-center justify-center mb-6 shadow-sm transform group-hover:rotate-3 transition-transform duration-500">
                       <LayoutDashboard className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Diseñadores de Sitios (WordPress, Wix, Framer)</h3>
+                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Alianza Productiva: Agencias de Desarrollo y UX/UI</h3>
                     <div className="flex gap-2 mt-3">
                        <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">1 Línea de Código</span>
                     </div>
@@ -286,7 +290,7 @@ export default function PartnersPage() {
                     <div className="w-20 h-20 bg-indigo-50 ring-1 ring-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm transform group-hover:-translate-y-2 transition-transform duration-500">
                       <Bot className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Agencias de Tiendas Online (Shopify, WooCommerce)</h3>
+                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Alianza Conversión: Especialistas en E-Commerce</h3>
                     <div className="flex gap-2 mt-3">
                        <span className="bg-red-100/80 border border-red-200 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Antirrebote de Carrito</span>
                     </div>
@@ -354,7 +358,7 @@ export default function PartnersPage() {
                     <div className="w-20 h-20 bg-teal-900/50 ring-1 ring-teal-500/50 text-teal-400 rounded-2xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(45,212,191,0.3)] transform group-hover:scale-105 transition-transform duration-500">
                       <Zap className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-white tracking-tight leading-tight">Agencias Performance, Pauta & Meta Ads</h3>
+                    <h3 className="text-3xl font-extrabold text-white tracking-tight leading-tight">Alianza Performance: Traffickers, Meta & Google Ads</h3>
                     <div className="flex gap-2 mt-3">
                        <span className="bg-red-500/20 border border-red-500/50 text-red-400 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Acaba la Fuga del ROAS</span>
                     </div>
@@ -411,6 +415,25 @@ export default function PartnersPage() {
             </div>
 
           </div>
+
+          {/* El puente: Todo es conversable */}
+          <div className="mt-20 bg-gradient-to-b from-gray-50 to-white border border-gray-200 rounded-3xl p-8 md:p-14 text-center max-w-5xl mx-auto shadow-2xl relative overflow-hidden group hover:border-blue-300 transition-colors">
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 group-hover:h-3 transition-all duration-300"></div>
+            <div className="flex justify-center mb-6">
+              <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center border-4 border-white shadow-lg">
+                <CheckCircle2 className="w-8 h-8 text-blue-600"/>
+              </div>
+            </div>
+            <h4 className="text-3xl font-extrabold text-gray-900 mb-4 tracking-tight">¿Tienes otra estructura comercial o volumen masivo?</h4>
+            <div className="w-24 h-1 bg-blue-200 mx-auto mb-6 rounded-full"></div>
+            <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
+              En el mercado B2B y Enterprise, ninguna talla es universal. <strong>Entendemos tu negocio.</strong> Absolutamente todos nuestros esquemas de Partnership, porcentajes, desarrollos y marcas blancas son <span className="text-blue-700 font-bold bg-blue-50 px-2 py-1 rounded">100% negociables y adaptables</span>. Si quieres proponer un modelo a la medida, nos sentamos contigo y lo construimos.
+            </p>
+            <Link href="#formulario-partner" className="bg-gray-900 hover:bg-black text-white px-10 py-4 rounded-full font-extrabold text-sm uppercase tracking-widest shadow-xl transition-all hover:scale-105 hover:shadow-2xl inline-flex items-center">
+              Agendar Reunión Ejecutiva Ahora <ArrowRight className="ml-3 w-5 h-5"/>
+            </Link>
+          </div>
+
         </div>
       </section>
 
@@ -546,12 +569,12 @@ export default function PartnersPage() {
       {/* CTA / Sandbox */}
       <section className="py-24 bg-white text-center px-4 relative">
         <div className="max-w-4xl mx-auto mb-16">
-          <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-md">
-             <Rocket className="w-10 h-10" />
+          <div className="w-24 h-24 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl border-4 border-white">
+             <Rocket className="w-12 h-12" />
           </div>
-          <h2 className="text-4xl font-extrabold text-gray-900 mb-6">Pruébalo Gratis en y veamos cómo aumentar tus ventas</h2>
-          <p className="text-xl text-gray-600 leading-relaxed text-center">
-            Para iniciar nuestra alianza, instalaremos y activaremos tu primer Agente Autónomo Pro en la propia web de tu negocio, <span className="font-bold text-gray-900">completamente gratis</span>. Comienza completando este formato y contactaremos contigo de forma directa.
+          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">Agenda tu Sesión Estratégica de Partnership</h2>
+          <p className="text-xl text-gray-600 leading-relaxed text-center max-w-3xl mx-auto">
+            Te invitamos a formalizar. Rellena el siguiente formulario exclusivo para Agencias. Analizaremos tu perfil, agendaremos nuestra <strong>reunión de negocios en Microsoft Teams</strong>, y activaremos un Agente Autónomo VIP en tu propia web <span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">completamente gratis</span> para que verifiques nuestra calidad.
           </p>
         </div>
 
