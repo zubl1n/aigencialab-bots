@@ -17,10 +17,12 @@ import {
   ArrowRight,
   RefreshCw,
   XCircle,
-  TrendingUp
+  Trash2,
+  Lock
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { PLANS, PLAN_MRR } from '@/lib/plans';
+import { PLANS, PLAN_MRR, getPlan } from '@/lib/plans';
+import CardEntryForm from '@/components/billing/CardEntryForm';
 
 // FASE 1 Bug 9: prices from plans.ts
 const PLAN_PRICES = Object.fromEntries(Object.entries(PLANS).map(([k, v]) => [k, v.price])) as Record<string, number>;
@@ -34,8 +36,11 @@ export default function BillingPage() {
   const [modalOpen, setModalOpen] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [changePlanOpen, setChangePlanOpen] = useState(false);
+  const [addCardOpen, setAddCardOpen] = useState(false);
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [cardFormLoading, setCardFormLoading] = useState(false);
+  const [cardFormError, setCardFormError] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -133,48 +138,67 @@ export default function BillingPage() {
   const cardLast4 = billingProfile?.card_last4;
   const cardBrand = billingProfile?.card_brand;
 
-  // FASE 2: Real MercadoPago checkout via Server API
-  const handleSubscribe = async (selectedPlan: string = 'Pro') => {
+  // PRIORITY 3 FIX: Use the user's CURRENT plan, not a hardcoded upgrade plan
+  // handleSubscribe defaults to the current client plan, never forces Pro
+  const handleSubscribe = async (selectedPlan?: string) => {
+    // If no plan given, use the current client plan (the one they already have)
+    const planToSubscribe = selectedPlan ?? plan;
+    // Enterprise requires contacting sales — no payment flow
+    if (planToSubscribe === 'Enterprise') {
+      window.location.href = '/contacto';
+      return;
+    }
+
     setCheckoutLoading(true);
     try {
-      // 1. Get session token
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) {
+        window.location.href = '/login';
+        return;
+      }
 
-      // 2. Request checkout URL from our new API route
       const res = await fetch('/api/billing/checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`
+          'Authorization': `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify({ plan: selectedPlan })
+        body: JSON.stringify({ plan: planToSubscribe }),
       });
 
       const data = await res.json();
+
       if (data.url) {
-        // 3. Redirect to real MercadoPago checkout page
         window.location.href = data.url;
+      } else if (data.redirect) {
+        window.location.href = data.redirect;
       } else {
-        console.error('Checkout error:', data.error);
-        alert('Hubo un problema iniciando el pago. Contacte soporte.');
+        // Surface the real error instead of a generic message
+        const msg = data.error ?? 'Error iniciando el pago. Contacte soporte.';
+        alert(`Error: ${msg}`);
       }
     } catch (err) {
-      console.error(err);
-      alert('Error de conexión.');
+      console.error('[billing] checkout error:', err);
+      alert('Error de conexión. Por favor intente nuevamente.');
     } finally {
       setCheckoutLoading(false);
     }
   };
 
-  // Update card → redirect to MP
+  // PRIORITY 4: Open card management modal (not the subscription checkout)
   const handleUpdateCard = () => {
-    const mpProfile = billingProfile?.mp_customer_id;
-    if (mpProfile) {
-      window.open(`https://www.mercadopago.cl/my-account/cards`, '_blank');
-    } else {
-      setModalOpen(true);
-    }
+    setAddCardOpen(true);
+  };
+
+  // PRIORITY 4: Remove saved card from billing_profiles
+  const handleRemoveCard = async () => {
+    if (!confirm('¿Eliminar tarjeta guardada? Deberás agregar una nueva para continuar tu suscripción.')) return;
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from('billing_profiles')
+      .update({ card_last4: null, card_brand: null, card_expiry: null, mp_customer_id: null, mp_card_token: null })
+      .eq('client_id', user.id);
+    setBillingProfile((prev: any) => prev ? { ...prev, card_last4: null, card_brand: null, card_expiry: null } : null);
   };
 
   return (
@@ -207,6 +231,7 @@ export default function BillingPage() {
           >
             <Zap className="w-4 h-4" /> Suscribirme →
           </button>
+          {/* PRIORITY 3 FIX: Clear indicator of which plan they're subscribing to */}
         </div>
       )}
 
@@ -280,20 +305,32 @@ export default function BillingPage() {
               <p className="text-xl font-extrabold text-white">
                 {cardBrand ? `${cardBrand.charAt(0).toUpperCase()}${cardBrand.slice(1)} ` : ''}•••• {cardLast4}
               </p>
-              <button
-                id="update-card-btn"
-                onClick={handleUpdateCard}
-                className="mt-2 text-xs font-bold text-primary hover:underline flex items-center gap-1"
-              >
-                <RefreshCw className="w-3 h-3" /> Actualizar tarjeta →
-              </button>
+              {billingProfile?.card_expiry && (
+                <p className="text-xs text-slate-400 mt-0.5">Vence: {billingProfile.card_expiry}</p>
+              )}
+              <div className="flex gap-3 mt-2">
+                <button
+                  id="update-card-btn"
+                  onClick={handleUpdateCard}
+                  className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
+                >
+                  <RefreshCw className="w-3 h-3" /> Reemplazar →
+                </button>
+                <button
+                  id="remove-card-btn"
+                  onClick={handleRemoveCard}
+                  className="text-xs font-bold text-red-400 hover:underline flex items-center gap-1"
+                >
+                  <Trash2 className="w-3 h-3" /> Eliminar
+                </button>
+              </div>
             </div>
           ) : (
             <div>
               <p className="text-sm text-slate-500 italic mb-2">Sin tarjeta guardada</p>
               <button
                 id="add-card-btn"
-                onClick={() => setModalOpen(true)}
+                onClick={() => setAddCardOpen(true)}
                 className="text-xs font-bold text-primary hover:underline flex items-center gap-1"
               >
                 <CreditCard className="w-3 h-3" /> Agregar método →
@@ -344,58 +381,82 @@ export default function BillingPage() {
         )}
       </div>
 
-      {/* ─── FASE 2: Subscribe Modal ─────────────────────────────────────── */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl">
-            <button
-              onClick={() => setModalOpen(false)}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <div className="p-10 space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <Zap className="w-6 h-6 text-blue-400" />
-                </div>
-                <div>
-                  <h2 className="text-2xl font-bold text-white">Suscríbete al Plan Pro</h2>
-                  <p className="text-slate-400 text-sm">Sin comisión · Cancela cuando quieras</p>
-                </div>
-              </div>
-
-              <div className="bg-blue-600/5 border border-blue-500/10 rounded-2xl p-6">
-                <div className="text-4xl font-extrabold text-white mb-1 tracking-tight">
-                  {/* FASE 1 Bug 9: price from plans.ts */}
-                  {PLANS.Pro.priceDisplay}
-                </div>
-                <p className="text-xs text-slate-400">+ IVA si aplica · Pagado mensualmente vía MercadoPago</p>
-              </div>
-
-              <ul className="space-y-2.5">
-                {['Hasta 2,500 conversaciones/mes', '3 bots independientes', 'Prompt personalizado', 'Soporte 24/7', 'Dashboard con analytics'].map(f => (
-                  <li key={f} className="flex items-center gap-2.5 text-sm text-slate-300">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-
+      {/* ─── PRIORITY 3 FIX: Subscribe Modal — uses CURRENT plan, not hardcoded Pro ── */}
+      {modalOpen && (() => {
+        const currentPlanData = getPlan(plan);
+        const isAlreadyActive = subscription?.status === 'active';
+        return (
+          <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+            <div className="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl">
               <button
-                id="mp-checkout-btn"
-                onClick={() => handleSubscribe('Pro')}
-                disabled={checkoutLoading}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white rounded-2xl font-bold text-base shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
+                onClick={() => setModalOpen(false)}
+                className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all"
               >
-                {checkoutLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Zap className="w-5 h-5" /> Pagar con MercadoPago</>}
+                <X className="w-5 h-5" />
               </button>
-              <p className="text-center text-xs text-slate-500">🔒 Datos cifrados. Ley N°19.628.</p>
+
+              <div className="p-10 space-y-6">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
+                    <Zap className="w-6 h-6 text-blue-400" />
+                  </div>
+                  <div>
+                    {/* PRIORITY 3: Title reflects current plan */}
+                    <h2 className="text-2xl font-bold text-white">Suscríbete al Plan {currentPlanData.name}</h2>
+                    <p className="text-slate-400 text-sm">Sin comisión · Cancela cuando quieras</p>
+                  </div>
+                </div>
+
+                {/* PRIORITY 3: If already active, show informational state instead of checkout */}
+                {isAlreadyActive ? (
+                  <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-2">
+                    <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
+                    <p className="font-bold text-white">Ya estás suscrito a este plan</p>
+                    <p className="text-xs text-slate-400">
+                      Tu suscripción al Plan {currentPlanData.name} está activa hasta el {formatDate(subscription?.current_period_end)}.
+                    </p>
+                    <button
+                      onClick={() => setModalOpen(false)}
+                      className="mt-2 px-6 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 rounded-xl font-bold text-sm transition-all"
+                    >
+                      Entendido
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-blue-600/5 border border-blue-500/10 rounded-2xl p-6">
+                      <div className="text-4xl font-extrabold text-white mb-1 tracking-tight">
+                        {/* PRIORITY 3: Price from the CURRENT plan, not hardcoded Pro */}
+                        {currentPlanData.isContact ? 'A consultar' : `$${currentPlanData.monthlyUSD} USD/mes`}
+                      </div>
+                      <p className="text-xs text-slate-400">+ IVA si aplica · Pagado mensualmente vía MercadoPago</p>
+                    </div>
+
+                    <ul className="space-y-2.5">
+                      {currentPlanData.features.filter(f => f.included).slice(0, 5).map(f => (
+                        <li key={f.text} className="flex items-center gap-2.5 text-sm text-slate-300">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                          {f.text}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <button
+                      id="mp-checkout-btn"
+                      onClick={() => handleSubscribe()}
+                      disabled={checkoutLoading}
+                      className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white rounded-2xl font-bold text-base shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
+                    >
+                      {checkoutLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <><Zap className="w-5 h-5" /> Pagar con MercadoPago</>}
+                    </button>
+                    <p className="text-center text-xs text-slate-500">🔒 Datos cifrados. Ley N°19.628.</p>
+                  </>
+                )}
+              </div>
             </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* ─── Change Plan Modal ───────────────────────────────────────────── */}
       {changePlanOpen && (
@@ -460,6 +521,82 @@ export default function BillingPage() {
                 >
                   Confirmar cancelación
                 </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ─── PRIORITY 4: Add / Replace Card Modal — MercadoPago tokenization ── */}
+      {addCardOpen && (
+        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+          <div className="relative w-full max-w-md bg-slate-900 border border-white/10 rounded-[32px] overflow-hidden shadow-2xl">
+            <button
+              onClick={() => { setAddCardOpen(false); setCardFormError(null); }}
+              className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="p-8 space-y-6">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center">
+                  <CreditCard className="w-6 h-6 text-purple-400" />
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-white">Agregar método de pago</h2>
+                  <p className="text-slate-400 text-sm">Tus datos se cifran y nunca los almacenamos</p>
+                </div>
+              </div>
+
+              {cardFormError && (
+                <div className="flex items-start gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-red-300">{cardFormError}</p>
+                </div>
+              )}
+
+              {/* Card form — tokenized via MercadoPago SDK before sending to server */}
+              <CardEntryForm
+                onSubmit={async (tokenData) => {
+                  setCardFormLoading(true);
+                  setCardFormError(null);
+                  try {
+                    const { data: { session } } = await supabase.auth.getSession();
+                    if (!session) throw new Error('No autenticado');
+
+                    const res = await fetch('/api/billing/save-card', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${session.access_token}`,
+                      },
+                      body: JSON.stringify(tokenData),
+                    });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error ?? 'Error guardando tarjeta');
+
+                    // Update local state with new card info
+                    setBillingProfile((prev: any) => ({
+                      ...(prev ?? {}),
+                      card_last4: tokenData.last4,
+                      card_brand: tokenData.brand,
+                      card_expiry: tokenData.expiry,
+                    }));
+                    setAddCardOpen(false);
+                    setCardFormError(null);
+                  } catch (err: any) {
+                    setCardFormError(err.message ?? 'Error procesando la tarjeta. Intente nuevamente.');
+                  } finally {
+                    setCardFormLoading(false);
+                  }
+                }}
+                loading={cardFormLoading}
+              />
+
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <Lock className="w-3 h-3" />
+                <span>Procesado por MercadoPago · Ley N°19.628 · PCI DSS</span>
               </div>
             </div>
           </div>
