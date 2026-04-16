@@ -135,28 +135,39 @@ export default function PartnersPage() {
             
             {/* Model 4: El Nuevo (Top Priority) */}
             <div className="group bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-1 shadow-md hover:shadow-2xl transition-all duration-300">
-              <div className="bg-white rounded-xl p-8 h-full flex flex-col md:flex-row gap-8 relative overflow-hidden">
+              <div className="bg-white rounded-xl p-8 h-full relative overflow-hidden">
                 <div className="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Nuevo: Alianza Win / Win Total</div>
-                <div className="md:w-1/3 flex-shrink-0">
-                  <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-                    <BarChart className="w-8 h-8"/>
+                <div className="flex flex-col md:flex-row gap-8 mb-6">
+                  <div className="md:w-1/3 flex-shrink-0">
+                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-6">
+                      <BarChart className="w-8 h-8"/>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">Agencias de SEO y Marketing Digital Puro (PyMEs)</h3>
+                    <p className="text-blue-600 font-medium mt-2">No programes nada. Nosotros somos tu brazo técnico.</p>
                   </div>
-                  <h3 className="text-2xl font-bold text-gray-900">Agencias de SEO y Marketing Digital Puro</h3>
-                  <p className="text-blue-600 font-medium mt-2">No programes nada. Nosotros hacemos todo el trabajo técnico.</p>
+                  <div className="md:w-2/3 space-y-4 text-gray-600">
+                    <p>¿Tienes una agencia o PyME de Marketing Digital enfocado en posicionamiento (SEO), redes sociales o publicidad, pero <strong>no quieres lidiar con el código ni servidores</strong>? Este ecosistema está diseñado para ti.</p>
+                    <p>En lugar de perder negocios porque "no haces sitios web complejos", puedes ofrecer un paquete integral premium. Nosotros construimos un Desarrollo Web Completo optimizado + IA (Chatbots, RAG, automatizaciones), y tú sigues vendiendo tus servicios sobre una plataforma mucho más potente.</p>
+                  </div>
                 </div>
-                <div className="md:w-2/3 space-y-4 text-gray-600">
-                  <p>¿Tú agencia no hace desarrollo de sitios web y prefieres enfocar tu tiempo en Estrategia Asesora o Pauta Publicitaria? Este es el modelo perfecto.</p>
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    <div className="bg-gray-50 p-4 rounded-lg border">
-                      <span className="font-bold text-gray-900 block mb-1">Tu Agencia se enfoca en:</span>
-                      Realizar el SEO, lanzar publicidad (Meta/Google), mejorar el posicionamiento comercial y mantener el control sobre la cuenta de tu cliente.
+
+                {/* Expanded Monetization Section */}
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-4">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">3 Formas de Multiplicar tus Ganancias (Sin programar):</h4>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Setup Informático</div>
+                      <p className="text-sm text-gray-600">Nosotros fijamos un costo mayorista por construir la web y la IA. Tú le cobras a tu cliente un "Fee de Desarrollo" muy superior. Toda la diferencia o recargo es <strong>100% tu ganancia directa</strong>.</p>
                     </div>
-                    <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
-                      <span className="font-bold text-blue-900 block mb-1">AigenciaLab se encarga de:</span>
-                      Construir el sitio web profesional o Ecommerce completo e integrar todos los elementos Chatbots e IA Avanzada que el cliente necesite.
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Retención y SEO / GEO</div>
+                      <p className="text-sm text-gray-600">Te entregamos páginas con <em>Generative Engine Optimization (GEO)</em> y Schema Markup. Esto eleva los resultados de tu servicio mensual de SEO, justificando que cobres <strong>Retainers más caros</strong> por tu excelente posicionamiento.</p>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. MRR de Mantenimiento IA</div>
+                      <p className="text-sm text-gray-600">Puedes cobrarle al cliente una póliza mensual por "Entrenamiento y mantenimiento del Bot", mientras nosotros nos encargamos del servidor. Creas un ingreso pasivo gigante (MRR).</p>
                     </div>
                   </div>
-                  <p className="pt-2 font-medium text-gray-900">El Beneficio final: Puedes cobrar a tu cliente un proyecto informático avanzado gigante sin tener un equipo de programación, y retienes la venta de tus servicios recurrentes mensuales de Marketing dirigiendo tráfico a una web potente.</p>
                 </div>
               </div>
             </div>
