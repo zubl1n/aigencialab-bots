@@ -34,7 +34,7 @@ export default function PartnersPage() {
             <div className="inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold text-blue-600 bg-blue-50 ring-1 ring-inset ring-blue-600/20 mb-6">
               <Rocket className="w-4 h-4 mr-2" /> Programa de Alianzas 2026
             </div>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-gray-900 mb-8 leading-tight">
+            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight text-blue-950 mb-8 leading-tight">
               Evoluciona tu Agencia. <br/>
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">
                 Vende Sistemas, no solo Webs.
@@ -92,7 +92,7 @@ export default function PartnersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-sm uppercase tracking-widest text-blue-600 font-bold mb-3">La Realidad del Mercado B2B</h2>
-            <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">El mercado exige sistemas.<br/>Las agencias que solo venden "visitas" están perdiendo.</h3>
+            <h3 className="text-4xl md:text-5xl font-extrabold text-blue-950 tracking-tight">El mercado exige sistemas.<br/>Las agencias que solo venden "visitas" están perdiendo.</h3>
             <p className="mt-6 text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
               Tus clientes corporativos ya no se conforman con un PDF y clics en Google. Buscan herramientas vivas que aseguren respuestas instantáneas y cierres de ventas a las 3:00 AM. <strong>Ahí es donde nuestra tecnología entra en acción.</strong>
             </p>
@@ -131,7 +131,7 @@ export default function PartnersPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-16 text-center">
             <h2 className="text-sm uppercase tracking-widest text-blue-600 font-bold mb-3">Tus Posibilidades Económicas</h2>
-            <h3 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight">4 Rutas de Partnership Demostradas</h3>
+            <h3 className="text-4xl md:text-5xl font-extrabold text-blue-950 tracking-tight">4 Rutas de Partnership Demostradas</h3>
             <p className="mt-6 text-xl text-gray-600 max-w-3xl mx-auto">Toda agencia tiene un ADN distinto y todo acuerdo debe fluir naturalmente. Hemos mapeado cuatro infraestructuras de asociación. Tú pones tu especialidad, nosotros el brazo tecnológico pesado.</p>
           </div>
 
@@ -152,7 +152,7 @@ export default function PartnersPage() {
                     <div className="w-20 h-20 bg-blue-50/80 ring-1 ring-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-inner transform group-hover:scale-110 transition-transform duration-500">
                       <BarChart className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Alianza Estratégica: Agencias SEO y Digitales 360</h3>
+                    <h3 className="text-3xl font-extrabold text-blue-950 tracking-tight leading-tight">Alianza Estratégica: Agencias SEO y Digitales 360</h3>
                     <div className="flex gap-2 mt-3">
                        <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Cero Código</span>
                        <span className="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Alta Retención</span>
@@ -222,7 +222,7 @@ export default function PartnersPage() {
                     <div className="w-20 h-20 bg-gray-50 ring-1 ring-gray-200 text-gray-900 rounded-2xl flex items-center justify-center mb-6 shadow-sm transform group-hover:rotate-3 transition-transform duration-500">
                       <LayoutDashboard className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Alianza Productiva: Agencias de Desarrollo y UX/UI</h3>
+                    <h3 className="text-3xl font-extrabold text-indigo-950 tracking-tight leading-tight">Alianza Productiva: Agencias de Desarrollo y UX/UI</h3>
                     <div className="flex gap-2 mt-3">
                        <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">1 Línea de Código</span>
                     </div>
@@ -290,7 +290,7 @@ export default function PartnersPage() {
                     <div className="w-20 h-20 bg-indigo-50 ring-1 ring-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm transform group-hover:-translate-y-2 transition-transform duration-500">
                       <Bot className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Alianza Conversión: Especialistas en E-Commerce</h3>
+                    <h3 className="text-3xl font-extrabold text-violet-950 tracking-tight leading-tight">Alianza Conversión: Especialistas en E-Commerce</h3>
                     <div className="flex gap-2 mt-3">
                        <span className="bg-red-100/80 border border-red-200 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Antirrebote de Carrito</span>
                     </div>
@@ -424,7 +424,7 @@ export default function PartnersPage() {
                 <CheckCircle2 className="w-8 h-8 text-blue-600"/>
               </div>
             </div>
-            <h4 className="text-3xl font-extrabold text-gray-900 mb-4 tracking-tight">¿Tienes otra estructura comercial o volumen masivo?</h4>
+            <h4 className="text-3xl font-extrabold text-blue-950 mb-4 tracking-tight">¿Tienes otra estructura comercial o volumen masivo?</h4>
             <div className="w-24 h-1 bg-blue-200 mx-auto mb-6 rounded-full"></div>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto leading-relaxed">
               En el mercado B2B y Enterprise, ninguna talla es universal. <strong>Entendemos tu negocio.</strong> Absolutamente todos nuestros esquemas de Partnership, porcentajes, desarrollos y marcas blancas son <span className="text-blue-700 font-bold bg-blue-50 px-2 py-1 rounded">100% negociables y adaptables</span>. Si quieres proponer un modelo a la medida, nos sentamos contigo y lo construimos.
@@ -572,7 +572,7 @@ export default function PartnersPage() {
           <div className="w-24 h-24 bg-gradient-to-br from-blue-50 to-indigo-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl border-4 border-white">
              <Rocket className="w-12 h-12" />
           </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-6 tracking-tight">Agenda tu Sesión Estratégica de Partnership</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold text-blue-950 mb-6 tracking-tight">Agenda tu Sesión Estratégica de Partnership</h2>
           <p className="text-xl text-gray-600 leading-relaxed text-center max-w-3xl mx-auto">
             Te invitamos a formalizar. Rellena el siguiente formulario exclusivo para Agencias. Analizaremos tu perfil, agendaremos nuestra <strong>reunión de negocios en Microsoft Teams</strong>, y activaremos un Agente Autónomo VIP en tu propia web <span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">completamente gratis</span> para que verifiques nuestra calidad.
           </p>
