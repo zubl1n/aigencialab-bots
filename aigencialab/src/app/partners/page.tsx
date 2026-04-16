@@ -158,6 +158,7 @@ export default function PartnersPage() {
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Setup Informático</div>
                       <p className="text-sm text-gray-600">Nosotros fijamos un costo mayorista por construir la web y la IA. Tú le cobras a tu cliente un "Fee de Desarrollo" muy superior. Toda la diferencia o recargo es <strong>100% tu ganancia directa</strong>.</p>
+                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Vendes a $1.000.000, nos pagas $300.000, te ganas $700.000 libres.</div>
                     </div>
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Retención y SEO / GEO</div>
@@ -196,6 +197,7 @@ export default function PartnersPage() {
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Upsell de "Sitio Inteligente"</div>
                       <p className="text-sm text-gray-600">Puedes cobrar fácilmente un <strong>30% o 50% extra</strong> sobre la cotización de tu página web simplemente argumentando que estás entregando un "Sistema Automatizado de Ventas" y no solo un brochure digital estático.</p>
+                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Web de $600.000 sube a $900.000 reales (+ $300.000 directos).</div>
                     </div>
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Consultoría en CRM</div>
@@ -234,6 +236,7 @@ export default function PartnersPage() {
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Módulo "Atención Automática"</div>
                       <p className="text-sm text-gray-600">En tu propuesta de diseño de tienda, incluyes como ítem de lujo la "Burbuja de Inteligencia Comercial", aumentando instantáneamente el Ticket Final (Setup) del E-commerce.</p>
+                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Tienda Shopify de $800k cierra en $1.2M (+ $400.000 íntegros).</div>
                     </div>
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Fee de Actualización de Catálogo</div>
@@ -276,6 +279,7 @@ export default function PartnersPage() {
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Venta del Embudo (Funnel Setup)</div>
                       <p className="text-sm text-gray-600">A tu tarifa mensual de campañas o de Community Management, puedes cobrarle adicionalmente un espectacular "Costo de Desarrollo de Embudo Inteligente en WhatsApp".</p>
+                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Extra de +$500.000 por integrar Ads al Bot Oficial de WhatsApp.</div>
                     </div>
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Participación en Ingresos IA</div>
@@ -398,7 +402,9 @@ export default function PartnersPage() {
                              <p className="text-lg font-bold text-gray-500 line-through decoration-red-500/70">$35.000</p>
                              <p className="text-3xl font-extrabold text-blue-400">$28.000</p>
                           </div>
-                          <p className="text-xs text-gray-400 leading-relaxed">Se te otorga un <span className="text-blue-300 font-bold bg-blue-900/30 px-1 py-0.5 rounded">20% de Descuento Especial</span> sobre el precio original mensual. AIgenciaLab solo retiene este monto base para garantizar servidores mundiales sin caídas.</p>
+                          <p className="text-xs text-gray-400 leading-relaxed mb-3">Se te otorga un <span className="text-blue-300 font-bold bg-blue-900/30 px-1 py-0.5 rounded">20% de Descuento Especial</span> sobre el precio original mensual. AIgenciaLab solo retiene este monto base para garantizar servidores mundiales sin caídas.</p>
+                          <div className="bg-red-900/30 border border-red-500/30 rounded px-2 py-1 inline-block text-[10px] text-red-300 uppercase tracking-widest font-bold mb-1">Importante: KPI Requerido</div>
+                          <p className="text-xs text-gray-400 leading-relaxed">Para optar y mantener esta Licencia Mayorista de Marca Blanca, la Agencia <span className="text-red-300 font-semibold">será evaluada bajo KPIs reales</span>. Se exige un compromiso de mantener un <strong>mínimo mensual activo de cuentas</strong> con nosotros.</p>
                         </div>
                         
                         <div className="bg-green-900/10 p-4 rounded-xl border border-green-500/30 relative overflow-hidden">
