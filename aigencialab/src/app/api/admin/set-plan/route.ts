@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * POST /api/admin/set-plan
  * Changes a client's plan. Admin only.

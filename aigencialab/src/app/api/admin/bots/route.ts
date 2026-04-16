@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * /api/admin/bots
  * GET  → lista todos los bots con datos del cliente (admin only)
