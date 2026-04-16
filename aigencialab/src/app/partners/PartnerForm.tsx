@@ -70,28 +70,28 @@ export default function PartnerForm() {
       <div className="grid sm:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Tu Nombre Completo *</label>
-          <input required type="text" name="name" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" placeholder="Ej: Juan Pérez" />
+          <input required type="text" name="name" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 bg-white placeholder-gray-400 font-medium" placeholder="Ej: Juan Pérez" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Correo Electrónico *</label>
-          <input required type="email" name="email" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" placeholder="hola@tuagencia.cl" />
+          <input required type="email" name="email" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 bg-white placeholder-gray-400 font-medium" placeholder="hola@tuagencia.cl" />
         </div>
       </div>
       
       <div className="grid sm:grid-cols-2 gap-6 mb-6">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Nombre de tu Agencia o Empresa *</label>
-          <input required type="text" name="agencyName" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" placeholder="Ej: Agencia Creativa Spa" />
+          <input required type="text" name="agencyName" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 bg-white placeholder-gray-400 font-medium" placeholder="Ej: Agencia Creativa Spa" />
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">Sitio Web / RRSS *</label>
-          <input required type="text" name="website" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all" placeholder="www.tuagencia.cl" />
+          <input required type="text" name="website" className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all text-gray-900 bg-white placeholder-gray-400 font-medium" placeholder="www.tuagencia.cl" />
         </div>
       </div>
 
       <div className="mb-6">
         <label className="block text-sm font-medium text-gray-700 mb-1">¿Qué tipo de servicios ofrecen actualmente? (Opcional)</label>
-        <textarea name="message" rows={3} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all resize-none" placeholder="Ej: Hacemos páginas en WordPress y campañas de Meta Ads..."></textarea>
+        <textarea name="message" rows={3} className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none transition-all resize-none text-gray-900 bg-white placeholder-gray-400 font-medium" placeholder="Ej: Hacemos páginas en WordPress y campañas de Meta Ads..."></textarea>
       </div>
 
       <button disabled={status === 'loading'} type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-xl text-lg font-bold shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl flex items-center justify-center disabled:opacity-70 disabled:cursor-not-allowed">
