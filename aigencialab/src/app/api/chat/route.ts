@@ -17,18 +17,27 @@ const OPENAI_KEY    = process.env.OPENAI_API_KEY        ?? '';
 const GROQ_KEY      = process.env.GROQ_API_KEY          ?? '';
 const GEMINI_KEY    = process.env.GEMINI_API_KEY        ?? '';
 
-// Free/low-cost models supported
+// Free/low-cost models supported (updated April 2025 — old llama3/mixtral decommissioned by Groq)
 const MODEL_CONFIGS: Record<string, { provider: 'openai' | 'groq' | 'gemini'; model: string }> = {
-  'gpt-4o-mini':         { provider: 'openai', model: 'gpt-4o-mini' },
-  'gpt-3.5-turbo':       { provider: 'openai', model: 'gpt-3.5-turbo' },
-  'llama3-8b-8192':      { provider: 'groq',   model: 'llama3-8b-8192' },
-  'llama3-70b-8192':     { provider: 'groq',   model: 'llama3-70b-8192' },
-  'mixtral-8x7b-32768':  { provider: 'groq',   model: 'mixtral-8x7b-32768' },
-  'gemma2-9b-it':        { provider: 'groq',   model: 'gemma2-9b-it' },
-  'gemini-1.5-flash':    { provider: 'gemini', model: 'gemini-1.5-flash' },
+  // ─── Groq (free tier) — ACTIVE models ───────────────────
+  'llama-3.1-8b-instant':      { provider: 'groq',   model: 'llama-3.1-8b-instant' },
+  'llama-3.3-70b-versatile':   { provider: 'groq',   model: 'llama-3.3-70b-versatile' },
+  'llama-3.1-70b-versatile':   { provider: 'groq',   model: 'llama-3.1-70b-versatile' },
+  'gemma2-9b-it':              { provider: 'groq',   model: 'gemma2-9b-it' },
+  'compound-beta':             { provider: 'groq',   model: 'compound-beta' },
+  // ─── Legacy aliases → map to active models ───────────────
+  'llama3-8b-8192':            { provider: 'groq',   model: 'llama-3.1-8b-instant' },
+  'llama3-70b-8192':           { provider: 'groq',   model: 'llama-3.3-70b-versatile' },
+  'mixtral-8x7b-32768':        { provider: 'groq',   model: 'llama-3.1-8b-instant' },
+  // ─── Google Gemini ────────────────────────────────────────
+  'gemini-1.5-flash':          { provider: 'gemini', model: 'gemini-1.5-flash' },
+  'gemini-2.0-flash':          { provider: 'gemini', model: 'gemini-2.0-flash' },
+  // ─── OpenAI (optional, needs OPENAI_API_KEY) ─────────────
+  'gpt-4o-mini':               { provider: 'openai', model: 'gpt-4o-mini' },
+  'gpt-3.5-turbo':             { provider: 'openai', model: 'gpt-3.5-turbo' },
 };
 
-const DEFAULT_MODEL = 'gpt-4o-mini';
+const DEFAULT_MODEL = 'llama-3.1-8b-instant'; // Groq free — always available
 
 // Rate limiting: simple in-memory store (resets on serverless restart — sufficient for basic protection)
 const rateLimitStore: Map<string, { count: number; resetAt: number }> = new Map();

@@ -9,12 +9,15 @@ import { createClient } from '@/lib/supabase/client';
 
 /* ── Free/low-cost AI models available ─────────────────────────── */
 const FREE_MODELS = [
-  { value: 'llama3-8b-8192',     label: 'Llama 3 8B (Groq — Gratis)',       provider: 'Groq',   tier: 'free' },
-  { value: 'gemma2-9b-it',       label: 'Gemma 2 9B (Groq — Gratis)',        provider: 'Groq',   tier: 'free' },
-  { value: 'mixtral-8x7b-32768', label: 'Mixtral 8x7B (Groq — Gratis)',      provider: 'Groq',   tier: 'free' },
-  { value: 'gemini-1.5-flash',   label: 'Gemini Flash 1.5 (Google — Gratis)', provider: 'Google', tier: 'free' },
-  { value: 'gpt-4o-mini',        label: 'GPT-4o Mini (OpenAI — Pro)',         provider: 'OpenAI', tier: 'pro' },
-  { value: 'llama3-70b-8192',    label: 'Llama 3 70B (Groq — Pro)',           provider: 'Groq',   tier: 'pro' },
+  // ── Groq (free tier) — modelos ACTIVOS abril 2025 ──
+  { value: 'llama-3.1-8b-instant',    label: 'Llama 3.1 8B Instant (Groq — Gratis)',    provider: 'Groq',   tier: 'free' },
+  { value: 'gemma2-9b-it',            label: 'Gemma 2 9B (Groq — Gratis)',               provider: 'Groq',   tier: 'free' },
+  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B Versatile (Groq — Gratis)', provider: 'Groq',   tier: 'free' },
+  { value: 'compound-beta',           label: 'Compound Beta (Groq — Gratis)',             provider: 'Groq',   tier: 'free' },
+  // ── Google Gemini ──
+  { value: 'gemini-1.5-flash',        label: 'Gemini Flash 1.5 (Google — Gratis)',       provider: 'Google', tier: 'free' },
+  // ── OpenAI (requiere OPENAI_API_KEY) ──
+  { value: 'gpt-4o-mini',             label: 'GPT-4o Mini (OpenAI — Requiere clave)',    provider: 'OpenAI', tier: 'pro' },
 ] as const;
 
 type ModelValue = (typeof FREE_MODELS)[number]['value'];
