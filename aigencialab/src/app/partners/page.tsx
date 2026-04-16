@@ -173,41 +173,116 @@ export default function PartnersPage() {
             </div>
 
             {/* Model 1: Landing Devs */}
-            <div className="bg-white border rounded-2xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row gap-8 group">
-              <div className="md:w-1/3 flex-shrink-0">
-                <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
-                  <LayoutDashboard className="w-7 h-7"/>
+            <div className="group bg-white border border-gray-200 rounded-2xl p-1 shadow-sm hover:shadow-xl transition-all duration-300">
+              <div className="bg-white rounded-xl p-6 lg:p-8 h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-gray-900 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Alianza: Desarrollo Web</div>
+                <div className="flex flex-col md:flex-row gap-8 mb-6">
+                  <div className="md:w-1/3 flex-shrink-0">
+                    <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
+                      <LayoutDashboard className="w-7 h-7"/>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">Diseñadores de Sitios Web (WordPress / Wix)</h3>
+                    <p className="text-gray-600 font-medium mt-2">Construye la fachada, nosotros ponemos el vendedor.</p>
+                  </div>
+                  <div className="md:w-2/3 space-y-4 text-gray-600">
+                    <p>Si tu negocio core es construir webs para abogados, clínicas o empresas de servicios, sabes que el cliente siempre se queja de "mi web nueva no me trae clientes". Esto cambia hoy.</p>
+                    <p>Tú creas el diseño web y UX. Nosotros te entregamos una <strong>sola línea de código segura (Script)</strong>. Al pegarla, despliegas un Agente Virtual que califica prospectos. Si el usuario pregunta "precio", el bot extrae su nombre, email y teléfono, e inyecta la oportunidad en el correo de tu cliente automáticamente.</p>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">Desarrollo Web (Sitios en WordPress o similares)</h3>
-              </div>
-              <div className="md:w-2/3 space-y-3 text-gray-600 flex flex-col justify-center">
-                <p>Tú creas todo el diseño de la web para el cliente. Nosotros solo te pasamos una línea de código muy fácil de insertar que activará a nuestro Agente Inteligente. Este agente obtendrá el nombre y WhatsApp de quienes visiten la web y los mandará a su correo. Así venderás mucho más caro tu servicio afirmando que "incluye automatización".</p>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-4">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">3 Formas de Monetizar este Modelo:</h4>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Upsell de "Sitio Inteligente"</div>
+                      <p className="text-sm text-gray-600">Puedes cobrar fácilmente un <strong>30% o 50% extra</strong> sobre la cotización de tu página web simplemente argumentando que estás entregando un "Sistema Automatizado de Ventas" y no solo un brochure digital estático.</p>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Consultoría en CRM</div>
+                      <p className="text-sm text-gray-600">Además de la web, puedes cobrar un <em>Setup</em> adicional por "integrar" los correos o el Excel del cliente con la IA, actuando como su asesor tecnológico de confianza.</p>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Licencia a tu Nombre</div>
+                      <p className="text-sm text-gray-600">Usas nuestra cuenta de agencia (descuento del 20%) y tú le cobras al cliente directamente por el mantenimiento mensual de su chatbot de leads.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Model 2: E-commerce */}
-            <div className="bg-white border rounded-2xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row gap-8 group">
-              <div className="md:w-1/3 flex-shrink-0">
-                <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
-                  <Bot className="w-7 h-7"/>
+            <div className="group bg-white border border-gray-200 rounded-2xl p-1 shadow-sm hover:shadow-xl transition-all duration-300">
+              <div className="bg-white rounded-xl p-6 lg:p-8 h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Alianza: E-Commerce</div>
+                <div className="flex flex-col md:flex-row gap-8 mb-6">
+                  <div className="md:w-1/3 flex-shrink-0">
+                    <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
+                      <Bot className="w-7 h-7"/>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">Creadores de Tiendas (Shopify, Jumpseller)</h3>
+                    <p className="text-blue-600 font-medium mt-2">Armas el catálogo, la IA reduce abandonos de carrito.</p>
+                  </div>
+                  <div className="md:w-2/3 space-y-4 text-gray-600">
+                    <p>El mayor dolor de cabeza de quien te compra un eCommerce es coordinar despachos y responder "cuánto cuesta el envío". Tú puedes eliminarle ese problema de raíz.</p>
+                    <p>Armas la tienda online donde la gente va a comprar, y le agregas nuestro <strong>Conserje Inteligente IA</strong>. Este agente ayudará en tiempo real al usuario de la tienda a consultar el estado de despacho (tracking), resolver devoluciones automáticas y asistir en decisiones de tallas.</p>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">Diseñadores de Tiendas Virtuales (Shopify, Jumpseller)</h3>
-              </div>
-              <div className="md:w-2/3 space-y-3 text-gray-600 flex flex-col justify-center">
-                <p>Armas la tienda online donde la gente va a comprar, y le agregas nuestro Conserje Inteligente. Ayudará en tiempo real al usuario de la tienda a ver sus despachos de Chilexpress/Starken, resolver devoluciones y ayudar a decidir tallas.</p>
+
+                <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-6 mt-4">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b border-blue-200 pb-2">3 Formas de Monetizar la Tienda:</h4>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Módulo "Atención Automática"</div>
+                      <p className="text-sm text-gray-600">En tu propuesta de diseño de tienda, incluyes como ítem de lujo la "Burbuja de Inteligencia Comercial", aumentando instantáneamente el Ticket Final (Setup) del E-commerce.</p>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Fee de Actualización de Catálogo</div>
+                      <p className="text-sm text-gray-600">La ropa o los productos cambian por temporada. El cliente necesitará que alguien nutra la base de datos de la IA con el nuevo catálogo (Prompts). <strong>Ese Retainer te lo pagarán a ti</strong>.</p>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Upselling cruzado (CRO)</div>
+                      <p className="text-sm text-gray-600">La IA actúa como conserje para recuperar clientes. Si la tienda sube su tasa de conversión gracias al bot, la retención de la agencia se dispara, justificando tarifas premium por tu servicio.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
             {/* Model 3: Paid Media */}
-            <div className="bg-white border rounded-2xl p-8 hover:shadow-xl transition-all duration-300 flex flex-col md:flex-row gap-8 group">
-              <div className="md:w-1/3 flex-shrink-0">
-                <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
-                  <Zap className="w-7 h-7"/>
+            <div className="group bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-1 shadow-sm hover:shadow-xl transition-all duration-300">
+              <div className="bg-white rounded-xl p-6 lg:p-8 h-full relative overflow-hidden">
+                <div className="absolute top-0 right-0 bg-green-500 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Alianza: Performance / Ads</div>
+                <div className="flex flex-col md:flex-row gap-8 mb-6">
+                  <div className="md:w-1/3 flex-shrink-0">
+                    <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
+                      <Zap className="w-7 h-7"/>
+                    </div>
+                    <h3 className="text-2xl font-bold text-gray-900">Agencias de Tráfico Pago (Meta, Google, Tiktok)</h3>
+                    <p className="text-green-600 font-medium mt-2">Deja de desperdiciar conversiones por culpa del cliente.</p>
+                  </div>
+                  <div className="md:w-2/3 space-y-4 text-gray-600">
+                    <p>Sabemos la frustración: Tu agencia genera miles de leads altamente calificados con las campañas, pero llegan al WhatsApp del cliente y su equipo humano demora 12 horas en responder. El lead se enfría, se pierde la venta y le echan la culpa a "la mala calidad del anuncio" (ROAS falsamente bajo).</p>
+                    <p><strong>Solución:</strong> Todo el tráfico de tus Ads aterrizará primero en nuestra <strong>IA en WhatsApp Oficial</strong>. Dará la bienvenida en 3 segundos (incluso de madrugada), perfilará si el lead tiene capacidad económica, y automáticamente agendará una reunión en el calendario de la empresa solo a los que sirven.</p>
+                  </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-900">Agencias de Anuncios y RRSS</h3>
-              </div>
-              <div className="md:w-2/3 space-y-3 text-gray-600 flex flex-col justify-center">
-                <p>Toda la gente que hace clic en tus avisos (Ads) llegarán a un WhatsApp oficial. Allí, nuestra tecnología les dará bienvenida instantánea (en la misma madruga), filtrará quién tiene dinero real y agendará la reunión de forma solitaria para la empresa de tu cliente.</p>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-4">
+                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">3 Formas de Ganar con Tráfico Automatizado:</h4>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Retención Inquebrantable</div>
+                      <p className="text-sm text-gray-600">Al demostrarle al cliente un ROAS (Retorno) 3x superior porque los leads sí se cierran en caliente, renovarán tu agencia de Ads todos los meses sin rechistar.</p>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Venta del Embudo (Funnel Setup)</div>
+                      <p className="text-sm text-gray-600">A tu tarifa mensual de campañas o de Community Management, puedes cobrarle adicionalmente un espectacular "Costo de Desarrollo de Embudo Inteligente en WhatsApp".</p>
+                    </div>
+                    <div>
+                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Participación en Ingresos IA</div>
+                      <p className="text-sm text-gray-600">Si tu cliente empieza a consumir miles de mensajes IA para soportar tus Ads virales, tú recibes mes a mes tu 20% a 30% recurrente sobre el plan Enterprise de AIgenciaLab.</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
 
