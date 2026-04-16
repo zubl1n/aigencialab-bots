@@ -14,9 +14,9 @@ export async function POST(req: Request) {
     const { Resend } = require('resend');
     const resend = new Resend(key);
 
-    await resend.emails.send({
+    const data = await resend.emails.send({
       from: process.env.RESEND_FROM_EMAIL ?? 'noreply@aigencialab.cl',
-      to: ['admin@aigencialab.cl'],
+      to: [process.env.RESEND_TO_EMAIL ?? 'admin@aigencialab.cl'],
       subject: `🤝 Nueva Solicitud de Partner: ${agencyName}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; padding: 20px;">
@@ -35,9 +35,14 @@ export async function POST(req: Request) {
       `,
     });
 
+    if (data.error) {
+      console.error('Error de la API de Resend:', data.error);
+      return NextResponse.json({ error: data.error.message }, { status: 500 });
+    }
+
     return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Error enviando email de partner:', error);
-    return NextResponse.json({ error: 'Hubo un problema al enviar la solicitud' }, { status: 500 });
+  } catch (error: any) {
+    console.error('Error en ruta partners:', error);
+    return NextResponse.json({ error: error.message || 'Hubo un problema al enviar la solicitud' }, { status: 500 });
   }
 }

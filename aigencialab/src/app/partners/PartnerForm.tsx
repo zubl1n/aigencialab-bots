@@ -5,6 +5,7 @@ import { Mail, CheckCircle2, Loader2 } from 'lucide-react';
 
 export default function PartnerForm() {
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -29,10 +30,13 @@ export default function PartnerForm() {
       if (res.ok) {
         setStatus('success');
       } else {
+        const errorData = await res.json().catch(() => ({}));
+        setErrorMessage(errorData.error || 'Hubo un error del servidor. Revisa los logs de Resend.');
         setStatus('error');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      setErrorMessage(err.message || 'Hubo un problema de red al enviar la solicitud');
       setStatus('error');
     }
   }
@@ -56,8 +60,10 @@ export default function PartnerForm() {
       <h3 className="text-2xl font-bold text-gray-900 mb-6 border-b pb-4">Solicitud Oficial de Alianza (Partner)</h3>
       
       {status === 'error' && (
-        <div className="bg-red-50 text-red-600 p-4 mb-6 rounded-lg text-sm border border-red-200">
-          Ocurrió un error al enviar el mensaje. Por favor intenta escribiendo directamente a admin@aigencialab.cl
+        <div className="bg-red-50 text-red-700 p-4 mb-6 rounded-lg text-sm border border-red-200">
+          <p className="font-bold mb-1">El envío falló:</p>
+          <p className="font-mono text-xs">{errorMessage}</p>
+          <p className="mt-2 text-red-600">Por favor intenta escribiendo directamente a admin@aigencialab.cl</p>
         </div>
       )}
 
