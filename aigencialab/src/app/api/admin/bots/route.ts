@@ -116,12 +116,14 @@ export async function PATCH(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    // Audit log — non-blocking
-    supabase.from('audit_logs').insert({
-      event:    'admin_toggle_bot',
-      module:   'admin',
-      metadata: { bot_id, client_id, active },
-    }).then(() => {}).catch(() => {});
+    // Audit log — non-blocking, void suppresses PromiseLike TS warning
+    void Promise.resolve(
+      supabase.from('audit_logs').insert({
+        event:    'admin_toggle_bot',
+        module:   'admin',
+        metadata: { bot_id, client_id, active },
+      })
+    ).catch(() => {});
 
     return NextResponse.json({ ok: true, bot_id, active });
 
@@ -169,11 +171,13 @@ export async function PUT(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    supabase.from('audit_logs').insert({
-      event:    'admin_update_bot_config',
-      module:   'admin',
-      metadata: { bot_id, client_id, fields: Object.keys(payload) },
-    }).then(() => {}).catch(() => {});
+    void Promise.resolve(
+      supabase.from('audit_logs').insert({
+        event:    'admin_update_bot_config',
+        module:   'admin',
+        metadata: { bot_id, client_id, fields: Object.keys(payload) },
+      })
+    ).catch(() => {});
 
     return NextResponse.json({ ok: true, bot_id, updated: Object.keys(payload) });
 
