@@ -134,39 +134,71 @@ export default function PartnersPage() {
           <div className="space-y-6">
             
             {/* Model 4: El Nuevo (Top Priority) */}
-            <div className="group bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl p-1 shadow-md hover:shadow-2xl transition-all duration-300">
-              <div className="bg-white rounded-xl p-8 h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Nuevo: Alianza Win / Win Total</div>
-                <div className="flex flex-col md:flex-row gap-8 mb-6">
-                  <div className="md:w-1/3 flex-shrink-0">
-                    <div className="w-16 h-16 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center mb-6">
-                      <BarChart className="w-8 h-8"/>
+            {/* Model 4: El Nuevo (Top Priority) */}
+            <div className="group relative bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-3xl p-1 shadow-2xl hover:shadow-[0_0_40px_rgba(59,130,246,0.3)] transition-all duration-500">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-3xl opacity-20 group-hover:opacity-100 blur transition duration-500"></div>
+              <div className="bg-white rounded-[22px] p-8 lg:p-10 relative overflow-hidden h-full z-10">
+                <div className="absolute top-0 right-0 bg-gradient-to-r from-blue-600 to-blue-800 text-white px-6 py-2 font-bold text-sm rounded-bl-2xl shadow-lg flex items-center">
+                   <Zap className="w-4 h-4 mr-2 text-yellow-300 animate-pulse"/> 
+                   🌟 Estrella: Alianza Win/Win Total
+                </div>
+                
+                <div className="flex flex-col md:flex-row gap-8 mb-8 mt-4">
+                  <div className="md:w-1/3">
+                    <div className="w-20 h-20 bg-blue-50/80 ring-1 ring-blue-100 text-blue-600 rounded-2xl flex items-center justify-center mb-6 shadow-inner transform group-hover:scale-110 transition-transform duration-500">
+                      <BarChart className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Agencias de SEO y Marketing Digital Puro (PyMEs)</h3>
-                    <p className="text-blue-600 font-medium mt-2">No programes nada. Nosotros somos tu brazo técnico.</p>
+                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Agencias SEO & Marketing Integral</h3>
+                    <div className="flex gap-2 mt-3">
+                       <span className="bg-green-100 text-green-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Cero Código</span>
+                       <span className="bg-purple-100 text-purple-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Alta Retención</span>
+                    </div>
                   </div>
-                  <div className="md:w-2/3 space-y-4 text-gray-600">
-                    <p>¿Tienes una agencia o PyME de Marketing Digital enfocado en posicionamiento (SEO), redes sociales o publicidad, pero <strong>no quieres lidiar con el código ni servidores</strong>? Este ecosistema está diseñado para ti.</p>
-                    <p>En lugar de perder negocios porque "no haces sitios web complejos", puedes ofrecer un paquete integral premium. Nosotros construimos un Desarrollo Web Completo optimizado + IA (Chatbots, RAG, automatizaciones), y tú sigues vendiendo tus servicios sobre una plataforma mucho más potente.</p>
+                  <div className="md:w-2/3 space-y-5 text-gray-600 leading-relaxed text-lg pt-2">
+                    <p>¿Tu fuerte es el posicionamiento o el diseño, pero <strong>huyes de la programación compleja o de servidores</strong>? Te estás perdiendo clientes corporativos que piden "Sistemas Integrales".</p>
+                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 shadow-sm relative overflow-hidden">
+                      <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                      <p className="text-gray-900 font-medium"><strong className="text-blue-700">La Solución:</strong> Nosotros operamos como tu "Departamento Técnico Fantasma". Elaboramos desarrollos web de lujo inyectados con Inteligencia Artificial. Tú pones la marca de tu Agencia frontalmente ante el cliente, y nosotros armamos la maquinaria detrás.</p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Expanded Monetization Section */}
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-4">
-                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">3 Formas de Multiplicar tus Ganancias (Sin programar):</h4>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Setup Informático</div>
-                      <p className="text-sm text-gray-600">Nosotros fijamos un costo mayorista por construir la web y la IA. Tú le cobras a tu cliente un "Fee de Desarrollo" muy superior. Toda la diferencia o recargo es <strong>100% tu ganancia directa</strong>.</p>
-                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Vendes a $1.000.000, nos pagas $300.000, te ganas $700.000 libres.</div>
+                <div className="flex flex-col sm:flex-row items-center justify-between bg-gray-900 rounded-xl p-6 mb-8 text-white relative overflow-hidden shadow-inner">
+                  <div className="text-center z-10 w-full sm:w-auto">
+                    <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Tú consigues</div>
+                    <div className="font-bold text-lg text-blue-300">Cliente Alto Valor</div>
+                  </div>
+                  <ArrowRight className="text-gray-600 my-2 sm:my-0 z-10 w-6 h-6 hidden sm:block"/>
+                  <div className="text-center z-10 w-full sm:w-auto mt-4 sm:mt-0">
+                    <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Nosotros Creamos</div>
+                    <div className="font-bold text-lg text-purple-300">Ecosistema IA + Web</div>
+                  </div>
+                  <ArrowRight className="text-gray-600 my-2 sm:my-0 z-10 w-6 h-6 hidden sm:block"/>
+                  <div className="text-center z-10 w-full sm:w-auto mt-4 sm:mt-0">
+                    <div className="text-[10px] text-gray-400 uppercase tracking-widest font-bold mb-1">Tu Agencia cobra</div>
+                    <div className="font-bold text-2xl text-green-400">100% Ganancia Inicial</div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-b from-gray-50 to-white border border-gray-200 rounded-2xl p-6 md:p-8 shadow-sm">
+                  <h4 className="text-xl font-black text-gray-900 mb-6 flex items-center">
+                    <span className="bg-blue-600 text-white w-8 h-8 rounded-full flex justify-center items-center mr-3 text-sm shadow-md">💰</span> 
+                    3 Motores de Facturación Directa:
+                  </h4>
+                  <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="group/item hover:bg-white p-5 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-200 hover:shadow-xl flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 1. Setup Informático</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Marcamos un valor base muy atractivo para ti. Todo el excedente abismal que le cobres al cliente por "Desarrollo Digital IA" entra limpio a tu empresa.</p>
+                      <div className="mt-4 text-xs font-mono font-bold bg-green-50 border border-green-200 shadow-inner text-green-800 p-3 flex flex-col gap-1 rounded-lg"><div>Ej: Vendes Proy. $1.000.000</div><div>Nos transfieres $300.000</div><div className="text-sm text-green-600 mt-1">👉 Te ganas libres $700.000.</div></div>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Retención y SEO / GEO</div>
-                      <p className="text-sm text-gray-600">Te entregamos páginas con <em>Generative Engine Optimization (GEO)</em> y Schema Markup. Esto eleva los resultados de tu servicio mensual de SEO, justificando que cobres <strong>Retainers más caros</strong> por tu excelente posicionamiento.</p>
+                    <div className="group/item hover:bg-white p-5 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-200 hover:shadow-xl flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 2. Retención SEO y GEO</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Te entregamos una web que responde usando Generative Engine Optimization (GEO). Al subir el PageRank, avalas subir tus honorarios mensuales de agencia al cliente.</p>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. MRR de Mantenimiento IA</div>
-                      <p className="text-sm text-gray-600">Puedes cobrarle al cliente una póliza mensual por "Entrenamiento y mantenimiento del Bot", mientras nosotros nos encargamos del servidor. Creas un ingreso pasivo gigante (MRR).</p>
+                    <div className="group/item hover:bg-white p-5 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-200 hover:shadow-xl flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 3. MRR de Mantenimiento</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Firma un contrato Retainer de soporte mensual a tu propio precio, usando en secreto nuestra cuenta mayorista que opera el servidor para ti.</p>
+                      <div className="mt-4 text-xs font-mono font-bold bg-green-50 border border-green-200 shadow-inner text-green-800 p-3 flex flex-col gap-1 rounded-lg"><div>Ej: Retainer $150.000 cobrado</div><div>Costo Servidor: $28.000</div><div className="text-sm text-green-600 mt-1">👉 Margen MRR: $122k/mes.</div></div>
                     </div>
                   </div>
                 </div>
@@ -174,38 +206,67 @@ export default function PartnersPage() {
             </div>
 
             {/* Model 1: Landing Devs */}
-            <div className="group bg-white border border-gray-200 rounded-2xl p-1 shadow-sm hover:shadow-xl transition-all duration-300">
-              <div className="bg-white rounded-xl p-6 lg:p-8 h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-gray-900 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Alianza: Desarrollo Web</div>
-                <div className="flex flex-col md:flex-row gap-8 mb-6">
-                  <div className="md:w-1/3 flex-shrink-0">
-                    <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
-                      <LayoutDashboard className="w-7 h-7"/>
+            {/* Model 1: Landing Devs */}
+            <div className="group relative bg-white border border-gray-200 rounded-3xl p-1 shadow-sm hover:shadow-2xl transition-all duration-500 mt-8">
+              <div className="bg-white rounded-[22px] p-8 lg:p-10 relative overflow-hidden h-full z-10 border border-gray-100">
+                <div className="absolute top-0 right-0 bg-gray-900 text-white px-6 py-2 font-bold text-sm rounded-bl-2xl shadow-lg">
+                   Especialización: Diseño Web
+                </div>
+                
+                <div className="flex flex-col md:flex-row gap-8 mb-8 mt-4">
+                  <div className="md:w-1/3">
+                    <div className="w-20 h-20 bg-gray-50 ring-1 ring-gray-200 text-gray-900 rounded-2xl flex items-center justify-center mb-6 shadow-sm transform group-hover:rotate-3 transition-transform duration-500">
+                      <LayoutDashboard className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Diseñadores de Sitios Web (WordPress / Wix)</h3>
-                    <p className="text-gray-600 font-medium mt-2">Construye la fachada, nosotros ponemos el vendedor.</p>
+                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Diseñadores de Sitios (WordPress, Wix, Framer)</h3>
+                    <div className="flex gap-2 mt-3">
+                       <span className="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">1 Línea de Código</span>
+                    </div>
                   </div>
-                  <div className="md:w-2/3 space-y-4 text-gray-600">
-                    <p>Si tu negocio core es construir webs para abogados, clínicas o empresas de servicios, sabes que el cliente siempre se queja de "mi web nueva no me trae clientes". Esto cambia hoy.</p>
-                    <p>Tú creas el diseño web y UX. Nosotros te entregamos una <strong>sola línea de código segura (Script)</strong>. Al pegarla, despliegas un Agente Virtual que califica prospectos. Si el usuario pregunta "precio", el bot extrae su nombre, email y teléfono, e inyecta la oportunidad en el correo de tu cliente automáticamente.</p>
+                  <div className="md:w-2/3 space-y-5 text-gray-600 leading-relaxed text-lg pt-2">
+                    <p>Si construyes webs estáticas para empresas de servicios, seguro te ha pasado que un par de meses después el cliente se frustra: <em>"La web no me trae gente nueva, nadie me contacta"</em>.</p>
+                    <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 relative overflow-hidden shadow-sm">
+                       <div className="absolute top-0 left-0 w-1 h-full bg-blue-500"></div>
+                      <p className="text-gray-900 font-medium tracking-tight">Cobra muchísimo más caro armando la misma web hermosa de siempre, pero añadiéndole la <strong className="text-blue-600">Línea de Código Mágica</strong>. Inyectas nuestro script en 1 minuto, y tu página web creada se vuelve un agente vivo 24/7 recogiendo y enviando datos directamente al WhatsApp/CRM de tu cliente.</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-4">
-                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">3 Formas de Monetizar este Modelo:</h4>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Upsell de "Sitio Inteligente"</div>
-                      <p className="text-sm text-gray-600">Puedes cobrar fácilmente un <strong>30% o 50% extra</strong> sobre la cotización de tu página web simplemente argumentando que estás entregando un "Sistema Automatizado de Ventas" y no solo un brochure digital estático.</p>
-                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Web de $600.000 sube a $900.000 reales (+ $300.000 directos).</div>
+                <div className="bg-blue-600 rounded-2xl p-1 mb-8 shadow-inner overflow-hidden flex flex-col md:flex-row gap-1">
+                  <div className="bg-blue-700/80 p-6 text-white w-full md:w-1/3 flex flex-col justify-center items-center text-center">
+                    <span className="text-5xl font-black mb-1 drop-shadow-md">300%</span>
+                    <span className="text-xs uppercase font-bold text-blue-200 tracking-widest mt-1 text-center leading-tight">Aumento en<br/>Precio de Venta</span>
+                  </div>
+                  <div className="bg-white flex-1 p-6 md:p-8 rounded-r-xl flex items-center relative gap-6">
+                    <div className="flex-1 space-y-4">
+                      <div className="h-3 bg-gray-100 rounded-full w-full"></div>
+                      <div className="h-3 bg-gray-100 rounded-full w-2/3"></div>
+                      <div className="h-3 bg-gray-100 rounded-full w-1/2"></div>
                     </div>
                     <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Consultoría en CRM</div>
-                      <p className="text-sm text-gray-600">Además de la web, puedes cobrar un <em>Setup</em> adicional por "integrar" los correos o el Excel del cliente con la IA, actuando como su asesor tecnológico de confianza.</p>
+                      <div className="bg-blue-50 border border-blue-100 text-blue-800 text-sm font-bold px-4 py-3 rounded-2xl rounded-tr-none shadow-md whitespace-nowrap animate-bounce"><Bot className="w-4 h-4 inline mr-2 text-blue-600"/> "¡Hola! ¿Agendamos?"</div>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Licencia a tu Nombre</div>
-                      <p className="text-sm text-gray-600">Usas nuestra cuenta de agencia (descuento del 20%) y tú le cobras al cliente directamente por el mantenimiento mensual de su chatbot de leads.</p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 border border-gray-200 rounded-2xl p-6 md:p-8">
+                  <h4 className="text-xl font-black text-gray-900 mb-6 flex items-center">
+                    <span className="text-blue-600 mr-2"><CheckCircle2 className="w-6 h-6"/></span> 
+                    Multiplica tus Ingresos Reales:
+                  </h4>
+                  <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="group/item hover:bg-white p-5 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-200 shadow-sm flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 1. El Doble por "IA Incluida"</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Deja de vender commodities. Vende "Hubs Automatizados de Captación". Solo la etiqueta de Inteligencia Artificial engorda tu cotización.</p>
+                      <div className="mt-auto text-xs font-mono font-bold bg-green-50 border border-green-200 text-green-800 p-3 flex flex-col gap-1 rounded-lg"><div>Ej: Cotización Base: $600.000</div><div>Presupuestas a: $900.000</div><div className="text-sm text-green-600 mt-1">👉 Bono Directo: +$300k.</div></div>
+                    </div>
+                    <div className="group/item hover:bg-white p-5 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-200 shadow-sm flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 2. Consultoría de Procesos</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">El bot necesita saber a dónde mandar los datos. Gana un honorario (Setup Fee) solo por configurarle y vincularle los correos y bases a su negocio matriz.</p>
+                    </div>
+                    <div className="group/item hover:bg-white p-5 rounded-xl transition-all duration-300 border border-transparent hover:border-gray-200 shadow-sm flex flex-col">
+                       <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 3. Suscripción Eterna</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Gana regalías inagotables. Únete con la Opción A, y AIgenciaLab te pagará un porcentaje mensual pasivo mientras tu cliente use su Bot web.</p>
                     </div>
                   </div>
                 </div>
@@ -213,38 +274,66 @@ export default function PartnersPage() {
             </div>
 
             {/* Model 2: E-commerce */}
-            <div className="group bg-white border border-gray-200 rounded-2xl p-1 shadow-sm hover:shadow-xl transition-all duration-300">
-              <div className="bg-white rounded-xl p-6 lg:p-8 h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-blue-600 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Alianza: E-Commerce</div>
-                <div className="flex flex-col md:flex-row gap-8 mb-6">
-                  <div className="md:w-1/3 flex-shrink-0">
-                    <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
-                      <Bot className="w-7 h-7"/>
+            {/* Model 2: E-commerce */}
+            <div className="group relative bg-white border border-gray-200 rounded-3xl p-1 shadow-sm hover:shadow-2xl transition-all duration-500 mt-8">
+              <div className="bg-white rounded-[22px] p-8 lg:p-10 relative overflow-hidden h-full z-10 border border-gray-100">
+                <div className="absolute top-0 right-0 bg-indigo-600 text-white px-6 py-2 font-bold text-sm rounded-bl-2xl shadow-lg">
+                   Especialización: E-Commerce
+                </div>
+                
+                <div className="flex flex-col md:flex-row gap-8 mb-8 mt-4">
+                  <div className="md:w-1/3">
+                    <div className="w-20 h-20 bg-indigo-50 ring-1 ring-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-sm transform group-hover:-translate-y-2 transition-transform duration-500">
+                      <Bot className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Creadores de Tiendas (Shopify, Jumpseller)</h3>
-                    <p className="text-blue-600 font-medium mt-2">Armas el catálogo, la IA reduce abandonos de carrito.</p>
+                    <h3 className="text-3xl font-extrabold text-gray-900 tracking-tight leading-tight">Agencias de Tiendas Online (Shopify, WooCommerce)</h3>
+                    <div className="flex gap-2 mt-3">
+                       <span className="bg-red-100/80 border border-red-200 text-red-700 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Antirrebote de Carrito</span>
+                    </div>
                   </div>
-                  <div className="md:w-2/3 space-y-4 text-gray-600">
-                    <p>El mayor dolor de cabeza de quien te compra un eCommerce es coordinar despachos y responder "cuánto cuesta el envío". Tú puedes eliminarle ese problema de raíz.</p>
-                    <p>Armas la tienda online donde la gente va a comprar, y le agregas nuestro <strong>Agente Experto IA</strong>. Este sistema ayudará en tiempo real al usuario de la tienda a consultar el estado de despacho (tracking), resolver devoluciones automáticas y asistir en decisiones de tallas.</p>
+                  <div className="md:w-2/3 space-y-5 text-gray-600 leading-relaxed text-lg pt-2">
+                    <p>La hemorragia de dinero de tu cliente siempre nace en soporte post-venta: responder "*¿por qué no me ha llegado mi envío por Starken?*" o luchar con devoluciones destruye tiempo valioso.</p>
+                    <div className="bg-indigo-50/50 p-5 rounded-xl border border-indigo-100 relative overflow-hidden shadow-sm">
+                       <div className="absolute top-0 left-0 w-1 h-full bg-indigo-500"></div>
+                      <p className="text-gray-900 font-medium">Instala un <strong>Conserje Inteligente de Datos</strong> directo en los códigos de su Shopify. Atiende carritos abandonados instantáneamente y ayuda a decidir tallas en vivo antes de que huyan al competidor.</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-6 mt-4">
-                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b border-blue-200 pb-2">3 Formas de Monetizar la Tienda:</h4>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Módulo "Atención Automática"</div>
-                      <p className="text-sm text-gray-600">En tu propuesta de diseño de tienda, incluyes como ítem de lujo la "Burbuja de Inteligencia Comercial", aumentando instantáneamente el Ticket Final (Setup) del E-commerce.</p>
-                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Tienda Shopify de $800k cierra en $1.2M (+ $400.000 íntegros).</div>
+                <div className="bg-gradient-to-r from-indigo-900 to-indigo-950 rounded-2xl p-8 mb-8 text-white relative overflow-hidden flex flex-col md:flex-row justify-around items-center gap-8 shadow-inner shadow-indigo-950">
+                   <div className="absolute top-0 right-0 p-4 opacity-5">
+                      <Rocket className="w-64 h-64" />
+                   </div>
+                   <div className="text-center z-10 w-full md:w-auto bg-gray-900/50 p-6 rounded-xl border border-indigo-500/20 shadow-lg">
+                     <p className="text-[10px] text-red-300 uppercase tracking-widest font-bold mb-3 flex items-center justify-center"><span className="w-2 h-2 bg-red-400 rounded-full animate-pulse mr-2"></span>Abandono Estándar</p>
+                     <p className="text-5xl font-black text-gray-400 line-through decoration-red-500/60 decoration-4">70%</p>
+                   </div>
+                   <ArrowRight className="w-10 h-10 text-indigo-400 hidden md:block opacity-50 absolute left-1/2 -translate-x-1/2" />
+                   <div className="text-center z-10 w-full md:w-auto bg-indigo-600/30 p-6 rounded-xl border border-indigo-400 shadow-lg relative transform hover:scale-105 transition-transform duration-300">
+                     <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-20"></div>
+                     <p className="text-[10px] text-indigo-200 uppercase tracking-widest font-bold mb-3 flex items-center justify-center relative z-10"><span className="w-2 h-2 bg-green-400 rounded-full animate-pulse mr-2"></span>Tienda Curada IA</p>
+                     <p className="text-4xl sm:text-5xl font-black text-green-300 relative z-10 drop-shadow-md">CRO al +40%</p>
+                   </div>
+                </div>
+
+                <div className="bg-indigo-50/50 border border-indigo-100 rounded-2xl p-6 md:p-8 mt-4">
+                  <h4 className="text-xl font-black text-indigo-950 mb-6 flex items-center">
+                    <span className="bg-indigo-600 text-white w-8 h-8 rounded-full flex justify-center items-center mr-3 text-sm shadow-md"><Zap className="w-4 h-4"/></span> 
+                    El Triángulo de Comisiones E-Commerce:
+                  </h4>
+                  <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="bg-white p-5 rounded-xl border border-indigo-100 shadow-sm shadow-indigo-100 hover:shadow-lg transition-all hover:scale-[1.03] flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 1. Módulo "Atención VIP"</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Vendes la tienda mucho más cara al incorporar el bloque 'Widget Automatizado de Dudas Múltiples'. El E-commerce eleva su categoría exponencialmente.</p>
+                      <div className="mt-auto text-xs font-mono font-bold bg-green-50 border border-green-200 text-green-800 p-3 flex flex-col gap-1 rounded-lg"><div>Ej: Tienda Shopify base de $800k.</div><div>Cierralo en $1.2M.</div><div className="text-sm text-green-600 mt-1">👉 +$400k íntegros al bolsillo.</div></div>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Fee de Actualización de Catálogo</div>
-                      <p className="text-sm text-gray-600">La ropa o los productos cambian por temporada. El cliente necesitará que alguien nutra la base de datos de la IA con el nuevo catálogo (Prompts). <strong>Ese Retainer te lo pagarán a ti</strong>.</p>
+                    <div className="bg-white p-5 rounded-xl border border-indigo-100 shadow-sm shadow-indigo-100 hover:shadow-lg transition-all hover:scale-[1.03] flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 2. Fee de Catalogación</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Los zapatos y ropas cambian. Cobra el honorario por "ingestar" las fotos, links y promociones de temporada en la base de datos de la IA para que aprenda.</p>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Upselling cruzado (CRO)</div>
-                      <p className="text-sm text-gray-600">La IA actúa como un agente de ventas persistente para recuperar clientes. Si la tienda sube su tasa de conversión gracias al bot, la retención de la agencia se dispara, justificando tarifas premium por tu servicio.</p>
+                    <div className="bg-white p-5 rounded-xl border border-indigo-100 shadow-sm shadow-indigo-100 hover:shadow-lg transition-all hover:scale-[1.03] flex flex-col">
+                      <div className="font-bold text-gray-900 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-green-500 mr-1"/> 3. Upselling Inquebrantable</div>
+                      <p className="text-sm text-gray-600 mb-4 flex-1">Aumentando la conversión de compra con este bot, el dueño de la tienda se casa con tus servicios e invalida a tu competencia. Tu retención LTV se vuelve infinita por haberle salvado el negocio.</p>
                     </div>
                   </div>
                 </div>
@@ -252,38 +341,69 @@ export default function PartnersPage() {
             </div>
 
             {/* Model 3: Paid Media */}
-            <div className="group bg-gradient-to-r from-blue-900 to-indigo-900 rounded-2xl p-1 shadow-sm hover:shadow-xl transition-all duration-300">
-              <div className="bg-white rounded-xl p-6 lg:p-8 h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-green-500 text-white px-4 py-1 font-semibold text-sm rounded-bl-xl z-10">Alianza: Performance / Ads</div>
-                <div className="flex flex-col md:flex-row gap-8 mb-6">
-                  <div className="md:w-1/3 flex-shrink-0">
-                    <div className="w-14 h-14 bg-gray-100 text-gray-900 rounded-xl flex items-center justify-center mb-6">
-                      <Zap className="w-7 h-7"/>
+            {/* Model 3: Paid Media */}
+            <div className="group relative bg-gradient-to-br from-teal-900 via-gray-900 to-indigo-950 rounded-3xl p-1 shadow-xl hover:shadow-[0_0_50px_rgba(45,212,191,0.4)] transition-all duration-500 mt-8">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-400 to-indigo-500 rounded-3xl opacity-0 group-hover:opacity-100 transition duration-1000 blur-sm"></div>
+              <div className="bg-gray-900 rounded-[22px] p-8 lg:p-10 relative overflow-hidden h-full z-10 border border-gray-700">
+                <div className="absolute top-0 right-0 bg-gradient-to-l from-teal-500 to-teal-400 text-gray-950 px-6 py-2 font-bold text-sm rounded-bl-2xl shadow-lg">
+                   Especialización: Tráfico Pago (Ads)
+                </div>
+                
+                <div className="flex flex-col md:flex-row gap-8 mb-8 mt-4">
+                  <div className="md:w-1/3">
+                    <div className="w-20 h-20 bg-teal-900/50 ring-1 ring-teal-500/50 text-teal-400 rounded-2xl flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(45,212,191,0.3)] transform group-hover:scale-105 transition-transform duration-500">
+                      <Zap className="w-10 h-10"/>
                     </div>
-                    <h3 className="text-2xl font-bold text-gray-900">Agencias de Tráfico Pago (Meta, Google, Tiktok)</h3>
-                    <p className="text-green-600 font-medium mt-2">Deja de desperdiciar conversiones por culpa del cliente.</p>
+                    <h3 className="text-3xl font-extrabold text-white tracking-tight leading-tight">Agencias Performance, Pauta & Meta Ads</h3>
+                    <div className="flex gap-2 mt-3">
+                       <span className="bg-red-500/20 border border-red-500/50 text-red-400 text-[10px] font-bold px-2 py-1 rounded uppercase tracking-wider">Acaba la Fuga del ROAS</span>
+                    </div>
                   </div>
-                  <div className="md:w-2/3 space-y-4 text-gray-600">
-                    <p>Sabemos la frustración: Tu agencia genera miles de leads altamente calificados con las campañas, pero llegan al WhatsApp del cliente y su equipo humano demora 12 horas en responder. El lead se enfría, se pierde la venta y le echan la culpa a "la mala calidad del anuncio" (ROAS falsamente bajo).</p>
-                    <p><strong>Solución:</strong> Todo el tráfico de tus Ads aterrizará primero en nuestra <strong>IA en WhatsApp Oficial</strong>. Dará la bienvenida en 3 segundos (incluso de madrugada), perfilará si el lead tiene capacidad económica, y automáticamente agendará una reunión en el calendario de la empresa solo a los que sirven.</p>
+                  <div className="md:w-2/3 space-y-4 text-gray-400 leading-relaxed text-lg pt-2">
+                    <p>La máxima frustración de un Trafficker: Levantas campañas perfectas en Facebook Ads, caen cientos de leads diarios, pero llegan a un WhatsApp de un asesor humano quemado que tarda <span className="text-red-400 line-through">12 horas en responderle</span> al cliente.</p>
+                    <p>El prospecto se enfría, no hay cierre, y el cliente final acusa a la agencia de "traer tráfico basura". Tu ROAS se destruye por culpa de su lenta fuerza de ventas humana.</p>
+                    <div className="bg-gradient-to-r from-teal-900/40 to-transparent p-5 border-l-4 border-teal-500 rounded-r-lg text-teal-100 shadow-inner mt-4">
+                      <p><strong className="text-teal-400 text-xl font-black">Solución Blindada:</strong> Al dar Click en tu Ad, el lead aterriza en el <strong className="text-white">Bot WhatsApp IA</strong>. Lo atiende en 2 segundos clavados en plena madrugada, perfila si tiene para pagar y agenda sin humanos.</p>
+                    </div>
                   </div>
                 </div>
 
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mt-4">
-                  <h4 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">3 Formas de Ganar con Tráfico Automatizado:</h4>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 1. Retención Inquebrantable</div>
-                      <p className="text-sm text-gray-600">Al demostrarle al cliente un ROAS (Retorno) 3x superior porque los leads sí se cierran en caliente, renovarán tu agencia de Ads todos los meses sin rechistar.</p>
+                {/* Ads Process Visualization */}
+                <div className="flex flex-col md:flex-row gap-4 mb-8">
+                   <div className="flex-1 bg-gray-800/80 rounded-xl p-4 border border-gray-700 shadow-sm text-center transform hover:scale-105 transition duration-300">
+                      <div className="text-teal-400 mb-2 font-bold uppercase text-[10px] tracking-widest">Paso 1: Ads Master</div>
+                      <div className="text-white font-medium text-sm">Tu pauta genera 1K Clicks</div>
+                   </div>
+                   <div className="flex-1 bg-teal-900/40 rounded-xl p-4 border border-teal-500/30 shadow-sm text-center transform hover:scale-105 transition duration-300 relative">
+                     <div className="absolute top-1/2 -left-4 w-4 h-[2px] bg-teal-500 hidden md:block"></div>
+                      <div className="text-teal-300 mb-2 font-bold uppercase text-[10px] tracking-widest animate-pulse">Paso 2: Aigencia IA</div>
+                      <div className="text-white font-medium text-sm">Respuesta 2 Seg. y Filtro</div>
+                   </div>
+                   <div className="flex-1 bg-green-900/40 rounded-xl p-4 border border-green-500/40 shadow-inner text-center transform hover:scale-105 transition duration-300 relative">
+                      <div className="absolute top-1/2 -left-4 w-4 h-[2px] bg-green-500 hidden md:block"></div>
+                      <div className="text-green-400 mb-2 font-bold uppercase text-[10px] tracking-widest">Paso 3: Cierre Total</div>
+                      <div className="text-white font-black text-lg">ROAS 5X Real</div>
+                   </div>
+                </div>
+
+                <div className="bg-gray-800/80 border border-gray-700/80 rounded-2xl p-6 md:p-8 mt-4 shadow-xl">
+                  <h4 className="text-xl font-bold text-white mb-6 flex items-center">
+                    <Rocket className="w-6 h-6 text-teal-400 mr-2" />
+                    El Esquema de Riqueza para Traffickers:
+                  </h4>
+                  <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 shadow-lg transform transition-transform hover:-translate-y-2 flex flex-col">
+                      <div className="font-bold text-teal-400 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-teal-500 mr-1"/> 1. Venta del Funnel Base</div>
+                      <p className="text-sm text-gray-400 mb-4 flex-1">Deja de cobrar la paupérrima tarifa de *"pauta mensual"*. Al Onboarding suma una comisión brutal "por crear el Sistema Receptor".</p>
+                      <div className="mt-auto text-xs font-mono font-bold bg-teal-900/40 border border-teal-500/40 text-teal-200 p-3 flex flex-col gap-1 rounded-lg"><div>Integración Ads al Bot IA Cliente.</div><div className="text-sm text-teal-400 mt-1">👉 Cobro Extra Setup: +$500.000.</div></div>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 2. Venta del Embudo (Funnel Setup)</div>
-                      <p className="text-sm text-gray-600">A tu tarifa mensual de campañas o de Community Management, puedes cobrarle adicionalmente un espectacular "Costo de Desarrollo de Embudo Inteligente en WhatsApp".</p>
-                      <div className="mt-3 text-xs font-mono font-bold bg-green-50 border-l-4 border-green-500 text-green-800 p-2 rounded">Ej: Extra de +$500.000 por integrar Ads al Bot Oficial de WhatsApp.</div>
+                    <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 shadow-lg transform transition-transform hover:-translate-y-2 flex flex-col">
+                      <div className="font-bold text-teal-400 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-teal-500 mr-1"/> 2. Retención Avasalladora</div>
+                      <p className="text-sm text-gray-400 flex-1">Los dentistas, concesionarias y aseguradoras cerrarán leads como nunca antes en su vida gracias al bot. Ningún competidor podrá robarte a ese cliente. Su LTV se va al techo.</p>
                     </div>
-                    <div>
-                      <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Participación en Ingresos IA</div>
-                      <p className="text-sm text-gray-600">Si tu cliente empieza a consumir miles de mensajes IA para soportar tus Ads virales, tú recibes mes a mes tu 20% a 30% recurrente sobre el plan Enterprise de AIgenciaLab.</p>
+                    <div className="bg-gray-900 p-6 rounded-xl border border-gray-700 shadow-lg transform transition-transform hover:-translate-y-2 flex flex-col">
+                      <div className="font-bold text-teal-400 mb-2 flex items-center"><DollarSign className="w-5 h-5 text-teal-500 mr-1"/> 3. Renta por Volumen</div>
+                      <p className="text-sm text-gray-400 flex-1">Para cuentas masivas, el consumo de API es alto. Usa la Opción A para ganar 30% vitalicio de nuestra facturación gigante generada de forma pasiva por tu equipo de Ads.</p>
                     </div>
                   </div>
                 </div>
