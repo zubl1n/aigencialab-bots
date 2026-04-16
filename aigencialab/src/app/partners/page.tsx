@@ -411,6 +411,7 @@ export default function PartnersPage() {
                     </div>
                   </div>
                 </div>
+              </div>
             </div>
           </div>
         </div>
