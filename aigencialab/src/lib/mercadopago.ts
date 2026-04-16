@@ -6,12 +6,6 @@
 
 const MP_BASE = 'https://api.mercadopago.com';
 
-const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN!;
-
-if (!ACCESS_TOKEN && process.env.NODE_ENV !== 'test') {
-  console.warn('[MP] MP_ACCESS_TOKEN not set in environment variables');
-}
-
 // ── Plan ID map ──────────────────────────────────────────────────────────────
 export const MP_PLAN_IDS = {
   Pro:        process.env.MP_PLAN_PRO_ID        ?? 'b2a75ff35c44491f81721b5134112f19',
@@ -20,10 +14,14 @@ export const MP_PLAN_IDS = {
 
 // ── Typed response helpers ───────────────────────────────────────────────────
 async function mpFetch<T = any>(path: string, options?: RequestInit): Promise<T> {
+  // Always read token at runtime (not module load) so env is available
+  const token = process.env.MP_ACCESS_TOKEN;
+  if (!token) throw new Error('[MP] MP_ACCESS_TOKEN not set');
+
   const res = await fetch(`${MP_BASE}${path}`, {
     ...options,
     headers: {
-      'Authorization': `Bearer ${ACCESS_TOKEN}`,
+      'Authorization': `Bearer ${token}`,
       'Content-Type': 'application/json',
       ...(options?.headers ?? {})
     }
@@ -32,7 +30,7 @@ async function mpFetch<T = any>(path: string, options?: RequestInit): Promise<T>
   const data = await res.json();
   if (!res.ok) {
     const msg = data?.message ?? data?.error ?? `MP error ${res.status}`;
-    throw new Error(`[MercadoPago] ${msg}`);
+    throw new Error(`[MercadoPago] ${msg}: ${JSON.stringify(data)}`);
   }
   return data as T;
 }
@@ -40,8 +38,11 @@ async function mpFetch<T = any>(path: string, options?: RequestInit): Promise<T>
 // ── Subscriptions API ────────────────────────────────────────────────────────
 
 /**
- * Get subscription checkout URL for a plan.
- * Returns { checkout_url, preapproval_plan_id }
+ * Creates a "preapproval" pending subscription with external_reference=clientId.
+ * This generates a unique init_point URL that embeds our client ID,
+ * which MP sends back in the webhook so we can match the payment.
+ *
+ * Returns { checkout_url, preapproval_id }
  */
 export async function getMpCheckoutUrl(
   planName: 'Pro' | 'Enterprise',
@@ -49,18 +50,43 @@ export async function getMpCheckoutUrl(
   clientId: string
 ): Promise<{ checkout_url: string; preapproval_plan_id: string }> {
   const planId = MP_PLAN_IDS[planName];
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl';
 
-  // For MercadoPago Subscriptions with Hosted Checkout, we provide the plan's init_point.
-  // MP matches the user by email or by them entering their details on the checkout form.
-  // In our webhook, we will match the new subscription via payer_email or other identifiers.
-  const plan = await getMpPlan(planId);
-  
-  if (!plan?.init_point) {
-    throw new Error('Plan not found or missing init_point');
+  // Create a pending preapproval with external_reference so the webhook can match this client
+  const payload = {
+    preapproval_plan_id: planId,
+    payer_email: payer.email,
+    external_reference: clientId,           // ← CRITICAL: used by webhook to find client
+    back_url: `${siteUrl}/dashboard/billing?payment=success`,
+  };
+
+  let preapproval: any;
+  try {
+    preapproval = await mpFetch('/preapproval', {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  } catch (createErr: any) {
+    // Fallback: if creating preapproval fails (e.g., payer not registered),
+    // fall back to plan's static init_point
+    console.warn('[MP] Preapproval create failed, falling back to plan init_point:', createErr.message);
+    const plan = await getMpPlan(planId);
+    if (!plan?.init_point) {
+      throw new Error('Plan not found or missing init_point');
+    }
+    return {
+      checkout_url: plan.init_point,
+      preapproval_plan_id: planId
+    };
+  }
+
+  const checkoutUrl = preapproval?.init_point;
+  if (!checkoutUrl) {
+    throw new Error('Preapproval created but missing init_point');
   }
 
   return {
-    checkout_url: plan.init_point,
+    checkout_url: checkoutUrl,
     preapproval_plan_id: planId
   };
 }

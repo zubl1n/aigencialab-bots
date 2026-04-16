@@ -70,17 +70,25 @@ function RegisterForm() {
 
       if (signUpError) throw signUpError;
 
-      // Bug 2 fix: If session exists (email confirmation disabled), ensure client row exists.
-      // The auth trigger is the primary path; this is a fallback upsert.
+      // Call on-register API to set up client row, subscription trial, bot config, and send emails
       if (data.user) {
-        await supabase.from('clients').upsert({
-          id: data.user.id,
-          email: data.user.email,
-          company_name: companyName,
-          plan: plan,
-          status: 'pending',
-          tenant_id: data.user.id, // required NOT NULL, same as id for single-owner
-        }, { onConflict: 'id' });
+        try {
+          await fetch('/api/auth/on-register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              userId:      data.user.id,
+              email:       data.user.email,
+              fullName:    fullName,
+              companyName: companyName,
+              plan:        plan,
+              website:     website,
+            }),
+          });
+        } catch (regErr) {
+          // Non-fatal: user still created, just log the error
+          console.error('[register] on-register API call failed:', regErr);
+        }
       }
 
       if (data.session) {
