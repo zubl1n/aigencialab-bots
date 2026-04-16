@@ -224,7 +224,7 @@ export default function PartnersPage() {
                   </div>
                   <div className="md:w-2/3 space-y-4 text-gray-600">
                     <p>El mayor dolor de cabeza de quien te compra un eCommerce es coordinar despachos y responder "cuánto cuesta el envío". Tú puedes eliminarle ese problema de raíz.</p>
-                    <p>Armas la tienda online donde la gente va a comprar, y le agregas nuestro <strong>Conserje Inteligente IA</strong>. Este agente ayudará en tiempo real al usuario de la tienda a consultar el estado de despacho (tracking), resolver devoluciones automáticas y asistir en decisiones de tallas.</p>
+                    <p>Armas la tienda online donde la gente va a comprar, y le agregas nuestro <strong>Agente Experto IA</strong>. Este sistema ayudará en tiempo real al usuario de la tienda a consultar el estado de despacho (tracking), resolver devoluciones automáticas y asistir en decisiones de tallas.</p>
                   </div>
                 </div>
 
@@ -241,7 +241,7 @@ export default function PartnersPage() {
                     </div>
                     <div>
                       <div className="font-bold text-gray-900 mb-1 flex items-center"><DollarSign className="w-4 h-4 text-green-500 mr-1"/> 3. Upselling cruzado (CRO)</div>
-                      <p className="text-sm text-gray-600">La IA actúa como conserje para recuperar clientes. Si la tienda sube su tasa de conversión gracias al bot, la retención de la agencia se dispara, justificando tarifas premium por tu servicio.</p>
+                      <p className="text-sm text-gray-600">La IA actúa como un agente de ventas persistente para recuperar clientes. Si la tienda sube su tasa de conversión gracias al bot, la retención de la agencia se dispara, justificando tarifas premium por tu servicio.</p>
                     </div>
                   </div>
                 </div>
@@ -347,33 +347,70 @@ export default function PartnersPage() {
               <h3 className="text-2xl font-bold mb-2 flex items-center relative z-10"><Code className="text-blue-300 mr-2"/> Opción B: Tu Propio Recargo (Marca Blanca)</h3>
               <p className="text-blue-100 mb-8 relative z-10">Tú le cobras la totalidad del proyecto informático a la empresa (al monto que elijas), y subcontratas por debajo nuestro sistema de software de IA.</p>
               
-              <div className="space-y-6 relative z-10">
-                <div className="bg-gray-900/50 p-4 rounded-xl border border-gray-700">
-                  <h4 className="font-bold text-blue-400 border-b border-gray-700 pb-2 mb-3">¿Cómo se reparten las ganancias minuciosamente?</h4>
+              <div className="space-y-6 relative z-10 mt-6">
+                <div className="bg-gray-900/80 p-6 rounded-2xl border border-blue-500/30">
+                  <h4 className="font-extrabold text-blue-400 border-b border-gray-700 pb-3 mb-6 text-xl">Ejemplo Visual de Ganancias: El Escenario Real</h4>
                   
-                  <div className="mb-4">
-                    <p className="font-bold text-white flex justify-between">
-                      <span>🏦 Lo que gana AIgenciaLab:</span>
-                    </p>
-                    <p className="text-gray-300 text-sm mt-2">
-                       AIgenciaLab le cobrará siempre a tu Agencia el <strong className="text-white">80%</strong> del costo mensual de mantenimiento del plan base (nuestro costo por entregar la arquitectura y servidores), y aplicará un 20% de descuento vitalicio para ti por tu cuenta mayorista. Nosotros ganamos en volumen y al asegurar la estabilidad del servidor a largo plazo.
-                    </p>
-                  </div>
+                  <div className="space-y-8">
+                    {/* Step 1: El Setup */}
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span className="text-gray-300 font-semibold flex items-center">
+                          <span className="bg-gray-700 text-white w-6 h-6 rounded flex items-center justify-center mr-2">1</span> 
+                          Tú cobras el Proyecto Completo Inicial (Setup)
+                        </span>
+                        <span className="text-green-400 font-extrabold text-lg">$800.000 CLP</span>
+                      </div>
+                      <div className="w-full bg-gray-800 rounded-full h-4 shadow-inner">
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-400 h-4 rounded-full relative" style={{ width: '100%' }}>
+                           <span className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-white shadow-sm">100% PARA TU AGENCIA</span>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-2">La totalidad de la ganancia por implementación e intermediación entra pura a la cuenta de tu empresa. Nosotros no tocamos ni comisionamos este dinero inicial gigante.</p>
+                    </div>
 
-                  <div className="bg-blue-900/40 p-3 rounded-lg border border-blue-600/50">
-                    <p className="font-bold text-green-400 flex justify-between">
-                      <span>🚀 Tus Enormes Ganancias (Agencia Partner):</span>
-                    </p>
-                    <p className="text-gray-200 text-sm mt-2 leading-relaxed">
-                      Como Agencia Marca Blanca, la verdadera ganancia está en la "Implementación Única" o <strong className="text-white">Setup</strong> que tú decidas cobrarles por armar el proyecto. <br/><br/>
-                      <strong>Ejemplo real:</strong><br/>
-                      1. Cobraste un costo de implementación por valor de $800.000 (Eso es <strong className="text-green-400">100% ganancia que queda en tu bolsillo</strong>).<br/>
-                      2. Le firmas al cliente un mantenimiento de $150.000 mes. Nosotros solo te pedimos la licencia original con nuestro 20% de descuento para partners. Ese margen o sobrante superior, es <strong className="text-green-400">exclusivo a favor de tu Agencia</strong>.<br/><br/>
-                      Tú fijas tus reglas porque tú eres el dueño de su cuenta maestra.
-                    </p>
+                    <div className="border-t border-gray-700 pb-2 pt-2"></div>
+
+                    {/* Step 2: MRR */}
+                    <div>
+                      <div className="flex items-center justify-between text-sm mb-2">
+                        <span className="text-gray-300 font-semibold flex items-center">
+                           <span className="bg-gray-700 text-white w-6 h-6 rounded flex items-center justify-center mr-2">2</span> 
+                           Le facturas la Mensualidad (Mantenimiento IA)
+                        </span>
+                        <span className="text-white font-extrabold text-lg">$150.000 CLP <span className="text-xs text-gray-500 font-normal">/ Mes</span></span>
+                      </div>
+                      
+                      {/* Visual Split Bar */}
+                      <div className="flex w-full h-8 rounded-full overflow-hidden mt-3 border border-gray-700 shadow-2xl">
+                        <div className="bg-gradient-to-r from-blue-700 to-indigo-600 flex items-center justify-center text-xs font-bold text-white px-2" style={{ width: '18.6%' }}>
+                          $28k
+                        </div>
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-400 flex items-center justify-center text-xs font-bold text-emerald-900 px-2" style={{ width: '81.4%' }}>
+                          Tu Ganancia Directa Mensual (MRR): $122.000 CLP
+                        </div>
+                      </div>
+
+                      <div className="grid md:grid-cols-2 gap-4 mt-6">
+                        <div className="bg-gray-800/50 p-4 rounded-xl border border-gray-700/80">
+                          <p className="text-[10px] text-blue-300 uppercase tracking-widest font-bold">Costo Mayorista Software</p>
+                          <div className="flex items-center gap-3 mt-1 mb-2">
+                             <p className="text-lg font-bold text-gray-500 line-through decoration-red-500/70">$35.000</p>
+                             <p className="text-3xl font-extrabold text-blue-400">$28.000</p>
+                          </div>
+                          <p className="text-xs text-gray-400 leading-relaxed">Se te otorga un <span className="text-blue-300 font-bold bg-blue-900/30 px-1 py-0.5 rounded">20% de Descuento Especial</span> sobre el precio original mensual. AIgenciaLab solo retiene este monto base para garantizar servidores mundiales sin caídas.</p>
+                        </div>
+                        
+                        <div className="bg-green-900/10 p-4 rounded-xl border border-green-500/30 relative overflow-hidden">
+                          <div className="absolute -right-4 -top-4 w-16 h-16 bg-green-500/10 rounded-full blur-xl"></div>
+                          <p className="text-[10px] text-green-400 uppercase tracking-widest font-bold">Tu Mensualidad Pasiva Neta</p>
+                          <p className="text-3xl font-extrabold text-green-400 mt-1 mb-2">$122.000 <span className="text-sm font-normal text-green-500">/ mes</span></p>
+                          <p className="text-xs text-gray-400 leading-relaxed">Multiplica esto por 10 clientes fidelizados en tu cartera y tendrás un sueldo gratis automático de <span className="text-white font-bold">$1.220.000 CLP directos</span>, sin programar nada.</p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
             </div>
           </div>
         </div>
