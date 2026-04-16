@@ -64,7 +64,6 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   font-weight: 700;
-  color: var(--text-primary);
 }
 
 /* ─── Typography Utilities ──────────────────────────────────── */
