@@ -6,11 +6,15 @@
 
 const MP_BASE = 'https://api.mercadopago.com';
 
-// ── Plan ID map ──────────────────────────────────────────────────────────────
-export const MP_PLAN_IDS = {
+// ── Plan ID map — all 4 plans ─────────────────────────────────────────────────
+// Starter and Business need their own MP preapproval plan IDs created in the MP dashboard.
+// Until those env vars are set, checkout falls back to preference-based checkout with correct price.
+export const MP_PLAN_IDS: Record<string, string | undefined> = {
+  Starter:    process.env.MP_PLAN_STARTER_ID    ?? undefined,
   Pro:        process.env.MP_PLAN_PRO_ID        ?? 'b2a75ff35c44491f81721b5134112f19',
+  Business:   process.env.MP_PLAN_BUSINESS_ID   ?? undefined,
   Enterprise: process.env.MP_PLAN_ENTERPRISE_ID ?? 'c579d6146d16485ba450b55e2ee10613',
-} as const;
+};
 
 // ── Typed response helpers ───────────────────────────────────────────────────
 async function mpFetch<T = any>(path: string, options?: RequestInit): Promise<T> {
@@ -50,6 +54,9 @@ export async function getMpCheckoutUrl(
   clientId: string
 ): Promise<{ checkout_url: string; preapproval_plan_id: string }> {
   const planId = MP_PLAN_IDS[planName];
+  if (!planId) {
+    throw new Error(`Plan ID not configured for plan: ${planName}`);
+  }
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl';
 
   // Create a pending preapproval with external_reference so the webhook can match this client
