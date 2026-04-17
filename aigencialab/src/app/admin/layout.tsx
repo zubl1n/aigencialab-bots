@@ -7,6 +7,7 @@ const navItems = [
   { href: '/admin/bots', label: 'Bots/Agentes', icon: '🤖' },
   { href: '/admin/leads', label: 'Leads Global', icon: '💬' },
   { href: '/admin/pagos', label: 'Pagos', icon: '💳' },
+  { href: '/admin/tickets', label: 'Tickets', icon: '🎫' },
   { href: '/admin/alertas', label: 'Alertas', icon: '🔔', badgeCount: 3 },
   { href: '/admin/auditorias', label: 'Auditorías', icon: '📋' },
 ];

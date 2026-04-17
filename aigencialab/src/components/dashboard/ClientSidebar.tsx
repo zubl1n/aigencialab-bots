@@ -34,6 +34,7 @@ const navItems = [
   { name: 'Conversaciones', href: '/dashboard/conversations', icon: MessageSquare },
   { name: 'Leads capturados',href: '/dashboard/leads',       icon: Target },
   { name: 'Instalación',   href: '/dashboard/installation',  icon: Download },
+  { name: 'Connect',       href: '/dashboard/connect',       icon: Zap },
   { name: 'Facturación',   href: '/dashboard/billing',       icon: CreditCard },
   { name: 'Tickets',       href: '/dashboard/tickets',       icon: TicketIcon,   showUnread: true },
   { name: 'Soporte',       href: '/dashboard/support',       icon: HelpCircle },

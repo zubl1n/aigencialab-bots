@@ -1,441 +1,227 @@
 'use client';
 
-import React, { useEffect, useState, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { createClient } from '@supabase/supabase-js';
 import {
-  Plus,
-  Search,
-  MessageSquare,
-  Clock,
-  CheckCircle2,
-  ChevronRight,
-  LifeBuoy,
-  BookOpen,
-  MessageCircle,
-  Zap,
-  Loader2,
-  X,
-  AlertTriangle,
-  RefreshCw,
-  Send,
+  Ticket, MessageSquare, Check, Clock, AlertCircle, Plus, Send, X, ChevronDown, ChevronUp,
 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
 
-type TicketStatus = 'open' | 'in_progress' | 'resolved' | 'closed';
-type TicketPriority = 'low' | 'medium' | 'high' | 'urgent';
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
-interface Ticket {
+type TicketItem = {
   id: string;
   subject: string;
-  description: string;
-  status: TicketStatus;
-  priority: TicketPriority;
-  response?: string;
-  responded_at?: string;
+  message: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
   created_at: string;
-  updated_at: string;
-}
-
-const STATUS_LABELS: Record<TicketStatus, { label: string; cls: string }> = {
-  open:        { label: 'Abierto',      cls: 'text-blue-400 border-blue-500/20' },
-  in_progress: { label: 'En progreso',  cls: 'text-amber-400 border-amber-500/20' },
-  resolved:    { label: 'Resuelto',     cls: 'text-emerald-400 border-emerald-500/20' },
-  closed:      { label: 'Cerrado',      cls: 'text-slate-400 border-white/10' },
+  admin_response: string | null;
 };
 
-const PRIORITY_LABELS: Record<TicketPriority, { label: string; cls: string }> = {
-  low:    { label: 'Baja',    cls: 'text-slate-400' },
-  medium: { label: 'Media',   cls: 'text-blue-400' },
-  high:   { label: 'Alta',    cls: 'text-amber-400' },
-  urgent: { label: 'Urgente', cls: 'text-red-400' },
+const STATUS_LABELS: Record<string, string> = {
+  open: 'Abierto', in_progress: 'En proceso', resolved: 'Resuelto', closed: 'Cerrado',
+};
+const STATUS_COLORS: Record<string, string> = {
+  open: 'bg-amber-50 text-amber-700 border-amber-200',
+  in_progress: 'bg-blue-50 text-blue-700 border-blue-200',
+  resolved: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  closed: 'bg-slate-50 text-slate-600 border-slate-200',
 };
 
-export default function SupportPage() {
-  const [tickets, setTickets]     = useState<Ticket[]>([]);
-  const [loading, setLoading]     = useState(true);
-  const [error, setError]         = useState<string | null>(null);
-  const [search, setSearch]       = useState('');
-  const [modalOpen, setModalOpen] = useState(false);
+export default function ClientSupportPage() {
+  const [tickets, setTickets] = useState<TicketItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [expanded, setExpanded] = useState<string | null>(null);
+  const [form, setForm] = useState({ subject: '', message: '', priority: 'medium' });
   const [submitting, setSubmitting] = useState(false);
-  const [successMsg, setSuccessMsg] = useState<string | null>(null);
+  const [error, setError] = useState('');
 
-  // New ticket form state
-  const [form, setForm] = useState({
-    subject:     '',
-    description: '',
-    priority:    'medium' as TicketPriority,
-  });
-  const [formError, setFormError] = useState<string | null>(null);
-
-  const supabase = createClient();
-
-  const fetchTickets = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
-
-      const res = await fetch('/api/support/tickets', { headers });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error ?? `Error ${res.status}`);
-      }
-      const json = await res.json();
-      setTickets(json.data ?? []);
-    } catch (e: any) {
-      setError(e.message ?? 'Error al cargar tickets');
-    } finally {
-      setLoading(false);
-    }
+  const load = useCallback(async () => {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { setLoading(false); return; }
+    const res = await fetch('/api/v2/tickets', {
+      headers: { Authorization: `Bearer ${session.access_token}` },
+    });
+    const data = await res.json();
+    setTickets(data.tickets ?? []);
+    setLoading(false);
   }, []);
 
-  useEffect(() => { fetchTickets(); }, [fetchTickets]);
+  useEffect(() => { load(); }, [load]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!form.subject.trim() || !form.description.trim()) {
-      setFormError('El asunto y la descripción son obligatorios.');
-      return;
-    }
     setSubmitting(true);
-    setFormError(null);
-
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
-      if (session?.access_token) headers['Authorization'] = `Bearer ${session.access_token}`;
-
-      const res = await fetch('/api/support/tickets', {
-        method: 'POST',
-        headers,
-        body: JSON.stringify(form),
-      });
-
-      const json = await res.json();
-
-      if (!res.ok) {
-        throw new Error(json.error ?? `Error ${res.status}`);
-      }
-
-      // Success
-      setModalOpen(false);
-      setForm({ subject: '', description: '', priority: 'medium' });
-      setSuccessMsg('¡Ticket creado! Te responderemos en menos de 24 horas.');
-      await fetchTickets();
-      setTimeout(() => setSuccessMsg(null), 5000);
-    } catch (e: any) {
-      setFormError(e.message ?? 'Error al crear ticket');
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const filteredTickets = tickets.filter(t =>
-    t.subject.toLowerCase().includes(search.toLowerCase()) ||
-    t.description.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const openCount     = tickets.filter(t => t.status === 'open' || t.status === 'in_progress').length;
-  const resolvedCount = tickets.filter(t => t.status === 'resolved' || t.status === 'closed').length;
+    setError('');
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) { setSubmitting(false); return; }
+    const res = await fetch('/api/v2/tickets', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${session.access_token}` },
+      body: JSON.stringify(form),
+    });
+    const data = await res.json();
+    if (!res.ok) { setError(data.error ?? 'Error al crear ticket'); setSubmitting(false); return; }
+    setForm({ subject: '', message: '', priority: 'medium' });
+    setShowForm(false);
+    setSubmitting(false);
+    await load();
+  }
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-
-      {/* Header */}
-      <div className="flex justify-between items-center">
+    <div className="max-w-3xl mx-auto px-6 py-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-3xl font-bold text-white tracking-tight">Centro de Soporte</h1>
-          <p className="text-[var(--muted)]">
-            {loading ? 'Cargando...' : `${openCount} abiertos · ${resolvedCount} resueltos`}
-          </p>
+          <h1 className="text-2xl font-bold text-slate-900">Soporte</h1>
+          <p className="text-slate-500 text-sm mt-0.5">Envía tickets y sigue el estado de tus solicitudes</p>
         </div>
-        <div className="flex gap-3">
-          <button
-            onClick={fetchTickets}
-            title="Actualizar"
-            className="p-3 bg-white/5 hover:bg-white/10 text-[var(--muted)] hover:text-white rounded-xl transition-all border border-white/5"
-          >
-            <RefreshCw className={`w-5 h-5 ${loading ? 'animate-spin' : ''}`} />
-          </button>
-          <button
-            id="open-ticket-btn"
-            onClick={() => { setModalOpen(true); setFormError(null); }}
-            className="flex items-center gap-2 px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold tracking-tight transition-all shadow-lg shadow-blue-500/20"
-          >
-            <Plus className="w-5 h-5" /> Abrir Ticket
-          </button>
-        </div>
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all"
+        >
+          {showForm ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
+          {showForm ? 'Cancelar' : 'Nuevo ticket'}
+        </button>
       </div>
 
-      {/* Success banner */}
-      {successMsg && (
-        <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-emerald-300 text-sm font-medium">
-          <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
-          {successMsg}
+      {/* New ticket form */}
+      {showForm && (
+        <div className="bg-white border border-blue-100 rounded-2xl p-6 mb-6 shadow-sm">
+          <h2 className="font-bold text-slate-900 mb-4">Crear nuevo ticket</h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Asunto *</label>
+              <input
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Describe brevemente el problema"
+                value={form.subject}
+                onChange={e => setForm(p => ({ ...p, subject: e.target.value }))}
+                required
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-1 block">Descripción *</label>
+              <textarea
+                rows={4}
+                className="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                placeholder="Explica el problema en detalle. Mientras más información, más rápido podemos ayudarte."
+                value={form.message}
+                onChange={e => setForm(p => ({ ...p, message: e.target.value }))}
+                required
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-slate-600 mb-2 block">Prioridad</label>
+              <div className="flex gap-2">
+                {[['low', 'Baja'], ['medium', 'Media'], ['high', 'Alta'], ['urgent', 'Urgente']].map(([val, label]) => (
+                  <button
+                    type="button"
+                    key={val}
+                    onClick={() => setForm(p => ({ ...p, priority: val }))}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                      form.priority === val ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-slate-600 border-slate-200'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            {error && <div className="text-red-600 text-sm bg-red-50 px-4 py-3 rounded-xl">{error}</div>}
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white py-3 rounded-xl font-bold transition-all"
+            >
+              <Send className="w-4 h-4" />
+              {submitting ? 'Enviando...' : 'Enviar ticket'}
+            </button>
+          </form>
         </div>
       )}
 
-      {/* Support channels */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="glass p-8 rounded-[32px] border border-[var(--border)] bg-gradient-to-br from-blue-600/5 to-transparent flex flex-col items-center text-center">
-          <div className="w-16 h-16 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 border border-blue-500/20 shadow-xl shadow-blue-500/5">
-            <MessageCircle className="w-8 h-8 text-blue-500" />
-          </div>
-          <h3 className="text-lg font-bold text-white mb-2 uppercase tracking-tight">Chat en Vivo</h3>
-          <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-widest mb-6">Promedio: 5 min</p>
-          <button
-            id="live-chat-btn"
-            onClick={() => setModalOpen(true)}
-            className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-xs font-bold transition-all border border-white/10 uppercase tracking-widest"
-          >
-            Iniciar Chat
-          </button>
+      {/* WhatsApp fallback */}
+      <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 mb-6 flex items-center gap-3">
+        <MessageSquare className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+        <div className="flex-1 text-sm">
+          <span className="font-semibold text-emerald-900">¿Necesitas ayuda urgente?</span>
+          <span className="text-emerald-700"> Escríbenos directamente por WhatsApp y te responderemos en minutos.</span>
         </div>
-        <div className="glass p-8 rounded-[32px] border border-[var(--border)] flex flex-col items-center text-center">
-          <div className="w-16 h-16 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 border border-emerald-500/20">
-            <BookOpen className="w-8 h-8 text-emerald-500" />
-          </div>
-          <h3 className="text-lg font-bold text-white mb-2 uppercase tracking-tight">Base de Conocimiento</h3>
-          <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-widest mb-6">+50 Artículos</p>
-          <a
-            id="docs-btn"
-            href="https://aigencialab.cl/blog"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-xs font-bold transition-all border border-white/10 uppercase tracking-widest block"
-          >
-            Ver Documentación
-          </a>
-        </div>
-        <div className="glass p-8 rounded-[32px] border border-[var(--border)] flex flex-col items-center text-center">
-          <div className="w-16 h-16 bg-purple-500/10 rounded-2xl flex items-center justify-center mb-6 border border-purple-500/20">
-            <LifeBuoy className="w-8 h-8 text-purple-500" />
-          </div>
-          <h3 className="text-lg font-bold text-white mb-2 uppercase tracking-tight">AIgenciaLab Academy</h3>
-          <p className="text-[10px] text-[var(--muted)] uppercase font-bold tracking-widest mb-6">Video Tutoriales</p>
-          <button className="w-full py-3 bg-white/5 hover:bg-white/10 text-white rounded-xl text-xs font-bold transition-all border border-white/10 uppercase tracking-widest">
-            Explorar Cursos
-          </button>
-        </div>
+        <a
+          href="https://wa.me/56912345678"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex-shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition-all"
+        >
+          WhatsApp →
+        </a>
       </div>
 
-      {/* Tickets list */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 glass rounded-[40px] border border-[var(--border)] p-10">
-          <div className="flex justify-between items-center mb-10">
-            <h3 className="text-xl font-bold text-white flex items-center gap-3">
-              <Clock className="text-blue-400" /> Mis Tickets Recientes
-            </h3>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--muted)]" />
-              <input
-                type="text"
-                placeholder="Buscar ticket..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="bg-[var(--bg3)] border border-[var(--border)] rounded-xl py-2 pl-10 pr-4 text-xs text-white focus:outline-none focus:border-blue-500/50"
-              />
-            </div>
-          </div>
-
-          {/* Loading state */}
-          {loading && (
-            <div className="flex items-center justify-center py-16">
-              <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
-            </div>
-          )}
-
-          {/* Error state */}
-          {!loading && error && (
-            <div className="flex flex-col items-center gap-3 py-12 text-center">
-              <AlertTriangle className="w-8 h-8 text-red-400" />
-              <p className="text-red-400 font-semibold">{error}</p>
-              <button
-                onClick={fetchTickets}
-                className="text-xs font-bold text-blue-400 hover:underline flex items-center gap-1"
+      {/* Ticket list */}
+      {loading ? (
+        <div className="text-center py-16 text-slate-400 text-sm">Cargando tickets...</div>
+      ) : tickets.length === 0 ? (
+        <div className="text-center py-16">
+          <Ticket className="w-8 h-8 text-slate-300 mx-auto mb-3" />
+          <div className="text-slate-500 font-medium">No tienes tickets abiertos</div>
+          <div className="text-slate-400 text-sm mt-1">¿Necesitas ayuda? Crea un nuevo ticket arriba.</div>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {tickets.map(ticket => (
+            <div key={ticket.id} className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+              <div
+                className="flex items-start gap-3 px-5 py-4 cursor-pointer hover:bg-slate-50 transition-colors"
+                onClick={() => setExpanded(expanded === ticket.id ? null : ticket.id)}
               >
-                <RefreshCw className="w-3 h-3" /> Reintentar
-              </button>
-            </div>
-          )}
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                  ticket.status === 'resolved' ? 'bg-emerald-50' :
+                  ticket.status === 'open' ? 'bg-amber-50' : 'bg-blue-50'
+                }`}>
+                  {ticket.status === 'resolved' ? <Check className="w-4 h-4 text-emerald-500" /> :
+                   ticket.status === 'open' ? <AlertCircle className="w-4 h-4 text-amber-500" /> :
+                   <Clock className="w-4 h-4 text-blue-500" />}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-semibold text-slate-900 text-sm">{ticket.subject}</span>
+                    <span className={`text-xs px-1.5 py-0.5 rounded-full border ${STATUS_COLORS[ticket.status]}`}>
+                      {STATUS_LABELS[ticket.status]}
+                    </span>
+                    {ticket.admin_response && (
+                      <span className="text-xs bg-blue-50 text-blue-600 border border-blue-200 px-1.5 py-0.5 rounded-full">
+                        ← Con respuesta
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-xs text-slate-400 mt-0.5">
+                    {new Date(ticket.created_at).toLocaleString('es-CL', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' })}
+                  </div>
+                </div>
+                {expanded === ticket.id ? <ChevronUp className="w-4 h-4 text-slate-400" /> : <ChevronDown className="w-4 h-4 text-slate-400" />}
+              </div>
 
-          {/* Empty state */}
-          {!loading && !error && filteredTickets.length === 0 && (
-            <div className="flex flex-col items-center gap-4 py-16 text-center">
-              <MessageSquare className="w-12 h-12 text-[var(--muted)]" />
-              <p className="text-white font-semibold">
-                {tickets.length === 0 ? 'Aún no tienes tickets' : 'Sin resultados para tu búsqueda'}
-              </p>
-              <p className="text-xs text-[var(--muted)]">
-                {tickets.length === 0 ? 'Crea un ticket y te responderemos en menos de 24 horas.' : 'Intenta con otras palabras clave.'}
-              </p>
-              {tickets.length === 0 && (
-                <button
-                  onClick={() => setModalOpen(true)}
-                  className="mt-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold transition-all"
-                >
-                  Abrir primer ticket
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Ticket list */}
-          {!loading && !error && filteredTickets.length > 0 && (
-            <div className="space-y-4">
-              {filteredTickets.map(t => {
-                const s = STATUS_LABELS[t.status];
-                const p = PRIORITY_LABELS[t.priority];
-                return (
-                  <div
-                    key={t.id}
-                    className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl hover:bg-white/[0.05] transition-all flex items-center justify-between group"
-                  >
-                    <div className="flex items-center gap-6">
-                      <div className="p-3 rounded-2xl bg-[var(--bg3)] text-[var(--muted)] group-hover:text-blue-400 transition-colors">
-                        <MessageSquare className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-3 mb-1">
-                          <span className="text-[10px] font-bold text-[var(--muted)] uppercase tracking-widest">
-                            #{t.id.slice(0, 8).toUpperCase()}
-                          </span>
-                          <span className={`text-[8px] font-bold px-1.5 py-0.5 rounded-md border uppercase ${s.cls}`}>
-                            {s.label}
-                          </span>
-                          <span className={`text-[8px] font-bold uppercase ${p.cls}`}>
-                            {p.label}
-                          </span>
-                        </div>
-                        <h4 className="text-sm font-bold text-white uppercase tracking-tight group-hover:text-blue-400 mb-1">
-                          {t.subject}
-                        </h4>
-                        <p className="text-[10px] text-[var(--muted)] font-bold uppercase tracking-widest">
-                          {new Date(t.created_at).toLocaleDateString('es-CL', { day: 'numeric', month: 'short', year: 'numeric' })}
-                          {t.response && ' · Respuesta recibida ✓'}
-                        </p>
+              {expanded === ticket.id && (
+                <div className="px-5 pb-4 border-t border-slate-100 pt-4 space-y-3">
+                  <div className="bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm text-slate-700 leading-relaxed">
+                    {ticket.message}
+                  </div>
+                  {ticket.admin_response && (
+                    <div>
+                      <div className="text-xs font-semibold text-blue-600 mb-1.5">RESPUESTA DEL EQUIPO AIgenciaLab</div>
+                      <div className="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 text-sm text-blue-800 leading-relaxed">
+                        {ticket.admin_response}
                       </div>
                     </div>
-                    <ChevronRight className="w-6 h-6 text-[var(--muted)] group-hover:text-white transition-all" />
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* Sidebar */}
-        <div className="glass rounded-[40px] p-8 border border-[var(--border)] bg-gradient-to-t from-blue-600/5 to-transparent flex flex-col justify-center items-center text-center">
-          <div className="w-12 h-12 bg-blue-500/10 rounded-full flex items-center justify-center mb-6 border border-blue-500/20">
-            <Zap className="w-6 h-6 text-blue-500" />
-          </div>
-          <h4 className="text-lg font-bold text-white mb-4 uppercase tracking-tighter max-w-[150px]">
-            Soporte Enterprise 24/7
-          </h4>
-          <p className="text-[10px] text-[var(--muted)] font-bold uppercase tracking-widest mb-8 leading-relaxed">
-            Respuesta garantizada en menos de 15 minutos para clientes de nivel corporativo.
-          </p>
-          <button className="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-blue-500/10 transition-all">
-            UPGRADE A ENTERPRISE
-          </button>
-        </div>
-      </div>
-
-      {/* New Ticket Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-          <div className="relative w-full max-w-lg bg-slate-900 border border-white/10 rounded-[32px] shadow-2xl">
-            <button
-              onClick={() => { setModalOpen(false); setFormError(null); }}
-              className="absolute top-5 right-5 text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10 transition-all"
-            >
-              <X className="w-5 h-5" />
-            </button>
-
-            <form onSubmit={handleSubmit} className="p-10 space-y-6">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center">
-                  <MessageSquare className="w-6 h-6 text-blue-400" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold text-white">Nuevo Ticket de Soporte</h2>
-                  <p className="text-slate-400 text-sm">Te responderemos en menos de 24 horas</p>
-                </div>
-              </div>
-
-              {formError && (
-                <div className="flex items-center gap-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                  {formError}
+                  )}
                 </div>
               )}
-
-              <div className="space-y-4">
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest block mb-2">
-                    Asunto *
-                  </label>
-                  <input
-                    id="ticket-subject"
-                    type="text"
-                    required
-                    value={form.subject}
-                    onChange={e => setForm(f => ({ ...f, subject: e.target.value }))}
-                    placeholder="Ej: Error al cargar el widget"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50 placeholder-slate-600"
-                    maxLength={200}
-                  />
-                </div>
-
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest block mb-2">
-                    Prioridad
-                  </label>
-                  <select
-                    id="ticket-priority"
-                    value={form.priority}
-                    onChange={e => setForm(f => ({ ...f, priority: e.target.value as TicketPriority }))}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50"
-                  >
-                    <option value="low">Baja — Consulta general</option>
-                    <option value="medium">Media — Problema menor</option>
-                    <option value="high">Alta — Afecta mi operación</option>
-                    <option value="urgent">Urgente — Sistema caído</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-[10px] uppercase font-bold text-slate-400 tracking-widest block mb-2">
-                    Descripción detallada *
-                  </label>
-                  <textarea
-                    id="ticket-description"
-                    required
-                    rows={5}
-                    value={form.description}
-                    onChange={e => setForm(f => ({ ...f, description: e.target.value }))}
-                    placeholder="Describe el problema con la mayor cantidad de detalles posible: pasos para reproducirlo, mensajes de error, comportamiento esperado vs actual..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 px-4 text-white text-sm focus:outline-none focus:border-blue-500/50 resize-none leading-relaxed placeholder-slate-600"
-                    maxLength={5000}
-                  />
-                  <p className="text-right text-[10px] text-slate-600 mt-1">{form.description.length}/5000</p>
-                </div>
-              </div>
-
-              <button
-                id="submit-ticket-btn"
-                type="submit"
-                disabled={submitting}
-                className="w-full py-4 bg-blue-600 hover:bg-blue-500 disabled:opacity-60 text-white rounded-2xl font-bold text-sm shadow-xl shadow-blue-500/20 transition-all flex items-center justify-center gap-2"
-              >
-                {submitting
-                  ? <><Loader2 className="w-5 h-5 animate-spin" /> Enviando...</>
-                  : <><Send className="w-5 h-5" /> Enviar Ticket</>
-                }
-              </button>
-            </form>
-          </div>
+            </div>
+          ))}
         </div>
       )}
     </div>

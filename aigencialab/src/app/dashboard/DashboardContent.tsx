@@ -46,7 +46,9 @@ export default function DashboardContent({ data }: DashboardContentProps) {
   const [userId, setUserId] = useState<string | null>(null);
   const [subscription, setSubscription] = useState<{
     plan: string; status: string; currentPeriodEnd: string | null; trialEndsAt: string | null;
+    implPaidAt: string | null; billingStartDate: string | null;
   } | null>(null);
+  const [openTickets, setOpenTickets] = useState(0);
   const supabase = createClient();
 
   const fetchData = useCallback(async () => {
@@ -86,10 +88,10 @@ export default function DashboardContent({ data }: DashboardContentProps) {
       supabase.from('leads').select('id, contact_name, status, created_at').eq('client_id', user.id).order('created_at', { ascending: false }).limit(3),
     ]);
 
-    // Fetch subscription info
+    // Fetch subscription info (including v2 billing data)
     const { data: subData } = await supabase
       .from('subscriptions')
-      .select('plan, status, current_period_end, trial_ends_at')
+      .select('plan, status, current_period_end, trial_ends_at, impl_paid_at, billing_start_date')
       .eq('client_id', user.id)
       .limit(1)
       .single();
@@ -100,8 +102,18 @@ export default function DashboardContent({ data }: DashboardContentProps) {
         status: subData.status ?? 'trialing',
         currentPeriodEnd: subData.current_period_end,
         trialEndsAt: subData.trial_ends_at,
+        implPaidAt: subData.impl_paid_at ?? null,
+        billingStartDate: subData.billing_start_date ?? null,
       });
     }
+
+    // Fetch open ticket count
+    const { count: ticketCount } = await supabase
+      .from('tickets')
+      .select('id', { count: 'exact', head: true })
+      .eq('client_id', user.id)
+      .in('status', ['open', 'in_progress']);
+    setOpenTickets(ticketCount ?? 0);
 
     const totalLeads = leadsRes.count || 0;
     const convsThisWeek = convsWeekRes.count || 0;
@@ -396,6 +408,22 @@ export default function DashboardContent({ data }: DashboardContentProps) {
                 </span>
               </div>
             )}
+            {subscription?.implPaidAt && (
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-[var(--muted)]">Implementación pagada</span>
+                <span className="text-sm font-bold text-emerald-400">
+                  {new Date(subscription.implPaidAt).toLocaleDateString('es-CL')}
+                </span>
+              </div>
+            )}
+            {subscription?.billingStartDate && (
+              <div className="flex justify-between items-center">
+                <span className="text-sm text-[var(--muted)]">Inicio suscripción</span>
+                <span className="text-sm font-bold text-blue-400">
+                  {new Date(subscription.billingStartDate).toLocaleDateString('es-CL')}
+                </span>
+              </div>
+            )}
           </div>
           <Link href="/dashboard/billing" className="flex items-center justify-center gap-1 mt-5 text-xs font-bold text-purple-400 hover:text-white transition-colors">
             Ver facturación <ChevronRight className="w-3 h-3" />
@@ -432,6 +460,27 @@ export default function DashboardContent({ data }: DashboardContentProps) {
               <div>
                 <p className="text-xs font-bold text-white">Instalación</p>
                 <p className="text-[10px] text-[var(--muted)]">Snippet y widget</p>
+              </div>
+            </Link>
+            <Link href="/dashboard/connect" className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-violet-500/30 hover:bg-violet-500/5 transition-all group">
+              <Zap className="w-5 h-5 text-violet-400 group-hover:scale-110 transition-transform" />
+              <div>
+                <p className="text-xs font-bold text-white">Connect</p>
+                <p className="text-[10px] text-[var(--muted)]">Integraciones</p>
+              </div>
+            </Link>
+            <Link href="/dashboard/support" className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all group">
+              <AlertCircle className="w-5 h-5 text-cyan-400 group-hover:scale-110 transition-transform" />
+              <div>
+                <p className="text-xs font-bold text-white">Soporte</p>
+                <p className="text-[10px] text-[var(--muted)]">{openTickets > 0 ? `${openTickets} tickets abiertos` : 'Crear ticket'}</p>
+              </div>
+            </Link>
+            <Link href="/docs/instalacion" className="flex items-center gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 hover:border-teal-500/30 hover:bg-teal-500/5 transition-all group">
+              <ArrowRight className="w-5 h-5 text-teal-400 group-hover:scale-110 transition-transform" />
+              <div>
+                <p className="text-xs font-bold text-white">Documentación</p>
+                <p className="text-[10px] text-[var(--muted)]">Guías de canales</p>
               </div>
             </Link>
           </div>
