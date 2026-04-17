@@ -50,6 +50,7 @@ export function ClientSidebar() {
   const [botConfig, setBotConfig] = useState<BotConfig | null>(null);
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
   const [trialExpired, setTrialExpired] = useState(false);
+  const [unreadTickets, setUnreadTickets] = useState(0);
   const supabase = createClient();
 
   useEffect(() => {
@@ -57,15 +58,22 @@ export function ClientSidebar() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
-      const [clientRes, botRes, subRes] = await Promise.all([
+      const [clientRes, botRes, subRes, ticketsRes] = await Promise.all([
         supabase.from('clients').select('*').eq('id', user.id).single(),
         supabase.from('bot_configs').select('*').eq('client_id', user.id).single(),
         // FASE 2: read trial_ends_at from subscriptions
-        supabase.from('subscriptions').select('trial_ends_at').eq('client_id', user.id).single()
+        supabase.from('subscriptions').select('trial_ends_at').eq('client_id', user.id).single(),
+        // Unread tickets count (unread_client = true and status != closed)
+        supabase.from('tickets')
+          .select('id', { count: 'exact', head: true })
+          .eq('client_id', user.id)
+          .eq('unread_client', true)
+          .not('status', 'eq', 'closed'),
       ]);
 
       if (clientRes.data) setClient(clientRes.data);
       if (botRes.data) setBotConfig(botRes.data);
+      if ((ticketsRes.count ?? 0) > 0) setUnreadTickets(ticketsRes.count ?? 0);
 
       // FASE 2: compute trial from subscriptions, fallback to clients
       const trialEndStr = subRes.data?.trial_ends_at ?? (clientRes.data as any)?.trial_ends_at;
@@ -82,6 +90,7 @@ export function ClientSidebar() {
     }
     fetchData();
   }, []);
+
 
   const toggleTheme = () => {
     const newTheme = !isDark;
@@ -215,11 +224,19 @@ export function ClientSidebar() {
                   <div className={`w-1.5 h-1.5 rounded-full ${botConfig?.active ? 'bg-emerald-500' : 'bg-red-500'}`} />
                 )}
 
+                {!isCollapsed && item.showUnread && unreadTickets > 0 && (
+                  <span className="flex items-center justify-center min-w-[18px] h-[18px] px-1 bg-red-500 text-white text-[9px] font-bold rounded-full">
+                    {unreadTickets > 9 ? '9+' : unreadTickets}
+                  </span>
+                )}
+
                 {isCollapsed && (
                   <div className="absolute left-14 invisible group-hover:visible bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap z-[100]">
                     {item.name}
+                    {item.showUnread && unreadTickets > 0 && ` (${unreadTickets})`}
                   </div>
                 )}
+
               </Link>
             );
           })}

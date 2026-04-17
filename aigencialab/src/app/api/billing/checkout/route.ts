@@ -1,193 +1,95 @@
 /**
- * POST /api/billing/checkout
- * Creates a MercadoPago checkout URL for the selected plan.
- *
- * Strategy:
- * - Always uses MP Preferences to ensure the price is controlled by plans.ts.
+ * POST /api/billing/checkout — DEPRECATED v1
+ * Redirige al flujo v2 (/api/v2/checkout/create-impl-preference)
+ * Este endpoint se mantiene por compatibilidad hacia atrás pero delega al v2.
  */
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
-import { PLANS_LIST } from '@/lib/plans';
 
 export const dynamic = 'force-dynamic';
 
-const MP_BASE = 'https://api.mercadopago.com';
-
-/** Get price in CLP for the plan from plans.ts (single source of truth) */
-function getPlanPriceCLP(planName: string): number {
-  const plan = PLANS_LIST.find(p => p.name.toLowerCase() === planName.toLowerCase());
-  // Fallback: if monthlyCLP is 0, assume USD price * 950 (approx conversion)
-  if (plan?.monthlyCLP === 0 && plan?.monthlyUSD) {
-    return plan.monthlyUSD * 950;
-  }
-  return plan?.monthlyCLP ?? 0;
-}
-
-async function mpFetch<T = any>(path: string, options?: RequestInit): Promise<T> {
-  const token = process.env.MP_ACCESS_TOKEN;
-  if (!token) throw new Error('MP_ACCESS_TOKEN not configured');
-
-  const res = await fetch(`${MP_BASE}${path}`, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'application/json',
-      ...(options?.headers ?? {}),
-    },
-  });
-
-  const data = await res.json();
-  if (!res.ok) {
-    const msg = data?.message ?? data?.error ?? `MP error ${res.status}`;
-    throw new Error(`[MP] ${msg}: ${JSON.stringify(data)}`);
-  }
-  return data as T;
-}
-
-/**
- * Preference-based checkout.
- * Uses the monthlyCLP price from plans.ts — THIS IS THE GROUND TRUTH PRICE.
- */
-async function preferenceCheckout(
-  planName: string,
-  priceCLP: number,
-  clientId: string,
-  payerEmail: string,
-  siteUrl: string,
-): Promise<string> {
-  const preference = await mpFetch<{ init_point?: string; id?: string }>('/checkout/preferences', {
-    method: 'POST',
-    body: JSON.stringify({
-      items: [{
-        id: `plan_${planName.toLowerCase()}`,
-        title: `AIgenciaLab — Plan ${planName}`,
-        description: `Suscripción mensual Plan ${planName} · aigencialab.cl`,
-        category_id: 'services',
-        quantity: 1,
-        currency_id: 'CLP',
-        unit_price: priceCLP, // Precio 100% desde plans.ts — nunca hardcodeado
-      }],
-      payer: { email: payerEmail },
-      external_reference: clientId,
-      back_urls: {
-        success: `${siteUrl}/dashboard/billing?payment=success`,
-        failure:  `${siteUrl}/dashboard/billing?payment=failure`,
-        pending:  `${siteUrl}/dashboard/billing?payment=pending`,
-      },
-      auto_return: 'approved',
-      // Aparece como "AIGENCIALAB" en el estado de cuenta bancario del pagador
-      statement_descriptor: 'AIGENCIALAB',
-      // El webhook existente en /api/billing/webhook procesa la confirmación de pago
-      notification_url: `${siteUrl}/api/billing/webhook`,
-      metadata: {
-        client_id: clientId,
-        plan:      planName,
-        price_clp: priceCLP, // Audit trail: precio exacto usado en esta transacción
-      },
-    }),
-  });
-
-  if (!preference.init_point) {
-    throw new Error('Preference created but missing init_point');
-  }
-  return preference.init_point;
-}
-
 export async function POST(request: Request) {
   try {
-    // Sanitize siteUrl — CRÍTICO: MP rechaza back_urls con trailing \n o /
-    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl').trim().replace(/\/+$/, '');
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const body = await request.json().catch(() => ({}));
+    const planRaw = (body.plan ?? '').trim();
 
-    // ── Parse body ─────────────────────────────────────────
-    let bodyData: { plan?: string; email?: string } = {};
-    try { bodyData = await request.json(); } catch { /* empty body OK */ }
+    // Mapeo de nombres legacy (lib/plans.ts) → slugs actuales (config/plans.ts)
+    const LEGACY_PLAN_MAP: Record<string, string> = {
+      starter:  'starter',
+      Starter:  'starter',
+      pro:      'pro',
+      Pro:      'pro',
+      business: 'starter', // Business no existe en config/plans.ts → fallback a Starter
+      Business: 'starter',
+      enterprise: 'enterprise',
+      Enterprise: 'enterprise',
+    };
 
-    const planRaw = (bodyData.plan ?? 'Pro').trim();
+    const planSlug = LEGACY_PLAN_MAP[planRaw];
 
-    // Validate plan — accept all 4 plans + case variations
-    const validPlans = ['Starter', 'Pro', 'Business', 'Enterprise'];
-    const planName = validPlans.find(p => p.toLowerCase() === planRaw.toLowerCase());
-
-    if (!planName) {
+    if (!planSlug) {
       return NextResponse.json(
-        { error: `Plan inválido: "${planRaw}". Opciones válidas: Starter, Pro, Business, Enterprise` },
+        { error: `Plan inválido: "${planRaw}". Opciones: basic, starter, pro, enterprise` },
         { status: 400 }
       );
     }
 
-    // Enterprise → contact sales (no checkout)
-    if (planName === 'Enterprise') {
+    // Enterprise → contact sales
+    if (planSlug === 'enterprise') {
       return NextResponse.json(
-        { error: 'El plan Enterprise requiere contactar a ventas.', redirect: '/contacto' },
+        { error: 'El plan Enterprise requiere contactar a ventas.', redirect: '/agendar' },
         { status: 422 }
       );
     }
 
-    // ── Authenticate user ──────────────────────────────────
+    // Delegar al v2 — reenviar la misma request con el slug correcto
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl').trim().replace(/\/+$/, '');
+    const v2Url = `${siteUrl}/api/v2/checkout/create-impl-preference`;
+
+    // Obtener auth header para pasarlo al v2
     const authHeader = request.headers.get('Authorization');
-    const supabaseAdmin = createClient(supabaseUrl, supabaseKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
+
+    // Parsear userId y userEmail del auth header si está disponible
+    // El frontend debe enviar estos en el body al llamar directamente al v2
+    const userId     = body.user_id ?? body.userId ?? '';
+    const userEmail  = body.email ?? body.userEmail ?? '';
+
+    if (!userId || !userEmail) {
+      // No tenemos los datos que necesita v2 — devolver redirect para que el frontend use el checkout v2 directamente
+      return NextResponse.json(
+        {
+          error: 'Este endpoint está deprecado. Usa /checkout/[plan] directamente.',
+          redirect: `/checkout/${planSlug}`,
+          deprecated: true,
+        },
+        { status: 301 }
+      );
+    }
+
+    const v2Res = await fetch(v2Url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        ...(authHeader ? { Authorization: authHeader } : {}),
+      },
+      body: JSON.stringify({ planSlug, userEmail, userId }),
     });
 
-    let userId = '';
-    let clientEmail = '';
+    const v2Data = await v2Res.json();
 
-    if (authHeader?.startsWith('Bearer ')) {
-      const supabaseAnon = createClient(supabaseUrl, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
-        global: { headers: { Authorization: authHeader } },
-      });
-      const { data: { user }, error: authErr } = await supabaseAnon.auth.getUser();
-
-      if (!authErr && user) {
-        userId = user.id;
-        const { data: clientData } = await supabaseAdmin
-          .from('clients')
-          .select('email')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        clientEmail = clientData?.email ?? user.email ?? '';
-      }
+    if (!v2Res.ok) {
+      return NextResponse.json({ error: v2Data.error ?? 'Error en checkout v2' }, { status: v2Res.status });
     }
 
-    if (!userId) {
-      return NextResponse.json(
-        { error: 'No autenticado. Por favor inicia sesión.' },
-        { status: 401 }
-      );
-    }
-
-    // ── Determine checkout strategy ────────────────────────
-    const priceCLP = getPlanPriceCLP(planName);
-
-    if (priceCLP <= 0) {
-      return NextResponse.json(
-        { error: `Plan ${planName} no tiene precio configurado.` },
-        { status: 400 }
-      );
-    }
-
-    console.log(`[checkout] User ${userId} → plan ${planName} (price: ${priceCLP})`);
-    const checkoutUrl = await preferenceCheckout(planName, priceCLP, userId, clientEmail, siteUrl);
-
-    // ── Save pending payment record ────────────────────────
-    await supabaseAdmin
-      .from('subscriptions')
-      .upsert({
-        client_id: userId,
-        plan: planName,
-        status: 'trialing',
-        payment_status: 'pending',
-      }, { onConflict: 'client_id', ignoreDuplicates: false });
-
-    console.log(`[checkout] Redirecting user ${userId} to: ${checkoutUrl.slice(0, 80)}...`);
-
-    return NextResponse.json({ url: checkoutUrl, plan: planName });
+    // v2 devuelve { checkoutUrl, preferenceId } — adaptar al formato legacy { url, plan }
+    return NextResponse.json({
+      url:  v2Data.checkoutUrl,
+      plan: planSlug,
+      // Indicar al cliente que migre al nuevo flujo
+      _note: 'Este endpoint está deprecado. Por favor usa /checkout/[plan].',
+    });
 
   } catch (err: any) {
-    console.error('[Billing Checkout API] Fatal error:', err.message);
+    console.error('[Billing Checkout API v1 deprecated]', err.message);
     return NextResponse.json(
       { error: err.message ?? 'Error interno del servidor' },
       { status: 500 }

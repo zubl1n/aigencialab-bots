@@ -224,20 +224,25 @@ export async function sendBotDeactivatedEmail(data: {
    6. TRIAL POR VENCER
    ══════════════════════════════════════════════════════════════ */
 export async function sendTrialExpiringEmail(data: {
-  email: string; name: string; company: string; expiresOn: string; daysLeft: number
+  email: string; name: string; company: string; plan: string; daysLeft: number; trialEndDate: string
+  /** @deprecated use trialEndDate */ expiresOn?: string
 }) {
   await sendEmail({
     to: data.email,
-    subject: `⏰ Tu trial vence en ${data.daysLeft} días — Toma acción ahora`,
+    subject: `⏰ Tu prueba gratuita vence en ${data.daysLeft} días — AIgenciaLab`,
     html: wrap(
-      `<h1 style="${H1}">Tu trial termina pronto ⏰</h1>`,
+      `<h1 style="${H1}">Tu prueba vence pronto ⏰</h1>
+       <p style="${SUB}">${data.company} · Plan ${data.plan.toUpperCase()}</p>`,
       `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
-       <p style="${MUTED}">Tu prueba gratuita vence el <strong style="color:#fbbf24">${data.expiresOn}</strong>. Para continuar usando tu agente IA sin interrupciones, activa tu suscripción ahora.</p>
+       <p style="${MUTED}">Tu prueba gratuita del plan <strong style="color:#C084FC">${data.plan.toUpperCase()}</strong> vence el <strong style="color:#fbbf24">${data.trialEndDate ?? data.expiresOn}</strong> (${data.daysLeft} días).</p>
        <div style="${BOX_Y}">
-         <p style="color:#fbbf24;font-weight:700;text-align:center;margin:0;font-size:14px">⚠️ Quedan ${data.daysLeft} días · Después tu bot se pausará automáticamente</p>
+         <div style="text-align:center;font-size:28px;margin-bottom:8px">🔔</div>
+         <p style="color:#fbbf24;text-align:center;font-weight:700;margin:0 0 8px">¿Qué pasa si no me suscribo?</p>
+         <p style="color:#A09CB0;font-size:13px;text-align:center;margin:0">Tu bot quedará en pausa y no podrás recibir nuevos leads hasta activar tu plan.</p>
        </div>
-       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/precios" style="${BTN}">Elegir mi plan →</a></p>`,
-      'Puedes cancelar en cualquier momento. Sin cargos ocultos.'
+       <p style="${MUTED}">Para continuar sin interrupciones, activa tu plan ahora. Puedes cancelar en cualquier momento.</p>
+       <p style="text-align:center;margin:32px 0"><a href="${SITE_URL}/dashboard/billing" style="${BTN}">✅ Activar Plan Ahora</a></p>`,
+      `Si no quieres continuar, no necesitas hacer nada — tu cuenta se pausará automáticamente.`
     ),
   })
 }
@@ -474,3 +479,78 @@ export async function sendAdminPaymentFailedEmail(data: {
     )
   )
 }
+
+
+/* ══════════════════════════════════════════════════════════════
+   16. CUOTA AL 80% — CRON activated
+
+   ══════════════════════════════════════════════════════════════ */
+export async function sendQuotaWarningEmail(data: {
+  email: string; name: string; company: string; plan: string
+  used: number; total: number; percentUsed: number; overageCostCLP: number | null
+}) {
+  const overageNote = data.overageCostCLP
+    ? `Cada conversación adicional tiene un costo de <strong style="color:#fbbf24">$${data.overageCostCLP} CLP</strong>.`
+    : 'Contacta a soporte para gestionar tu cuota.'
+
+  await sendEmail({
+    to: data.email,
+    subject: `⚠️ Has usado el ${data.percentUsed}% de tus conversaciones — AIgenciaLab`,
+    html: wrap(
+      `<h1 style="${H1}">Alerta de cuota ⚠️</h1>
+       <p style="${SUB}">${data.company} · Plan ${data.plan.toUpperCase()}</p>`,
+      `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+       <p style="${MUTED}">Has utilizado <strong style="color:#fbbf24">${data.used.toLocaleString('es-CL')} de ${data.total.toLocaleString('es-CL')}</strong> conversaciones este mes (<strong>${data.percentUsed}%</strong>).</p>
+       <div style="${BOX_Y}">
+         <div style="background:#fbbf24/10;border-radius:8px;height:12px;width:100%;overflow:hidden;margin-bottom:12px">
+           <div style="height:100%;width:${data.percentUsed}%;background:linear-gradient(90deg,#f59e0b,#fbbf24);border-radius:8px"></div>
+         </div>
+         <p style="color:#A09CB0;font-size:13px;margin:0">${overageNote}</p>
+       </div>
+       <p style="${MUTED}">Considera hacer upgrade de tu plan para evitar interrupciones en la atención a tus clientes.</p>
+       <div style="display:flex;gap:12px;justify-content:center;margin-top:28px">
+         <a href="${SITE_URL}/dashboard/billing" style="${BTN}">⬆️ Mejorar Plan</a>
+       </div>`,
+      `Este aviso se envía automáticamente cuando superas el 80% de tu cuota mensual.`
+    ),
+  })
+}
+
+/* ══════════════════════════════════════════════════════════════
+   17. REPORTE SEMANAL ADMIN — Enviado cada lunes
+   ══════════════════════════════════════════════════════════════ */
+export async function sendWeeklyAdminReport(data: {
+  weekLabel: string
+  newClients: number; activeClients: number; trialClients: number; suspendedClients: number
+  mrrCLP: number; arrCLP: number
+  newLeads: number; totalLeads: number
+  openTickets: number; resolvedTickets: number
+  botsActive: number; botsTotal: number
+}) {
+  const fmt = (n: number) => n.toLocaleString('es-CL')
+  await sendAdminEmail(`📊 Reporte Semanal AIgenciaLab · ${data.weekLabel}`,
+    wrap(
+      `<h1 style="${H1}">📊 Reporte Semanal</h1>
+       <p style="${SUB}">${data.weekLabel}</p>`,
+      `<table style="width:100%;border-collapse:collapse">
+         ${row('MRR actual (CLP)', `$${fmt(data.mrrCLP)}`, '#34d399')}
+         ${row('ARR proyectado (CLP)', `$${fmt(data.arrCLP)}`, '#34d399')}
+         ${row('Clientes activos', String(data.activeClients), '#C084FC')}
+         ${row('Nuevos esta semana', String(data.newClients), data.newClients > 0 ? '#34d399' : '#F1F0F5')}
+         ${row('En trial', String(data.trialClients))}
+         ${row('Suspendidos', String(data.suspendedClients), data.suspendedClients > 0 ? '#f87171' : '#F1F0F5')}
+       </table>
+       <div style="${BOX_P}">
+         <table style="width:100%;border-collapse:collapse">
+           ${row('Leads nuevos', String(data.newLeads), '#C084FC')}
+           ${row('Leads totales', String(data.totalLeads))}
+           ${row('Tickets abiertos', String(data.openTickets), data.openTickets > 0 ? '#fbbf24' : '#F1F0F5')}
+           ${row('Tickets resueltos', String(data.resolvedTickets), '#34d399')}
+           ${row('Bots activos', `${data.botsActive}/${data.botsTotal}`)}
+         </table>
+       </div>
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}/admin" style="${BTN}">Ver Panel Admin →</a></p>`
+    )
+  )
+}
+

@@ -1,244 +1,271 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createClient } from '@supabase/supabase-js';
+import { useState, useEffect, useCallback } from 'react';
 import {
-  Zap, Check, Play, Plus, RefreshCw, AlertCircle, CheckCircle, Clock,
-  Database, Calendar, CreditCard, ShoppingCart, Bell, BarChart3,
-  ExternalLink, Power,
+  Zap, Check, RefreshCw, AlertCircle, Database, Calendar, CreditCard,
+  ShoppingCart, Bell, Power, Lock, Loader2, CheckCircle2, XCircle,
 } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-);
-
-type Integration = {
-  id: string;
-  name: string;
+// ── Integration catalog (UI only — state persisted in DB via /api/client/integrations) ────
+const CATALOG: {
   category: string;
-  description: string;
-  status: 'active' | 'inactive' | 'error';
-  setupUrl?: string;
-};
-
-type Playbook = {
-  id: string;
-  title: string;
-  desc: string;
-  tags: string[];
-  active: boolean;
-};
-
-const CATALOG: { category: string; icon: typeof Database; integrations: { name: string; desc: string }[] }[] = [
-  { category: 'CRM', icon: Database, integrations: [
-    { name: 'HubSpot', desc: 'Sincroniza contactos, deals y notas' },
-    { name: 'Salesforce', desc: 'CRM empresarial (Pro/Enterprise)' },
-    { name: 'Zoho CRM', desc: 'Gestión de leads y cuentas' },
-    { name: 'Pipedrive', desc: 'Pipeline de ventas' },
-  ]},
-  { category: 'Calendarios', icon: Calendar, integrations: [
-    { name: 'Google Calendar', desc: 'El agente puede agendar reuniones' },
-    { name: 'Calendly', desc: 'Detecta slots y agenda' },
-    { name: 'Microsoft Outlook', desc: 'Para empresas (Pro/Enterprise)' },
-  ]},
-  { category: 'Pagos', icon: CreditCard, integrations: [
-    { name: 'MercadoPago', desc: 'Consultar pagos, enviar links' },
-    { name: 'Stripe', desc: 'Pagos internacionales (Pro+)' },
-    { name: 'Transbank WebPay', desc: 'Exclusivo Chile (Pro+)' },
-  ]},
-  { category: 'E-commerce', icon: ShoppingCart, integrations: [
-    { name: 'Shopify', desc: 'Stock, pedidos, envíos' },
-    { name: 'WooCommerce', desc: 'Catálogo y pedidos' },
-    { name: 'Jumpseller', desc: 'E-commerce Chile' },
-  ]},
-  { category: 'Notificaciones', icon: Bell, integrations: [
-    { name: 'Slack', desc: 'Alertas internas al equipo' },
-    { name: 'Google Sheets', desc: 'Inventario y precios en tiempo real' },
-    { name: 'Airtable', desc: 'Base de datos flexible' },
-  ]},
+  icon: typeof Database;
+  planRequired: 'basic' | 'starter' | 'pro';
+  integrations: { key: string; name: string; desc: string }[];
+}[] = [
+  {
+    category: 'CRM', icon: Database, planRequired: 'starter',
+    integrations: [
+      { key: 'hubspot',    name: 'HubSpot',    desc: 'Sincroniza contactos, deals y notas automáticamente' },
+      { key: 'salesforce', name: 'Salesforce', desc: 'CRM empresarial (Pro/Enterprise)' },
+      { key: 'zoho_crm',  name: 'Zoho CRM',   desc: 'Gestión de leads y cuentas' },
+      { key: 'pipedrive',  name: 'Pipedrive',  desc: 'Pipeline de ventas visual' },
+    ],
+  },
+  {
+    category: 'Calendarios', icon: Calendar, planRequired: 'starter',
+    integrations: [
+      { key: 'google_calendar', name: 'Google Calendar', desc: 'El agente agenda reuniones en tu calendario' },
+      { key: 'calendly',        name: 'Calendly',        desc: 'Detecta slots disponibles y agenda' },
+      { key: 'outlook',         name: 'Microsoft Outlook', desc: 'Calendarios corporativos (Pro/Enterprise)' },
+    ],
+  },
+  {
+    category: 'Pagos', icon: CreditCard, planRequired: 'starter',
+    integrations: [
+      { key: 'mercadopago', name: 'MercadoPago',    desc: 'Consultar pagos y enviar links de cobro' },
+      { key: 'stripe',      name: 'Stripe',         desc: 'Pagos internacionales (Pro+)' },
+      { key: 'transbank',   name: 'Transbank WebPay', desc: 'Exclusivo Chile (Pro+)' },
+    ],
+  },
+  {
+    category: 'E-commerce', icon: ShoppingCart, planRequired: 'starter',
+    integrations: [
+      { key: 'shopify',     name: 'Shopify',      desc: 'Consultar stock, pedidos y envíos en tiempo real' },
+      { key: 'woocommerce', name: 'WooCommerce',  desc: 'Catálogo y pedidos' },
+      { key: 'jumpseller',  name: 'Jumpseller',   desc: 'E-commerce Chile' },
+    ],
+  },
+  {
+    category: 'Notificaciones & Datos', icon: Bell, planRequired: 'starter',
+    integrations: [
+      { key: 'slack',         name: 'Slack',         desc: 'Alertas internas al equipo cuando hay un lead' },
+      { key: 'google_sheets', name: 'Google Sheets', desc: 'Inventario y precios en tiempo real' },
+      { key: 'airtable',      name: 'Airtable',      desc: 'Base de datos flexible como fuente de verdad' },
+    ],
+  },
 ];
 
-const PLAYBOOKS_DATA: Playbook[] = [
-  { id: 'p1', title: 'Lead → HubSpot + Slack', desc: 'Nuevo lead de WhatsApp → crear contacto en HubSpot + notificar Slack', tags: ['WhatsApp', 'HubSpot', 'Slack'], active: false },
-  { id: 'p2', title: 'Consulta de stock → Shopify', desc: 'Consulta de stock → verificar en Shopify → responder con disponibilidad', tags: ['Shopify', 'Chat'], active: false },
-  { id: 'p3', title: 'Solicitud de reunión → Calendar', desc: 'Solicitud de reunión → verificar Calendar → agendar y confirmar', tags: ['Google Calendar', 'WhatsApp'], active: false },
-  { id: 'p4', title: 'Lead calificado → Pipedrive', desc: 'Lead calificado por IA → crear deal en Pipedrive', tags: ['Pipedrive', 'Chat'], active: false },
-  { id: 'p5', title: 'Abandono de carrito → WA', desc: 'Abandono de carrito → enviar mensaje WhatsApp a las 2h', tags: ['WooCommerce', 'WhatsApp'], active: false },
-];
+const PLAN_ORDER = ['basic', 'starter', 'pro', 'enterprise'];
+
+function planCanAccess(clientPlan: string, required: string): boolean {
+  const ci = PLAN_ORDER.indexOf(clientPlan?.toLowerCase());
+  const ri = PLAN_ORDER.indexOf(required);
+  return ci >= ri;
+}
 
 export default function DashboardConnectPage() {
-  const [activeIntegrations, setActiveIntegrations] = useState<Integration[]>([]);
-  const [playbooks, setPlaybooks] = useState(PLAYBOOKS_DATA);
-  const [loading, setLoading] = useState(true);
-  const [planAllows, setPlanAllows] = useState(false);
-  const [actionsThisMonth, setActionsThisMonth] = useState(0);
+  const [integrationMap, setIntegrationMap]   = useState<Record<string, { enabled: boolean; updated_at: string }>>({});
+  const [loading, setLoading]                 = useState(true);
+  const [toggling, setToggling]               = useState<string | null>(null);
+  const [clientPlan, setClientPlan]           = useState('basic');
+  const [toast, setToast]                     = useState<{ msg: string; ok: boolean } | null>(null);
+  const supabase = createClient();
 
-  useEffect(() => {
-    async function load() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+  const showToast = (msg: string, ok = true) => {
+    setToast({ msg, ok });
+    setTimeout(() => setToast(null), 3500);
+  };
 
-      // Check plan allows Connect
-      const { data: sub } = await supabase
-        .from('subscriptions')
-        .select('plan')
-        .eq('client_id', user.id)
-        .single();
+  // Load integrations state + client plan
+  const loadData = useCallback(async () => {
+    setLoading(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { setLoading(false); return; }
 
-      const allowedPlans = ['Starter', 'Pro', 'Business', 'Enterprise'];
-      const plan = sub?.plan ?? '';
-      setPlanAllows(allowedPlans.some(p => plan.toLowerCase().includes(p.toLowerCase())));
-      setActionsThisMonth(Math.floor(Math.random() * 450) + 50); // Mock for now
-      setLoading(false);
+    // Get plan
+    const { data: sub } = await supabase
+      .from('subscriptions')
+      .select('plan')
+      .eq('client_id', user.id)
+      .maybeSingle();
+
+    if (sub?.plan) setClientPlan(sub.plan.toLowerCase());
+
+    // Get integration states
+    const res  = await fetch('/api/client/integrations');
+    const data = await res.json();
+    setIntegrationMap(data.integrations ?? {});
+    setLoading(false);
+  }, [supabase]);
+
+  useEffect(() => { loadData(); }, [loadData]);
+
+  const toggleIntegration = async (key: string, currentEnabled: boolean) => {
+    setToggling(key);
+    const newEnabled = !currentEnabled;
+
+    const res = await fetch('/api/client/integrations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ integration_key: key, enabled: newEnabled }),
+    });
+    const data = await res.json();
+
+    if (res.ok) {
+      setIntegrationMap(prev => ({
+        ...prev,
+        [key]: { enabled: newEnabled, updated_at: new Date().toISOString() },
+      }));
+      showToast(newEnabled ? `✅ Integración activada` : `🔌 Integración desactivada`, true);
+    } else {
+      showToast(`❌ Error: ${data.error ?? 'desconocido'}`, false);
     }
-    load();
-  }, []);
+    setToggling(null);
+  };
 
-  function togglePlaybook(id: string) {
-    setPlaybooks(prev => prev.map(p => p.id === id ? { ...p, active: !p.active } : p));
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center h-64">
-        <RefreshCw className="w-5 h-5 text-slate-400 animate-spin" />
-      </div>
-    );
-  }
-
-  if (!planAllows) {
-    return (
-      <div className="max-w-2xl mx-auto py-20 text-center">
-        <div className="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-          <Zap className="w-8 h-8 text-blue-600" />
-        </div>
-        <h2 className="text-2xl font-bold text-slate-900 mb-3">AIgenciaLab Connect</h2>
-        <p className="text-slate-500 mb-8">
-          El módulo Connect está disponible desde el plan Starter.
-          Conecta tu agente con CRMs, calendarios y más de 150 integraciones.
-        </p>
-        <a
-          href="/precios"
-          className="inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold transition-all"
-        >
-          Ver planes disponibles →
-        </a>
-      </div>
-    );
-  }
+  const activeCount = Object.values(integrationMap).filter(v => v.enabled).length;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-8 space-y-8">
-      {/* Header KPIs */}
-      <div>
-        <h1 className="text-2xl font-bold text-slate-900 mb-1">AIgenciaLab Connect</h1>
-        <p className="text-slate-500 text-sm mb-6">Conecta todos tus sistemas. Tu agente IA hace el resto.</p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            { label: 'Integraciones activas', value: activeIntegrations.filter(i => i.status === 'active').length.toString(), icon: Check, color: 'emerald' },
-            { label: 'Acciones este mes', value: actionsThisMonth.toLocaleString('es-CL'), icon: Zap, color: 'blue' },
-            { label: 'Playbooks activos', value: playbooks.filter(p => p.active).length.toString(), icon: Play, color: 'violet' },
-            { label: 'Uptime conectores', value: '99.8%', icon: CheckCircle, color: 'emerald' },
-          ].map(({ label, value, icon: Icon, color }) => {
-            const colors: Record<string, string> = {
-              emerald: 'bg-emerald-50 text-emerald-600',
-              blue:    'bg-blue-50 text-blue-600',
-              violet:  'bg-violet-50 text-violet-600',
-            };
+    <div className="space-y-8 pb-20 animate-in fade-in duration-700">
+
+      {/* Toast */}
+      {toast && (
+        <div className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-2xl text-sm font-medium shadow-xl animate-in slide-in-from-bottom-4 border ${
+          toast.ok ? 'bg-[#0e0e18] border-emerald-500/30 text-emerald-400' : 'bg-[#0e0e18] border-red-500/30 text-red-400'
+        }`}>
+          {toast.msg}
+        </div>
+      )}
+
+      {/* Header */}
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-white tracking-tight">AIgenciaLab Connect</h1>
+          <p className="text-[var(--muted)] mt-1">Conecta tu agente IA con tus herramientas de negocio. Los cambios se guardan automáticamente.</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full">
+            <Zap className="w-4 h-4 text-emerald-400" />
+            <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">{activeCount} activas</span>
+          </div>
+          <button onClick={loadData} className="p-2 hover:bg-white/5 rounded-xl transition text-[var(--muted)] hover:text-white">
+            <RefreshCw className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex items-center justify-center py-32">
+          <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+        </div>
+      ) : (
+        <div className="space-y-10">
+          {CATALOG.map(cat => {
+            const catIcon = cat.icon;
+            const CatIcon = catIcon;
+            const canAccess = planCanAccess(clientPlan, cat.planRequired);
+
             return (
-              <div key={label} className="bg-white border border-slate-200 rounded-xl p-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${colors[color]}`}>
-                    <Icon className="w-3.5 h-3.5" />
+              <div key={cat.category}>
+                <div className="flex items-center gap-3 mb-5">
+                  <div className={`p-2 rounded-xl border ${canAccess ? 'bg-purple-500/10 border-purple-500/20 text-purple-400' : 'bg-white/5 border-white/10 text-gray-600'}`}>
+                    <CatIcon className="w-5 h-5" />
                   </div>
-                  <span className="text-xs text-slate-500">{label}</span>
+                  <h2 className={`text-sm font-bold uppercase tracking-widest ${canAccess ? 'text-white' : 'text-gray-600'}`}>
+                    {cat.category}
+                  </h2>
+                  {!canAccess && (
+                    <span className="flex items-center gap-1 text-[10px] font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2 py-0.5 rounded-full">
+                      <Lock className="w-2.5 h-2.5" /> Plan {cat.planRequired.charAt(0).toUpperCase() + cat.planRequired.slice(1)}+
+                    </span>
+                  )}
                 </div>
-                <div className="text-2xl font-bold text-slate-900">{value}</div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {cat.integrations.map(intg => {
+                    const state   = integrationMap[intg.key];
+                    const enabled = state?.enabled ?? false;
+                    const isTogg  = toggling === intg.key;
+                    const locked  = !canAccess;
+
+                    return (
+                      <div
+                        key={intg.key}
+                        className={`glass rounded-2xl p-5 border transition-all ${
+                          locked     ? 'opacity-40 border-white/5' :
+                          enabled    ? 'border-emerald-500/30 bg-emerald-500/5 shadow-lg shadow-emerald-500/5' :
+                                       'border-[var(--border)] hover:border-white/20'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h3 className="text-sm font-bold text-white">{intg.name}</h3>
+                            <p className="text-[11px] text-[var(--muted)] mt-0.5 leading-relaxed">{intg.desc}</p>
+                          </div>
+                          <button
+                            disabled={locked || isTogg}
+                            onClick={() => toggleIntegration(intg.key, enabled)}
+                            className={`flex-shrink-0 ml-3 p-2 rounded-xl border transition-all ${
+                              locked   ? 'opacity-30 cursor-not-allowed border-white/10 text-gray-600' :
+                              enabled  ? 'bg-emerald-500/20 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30' :
+                                         'bg-white/5 border-white/10 text-gray-500 hover:border-white/20 hover:text-white'
+                            }`}
+                            title={locked ? 'Requiere upgrade de plan' : enabled ? 'Desactivar' : 'Activar'}
+                          >
+                            {isTogg ? (
+                              <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : locked ? (
+                              <Lock className="w-4 h-4" />
+                            ) : enabled ? (
+                              <CheckCircle2 className="w-4 h-4" />
+                            ) : (
+                              <Power className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/[0.04]">
+                          <div className={`w-1.5 h-1.5 rounded-full ${locked ? 'bg-gray-700' : enabled ? 'bg-emerald-400 animate-pulse' : 'bg-gray-600'}`} />
+                          <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                            locked ? 'text-gray-600' : enabled ? 'text-emerald-400' : 'text-gray-600'
+                          }`}>
+                            {locked ? 'Bloqueado' : enabled ? 'Activa' : 'Inactiva'}
+                          </span>
+                          {!locked && state?.updated_at && (
+                            <span className="text-[9px] text-gray-700 ml-auto">
+                              {new Date(state.updated_at).toLocaleDateString('es-CL')}
+                            </span>
+                          )}
+                          {locked && (
+                            <a href="/dashboard/billing" className="ml-auto text-[10px] text-purple-400 hover:text-purple-300 font-bold transition">
+                              Upgrade →
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             );
           })}
         </div>
-      </div>
+      )}
 
-      {/* Playbooks */}
-      <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+      {/* Info banner */}
+      <div className="glass rounded-2xl p-6 border border-blue-500/10 bg-blue-500/5">
+        <div className="flex items-start gap-4">
+          <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
           <div>
-            <h2 className="font-bold text-slate-900">Playbooks de automatización</h2>
-            <p className="text-xs text-slate-500 mt-0.5">Flujos listos para activar con un clic</p>
+            <h4 className="text-sm font-bold text-blue-400 mb-1">¿Cómo funciona Connect?</h4>
+            <p className="text-xs text-[var(--muted)] leading-relaxed">
+              Al activar una integración, tu agente IA podrá comunicarse con esa herramienta en tiempo real.
+              Por ejemplo: cuando se capture un nuevo lead, se creará automáticamente en HubSpot y se notificará a Slack.
+              Las credenciales y configuración avanzada se gestionan desde <a href="/dashboard/settings" className="text-blue-400 hover:underline">Configuración → Integraciones</a>.
+            </p>
           </div>
-          <button className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-3 py-2 rounded-lg transition-colors">
-            <Plus className="w-3.5 h-3.5" /> Crear flujo
-          </button>
-        </div>
-        <div className="divide-y divide-slate-100">
-          {playbooks.map((pb) => (
-            <div key={pb.id} className="flex items-center gap-4 px-6 py-4">
-              <div className={`w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0 ${pb.active ? 'bg-emerald-50' : 'bg-slate-50'}`}>
-                <Play className={`w-4 h-4 ${pb.active ? 'text-emerald-500' : 'text-slate-400'}`} />
-              </div>
-              <div className="flex-1">
-                <div className="font-semibold text-slate-900 text-sm mb-0.5">{pb.title}</div>
-                <div className="text-xs text-slate-500 mb-1.5">{pb.desc}</div>
-                <div className="flex gap-1">
-                  {pb.tags.map(t => (
-                    <span key={t} className="text-xs bg-blue-50 text-blue-600 border border-blue-100 px-1.5 py-0.5 rounded-full">{t}</span>
-                  ))}
-                </div>
-              </div>
-              <button
-                onClick={() => togglePlaybook(pb.id)}
-                className={`flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border transition-all ${
-                  pb.active
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-slate-50 text-slate-600 border-slate-200 hover:border-blue-300'
-                }`}
-              >
-                <Power className="w-3 h-3" />
-                {pb.active ? 'Activo' : 'Activar'}
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Integration Catalog */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-bold text-slate-900">Catálogo de integraciones</h2>
-          <span className="text-xs text-slate-500">150+ disponibles</span>
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {CATALOG.map(({ category, icon: CatIcon, integrations }) => (
-            <div key={category} className="bg-white border border-slate-200 rounded-2xl overflow-hidden">
-              <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-100 bg-slate-50">
-                <CatIcon className="w-4 h-4 text-blue-600" />
-                <span className="text-xs font-bold text-slate-600 uppercase tracking-wide">{category}</span>
-              </div>
-              <div className="divide-y divide-slate-50">
-                {integrations.map(({ name, desc }) => {
-                  const isActive = activeIntegrations.some(i => i.name === name && i.status === 'active');
-                  return (
-                    <div key={name} className="flex items-center gap-3 px-4 py-3">
-                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${isActive ? 'bg-emerald-400' : 'bg-slate-200'}`} />
-                      <div className="flex-1">
-                        <div className="text-sm font-medium text-slate-800">{name}</div>
-                        <div className="text-xs text-slate-400">{desc}</div>
-                      </div>
-                      <button className={`text-xs px-2.5 py-1 rounded-lg font-medium border transition-all flex items-center gap-1 ${
-                        isActive
-                          ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                          : 'bg-white text-slate-600 border-slate-200 hover:border-blue-300 hover:text-blue-600'
-                      }`}>
-                        {isActive ? <><Check className="w-3 h-3" /> Activo</> : <><Plus className="w-3 h-3" /> Conectar</>}
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

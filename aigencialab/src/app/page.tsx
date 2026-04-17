@@ -10,12 +10,12 @@ export const metadata: Metadata = {
 }
 
 const services = [
-  { icon: '🛒', title: 'Sales & Inventory Sync', desc: 'Sincronización bidireccional de stock en tiempo real con WooCommerce y Shopify.', tags: ['REST/GraphQL','WooCommerce','Shopify'] },
-  { icon: '🚚', title: 'Logística & Trazabilidad', desc: 'Tracking de última milla y alertas automáticas de SLA con Starken y Chilexpress.', tags: ['Starken','Chilexpress','WhatsApp'] },
-  { icon: '📊', title: 'Business Intelligence', desc: 'Forecasting de demanda, detección de churn y segmentación de clientes con IA.', tags: ['ML Predictivo','BI','Alertas'] },
-  { icon: '🔒', title: 'Ciberseguridad', desc: 'WAF, detección de anomalías y auditoría de cumplimiento Ley N°21.663.', tags: ['Ley 21.663','WAF','CSIRT'] },
-  { icon: '💬', title: 'Soporte Omnicanal 24/7', desc: 'Agente LLM (GPT-4o/Gemini) que responde consultas complejas vía RAG y escala a humano.', tags: ['Omnicanalidad','RAG / LLMs','SLA'] },
-  { icon: '🤖', title: 'RPA Inteligente', desc: 'Facturación automática en SII, conciliaciones ERP financieras y reportes automáticos.', tags: ['RPA','SII','Defontana'] },
+  { icon: '🛒', title: 'Sales & Inventory Sync', desc: 'Sincronización bidireccional de stock en tiempo real con WooCommerce y Shopify.', tags: ['REST/GraphQL', 'WooCommerce', 'Shopify'] },
+  { icon: '🚚', title: 'Logística & Trazabilidad', desc: 'Tracking de última milla y alertas automáticas de SLA con Starken y Chilexpress.', tags: ['Starken', 'Chilexpress', 'WhatsApp'] },
+  { icon: '📊', title: 'Business Intelligence', desc: 'Forecasting de demanda, detección de churn y segmentación de clientes con IA.', tags: ['ML Predictivo', 'BI', 'Alertas'] },
+  { icon: '🔒', title: 'Ciberseguridad', desc: 'WAF, detección de anomalías y auditoría de cumplimiento Ley N°21.663.', tags: ['Ley 21.663', 'WAF', 'CSIRT'] },
+  { icon: '💬', title: 'Soporte Omnicanal 24/7', desc: 'Agente LLM (GPT-4o/Gemini) que responde consultas complejas vía RAG y escala a humano.', tags: ['Omnicanalidad', 'RAG / LLMs', 'SLA'] },
+  { icon: '🤖', title: 'RPA Inteligente', desc: 'Facturación automática en SII, conciliaciones ERP financieras y reportes automáticos.', tags: ['RPA', 'SII', 'Defontana'] },
 ]
 
 // Pricing data now sourced from PLANS_LIST via LandingPricing component
@@ -26,7 +26,7 @@ export default function LandingPage() {
   return (
     <MainLayout>
       {/* ── HEADER ── */}
-      
+
 
       <main className="pt-16">
         {/* ── HERO ── */}
@@ -50,7 +50,7 @@ export default function LandingPage() {
                   🔍 Auditar mi Negocio — Gratis
                 </Link>
                 <a href={`https://wa.me/${waNumber}`} target="_blank" rel="noreferrer"
-                   className="inline-flex items-center gap-2 bg-[#25d366] text-white px-8 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-all hover:scale-105">
+                  className="inline-flex items-center gap-2 bg-[#25d366] text-white px-8 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-all hover:scale-105">
                   💬 Hablar con un Experto
                 </a>
                 <Link href="/dashboard" className="inline-flex items-center gap-2 border border-white/10 text-slate-300 px-6 py-4 rounded-xl font-medium hover:border-white/20 hover:text-white transition-colors">
@@ -67,10 +67,10 @@ export default function LandingPage() {
         {/* ── BENCHMARK / INFORMATION GAIN ── */}
         <section className="py-12 border-t border-white/5 bg-blue-900/10" aria-label="Benchmark y Casos de Éxito Aigencialab">
           <div className="max-w-6xl mx-auto px-6 text-center">
-             <div className="inline-block text-xs font-semibold uppercase tracking-widest text-blue-400 bg-blue-400/10 px-3 py-1 rounded-full mb-4">Benchmark Local Chile 2026</div>
-             <p className="text-xl text-slate-300 font-medium max-w-4xl mx-auto leading-relaxed">
-                "Según datos operativos de AigenciaLab, nuestra arquitectura **RPA (Robotic Process Automation)** y agentes **LLM** lograron reducir el tiempo de conciliación del **SII y Defontana** en un <span className="text-emerald-400 font-bold">84%</span>, incrementando paralelamente la retención de clientes en un <span className="text-emerald-400 font-bold">32%</span> para e-commerce chilenos."
-             </p>
+            <div className="inline-block text-xs font-semibold uppercase tracking-widest text-blue-400 bg-blue-400/10 px-3 py-1 rounded-full mb-4">Benchmark Local Chile 2026</div>
+            <p className="text-xl text-slate-300 font-medium max-w-4xl mx-auto leading-relaxed">
+              "Según datos operativos de AigenciaLab, nuestra arquitectura **RPA (Robotic Process Automation)** y agentes **LLM** lograron reducir el tiempo de conciliación del **SII y Defontana** en un <span className="text-emerald-400 font-bold">84%</span>, incrementando paralelamente la retención de clientes en un <span className="text-emerald-400 font-bold">32%</span> para e-commerce chilenos."
+            </p>
           </div>
         </section>
 
@@ -78,17 +78,17 @@ export default function LandingPage() {
         <section className="py-20 border-t border-white/5 bg-gradient-to-b from-transparent to-[#0d0f1a]">
           <div className="max-w-4xl mx-auto px-6 text-center">
             <div className="inline-block bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-sm px-4 py-2 rounded-full mb-6">
-              🎁 100% Gratuito · Sin tarjeta · Resultado en 30 segundos
+              🎁 100% Gratuito · Resultado en 30 segundos
             </div>
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              Descubre en 30 segundos dónde<br/>
+              Descubre en 30 segundos dónde<br />
               <span className="text-gradient">pierde dinero tu negocio</span>
             </h2>
             <p className="text-slate-400 mb-10 text-lg">
               Análisis real con Google PageSpeed + IA. Recibes score, problemas y oportunidades de automatización al instante.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
-              {[['⚡','Velocidad Web'],['📊','UX / Conversión'],['🔍','SEO Técnico'],['💳','Checkout'],['🤖','Atención IA']].map(([icon,label])=>(
+              {[['⚡', 'Velocidad Web'], ['📊', 'UX / Conversión'], ['🔍', 'SEO Técnico'], ['💳', 'Checkout'], ['🤖', 'Atención IA']].map(([icon, label]) => (
                 <div key={label} className="glass rounded-xl p-4 text-center">
                   <div className="text-2xl mb-2">{icon}</div>
                   <div className="text-sm font-medium text-slate-300">{label}</div>
@@ -144,7 +144,7 @@ export default function LandingPage() {
                 </div>
               ))}
             </div>
-            
+
             {/* CISO STATEMENT (E-E-A-T) */}
             <div className="mt-8 glass rounded-2xl p-6 md:p-8 text-left border border-blue-500/20" aria-label="Declaración de Ciberseguridad CISO">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-4 mb-4 md:mb-2">
@@ -169,39 +169,41 @@ export default function LandingPage() {
       {/* Schema.org JSON-LD structured data */}
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify([
-          {
-            "@context": "https://schema.org",
-            "@type": "Organization",
-            "name": "AIgenciaLab",
-            "url": "https://aigencialab.cl",
-            "logo": "https://aigencialab.cl/og-image.png",
-            "description": "Plataforma SaaS de agentes IA autónomos para empresas chilenas. Automatiza ventas, soporte y backoffice.",
-            "address": { "@type": "PostalAddress", "addressCountry": "CL" },
-            "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "availableLanguage": "Spanish" },
-            "sameAs": ["https://aigencialab.cl"]
-          },
-          {
-            "@context": "https://schema.org",
-            "@type": "SoftwareApplication",
-            "name": "AIgenciaLab",
-            "applicationCategory": "BusinessApplication",
-            "operatingSystem": "Web",
-            "url": "https://aigencialab.cl",
-            "description": "Agentes IA conversacionales para automatizar ventas, soporte y captación de leads en empresas chilenas.",
-            "offers": {
-              "@type": "Offer",
-              "price": "45",
-              "priceCurrency": "USD",
-              "priceValidUntil": "2027-12-31"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify([
+            {
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "AIgenciaLab",
+              "url": "https://aigencialab.cl",
+              "logo": "https://aigencialab.cl/og-image.png",
+              "description": "Plataforma SaaS de agentes IA autónomos para empresas chilenas. Automatiza ventas, soporte y backoffice.",
+              "address": { "@type": "PostalAddress", "addressCountry": "CL" },
+              "contactPoint": { "@type": "ContactPoint", "contactType": "sales", "availableLanguage": "Spanish" },
+              "sameAs": ["https://aigencialab.cl"]
             },
-            "aggregateRating": {
-              "@type": "AggregateRating",
-              "ratingValue": "4.8",
-              "reviewCount": "47"
+            {
+              "@context": "https://schema.org",
+              "@type": "SoftwareApplication",
+              "name": "AIgenciaLab",
+              "applicationCategory": "BusinessApplication",
+              "operatingSystem": "Web",
+              "url": "https://aigencialab.cl",
+              "description": "Agentes IA conversacionales para automatizar ventas, soporte y captación de leads en empresas chilenas.",
+              "offers": {
+                "@type": "Offer",
+                "price": "45",
+                "priceCurrency": "USD",
+                "priceValidUntil": "2027-12-31"
+              },
+              "aggregateRating": {
+                "@type": "AggregateRating",
+                "ratingValue": "4.8",
+                "reviewCount": "47"
+              }
             }
-          }
-        ]) }}
+          ])
+        }}
       />
 
       {/* Footer via MainLayout */}
