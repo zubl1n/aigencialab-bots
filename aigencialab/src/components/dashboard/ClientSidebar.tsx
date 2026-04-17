@@ -24,22 +24,31 @@ import {
   Zap,
   AlertTriangle,
   TicketIcon,
+  Lock,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Client, BotConfig } from '@/types/client';
 
+// requiresPlan: minimum plan needed to access this nav item
 const navItems = [
-  { name: 'Inicio',         href: '/dashboard',              icon: Home },
-  { name: 'Mi bot',         href: '/dashboard/bot',          icon: Bot,          showStatus: true },
-  { name: 'Conversaciones', href: '/dashboard/conversations', icon: MessageSquare },
-  { name: 'Leads capturados',href: '/dashboard/leads',       icon: Target },
-  { name: 'Instalación',   href: '/dashboard/installation',  icon: Download },
-  { name: 'Connect',       href: '/dashboard/connect',       icon: Zap },
-  { name: 'Facturación',   href: '/dashboard/billing',       icon: CreditCard },
-  { name: 'Tickets',       href: '/dashboard/tickets',       icon: TicketIcon,   showUnread: true },
-  { name: 'Soporte',       href: '/dashboard/support',       icon: HelpCircle },
-  { name: 'Configuración', href: '/dashboard/settings',      icon: Settings },
+  { name: 'Inicio',           href: '/dashboard',              icon: Home },
+  { name: 'Mi bot',           href: '/dashboard/bot',          icon: Bot,         showStatus: true },
+  { name: 'Conversaciones',   href: '/dashboard/conversations', icon: MessageSquare },
+  { name: 'Leads capturados', href: '/dashboard/leads',        icon: Target },
+  { name: 'Instalación',     href: '/dashboard/installation', icon: Download },
+  { name: 'Connect',          href: '/dashboard/connect',      icon: Zap,         requiresPlan: 'starter' },
+  { name: 'Facturación',     href: '/dashboard/billing',      icon: CreditCard },
+  { name: 'Tickets',          href: '/dashboard/tickets',      icon: TicketIcon,  showUnread: true },
+  { name: 'Soporte',          href: '/dashboard/support',      icon: HelpCircle },
+  { name: 'Configuración',   href: '/dashboard/settings',     icon: Settings },
 ];
+
+const PLAN_ORDER = ['basic', 'starter', 'pro', 'enterprise'];
+function planHasAccess(clientPlan: string, required: string): boolean {
+  const ci = PLAN_ORDER.indexOf((clientPlan ?? '').toLowerCase());
+  const ri = PLAN_ORDER.indexOf(required.toLowerCase());
+  return ci >= 0 && ri >= 0 && ci >= ri;
+}
 
 export function ClientSidebar() {
   const pathname = usePathname();
@@ -51,6 +60,7 @@ export function ClientSidebar() {
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
   const [trialExpired, setTrialExpired] = useState(false);
   const [unreadTickets, setUnreadTickets] = useState(0);
+  const [clientPlan, setClientPlan] = useState('basic');
   const supabase = createClient();
 
   useEffect(() => {
@@ -61,9 +71,7 @@ export function ClientSidebar() {
       const [clientRes, botRes, subRes, ticketsRes] = await Promise.all([
         supabase.from('clients').select('*').eq('id', user.id).single(),
         supabase.from('bot_configs').select('*').eq('client_id', user.id).single(),
-        // FASE 2: read trial_ends_at from subscriptions
-        supabase.from('subscriptions').select('trial_ends_at').eq('client_id', user.id).single(),
-        // Unread tickets count (unread_client = true and status != closed)
+        supabase.from('subscriptions').select('trial_ends_at, plan').eq('client_id', user.id).single(),
         supabase.from('tickets')
           .select('id', { count: 'exact', head: true })
           .eq('client_id', user.id)
@@ -75,7 +83,10 @@ export function ClientSidebar() {
       if (botRes.data) setBotConfig(botRes.data);
       if ((ticketsRes.count ?? 0) > 0) setUnreadTickets(ticketsRes.count ?? 0);
 
-      // FASE 2: compute trial from subscriptions, fallback to clients
+      // Set client plan from subscriptions or clients table
+      const plan = subRes.data?.plan ?? (clientRes.data as any)?.plan ?? 'basic';
+      setClientPlan((plan as string).toLowerCase());
+
       const trialEndStr = subRes.data?.trial_ends_at ?? (clientRes.data as any)?.trial_ends_at;
       if (trialEndStr) {
         const daysLeft = Math.ceil((new Date(trialEndStr).getTime() - Date.now()) / 86400000);
@@ -201,8 +212,37 @@ export function ClientSidebar() {
 
         {/* Navigation */}
         <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
-          {navItems.map((item) => {
+        {navItems.map((item) => {
             const isActive = pathname === item.href;
+            const isLocked = !!(item.requiresPlan && !planHasAccess(clientPlan, item.requiresPlan));
+
+            if (isLocked) {
+              return (
+                <div
+                  key={item.href}
+                  title={`Requiere plan ${item.requiresPlan?.charAt(0).toUpperCase()}${item.requiresPlan?.slice(1)} o superior`}
+                  className={`
+                    flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg opacity-40 cursor-not-allowed group relative
+                    ${isCollapsed ? 'justify-center' : ''}
+                    text-muted-foreground
+                  `}
+                >
+                  <item.icon size={18} />
+                  {!isCollapsed && (
+                    <>
+                      <span className="flex-1">{item.name}</span>
+                      <Lock size={12} className="opacity-60" />
+                    </>
+                  )}
+                  {isCollapsed && (
+                    <div className="absolute left-14 invisible group-hover:visible bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap z-[100]">
+                      {item.name} 🔒 Plan {item.requiresPlan}
+                    </div>
+                  )}
+                </div>
+              );
+            }
+
             return (
               <Link
                 key={item.href}
@@ -240,6 +280,7 @@ export function ClientSidebar() {
               </Link>
             );
           })}
+
         </nav>
 
         {/* Footer */}

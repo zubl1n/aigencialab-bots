@@ -53,8 +53,8 @@ export default function LandingPage() {
                   className="inline-flex items-center gap-2 bg-[#25d366] text-white px-8 py-4 rounded-xl font-semibold text-lg hover:opacity-90 transition-all hover:scale-105">
                   💬 Hablar con un Experto
                 </a>
-                <Link href="/dashboard" className="inline-flex items-center gap-2 border border-white/10 text-slate-300 px-6 py-4 rounded-xl font-medium hover:border-white/20 hover:text-white transition-colors">
-                  Dashboard →
+                <Link href="/precios" className="inline-flex items-center gap-2 border border-white/10 text-slate-300 px-6 py-4 rounded-xl font-medium hover:border-white/20 hover:text-white transition-colors">
+                  Ver Planes →
                 </Link>
               </div>
               <div className="mt-10 text-sm text-slate-500 reveal">

@@ -51,8 +51,12 @@ async function logAudit(supabase: ReturnType<typeof getAdminSupabase>, event: st
   await supabase.from('audit_logs').insert({ event, module: 'payment', metadata: meta })
 }
 
-// ── Main handler ────────────────────────────────────────────
+// ── Main handler — DEPRECATED v1 ────────────────────────────
+// This webhook handles legacy subscriptions created before the v2 checkout.
+// New subscriptions use /api/v2/webhooks/mp instead.
+// Keep active for compatibility with existing MP subscriptions.
 export async function POST(request: NextRequest) {
+  console.warn('[Webhook v1 DEPRECATED] Received event — consider migrating to /api/v2/webhooks/mp')
   // Always respond 200 — MP will retry on non-200
   try {
     const supabase = getAdminSupabase()

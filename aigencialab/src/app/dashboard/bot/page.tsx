@@ -7,26 +7,39 @@ import {
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
-/* ── Free/low-cost AI models available ─────────────────────────── */
-const FREE_MODELS = [
-  // ── Groq (free tier) — modelos ACTIVOS abril 2025 ──
-  { value: 'llama-3.1-8b-instant',    label: 'Llama 3.1 8B Instant (Groq — Gratis)',    provider: 'Groq',   tier: 'free' },
-  { value: 'gemma2-9b-it',            label: 'Gemma 2 9B (Groq — Gratis)',               provider: 'Groq',   tier: 'free' },
-  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B Versatile (Groq — Gratis)', provider: 'Groq',   tier: 'free' },
-  { value: 'compound-beta',           label: 'Compound Beta (Groq — Gratis)',             provider: 'Groq',   tier: 'free' },
-  // ── Google Gemini ──
-  { value: 'gemini-1.5-flash',        label: 'Gemini Flash 1.5 (Google — Gratis)',       provider: 'Google', tier: 'free' },
-  // ── OpenAI (requiere OPENAI_API_KEY) ──
-  { value: 'gpt-4o-mini',             label: 'GPT-4o Mini (OpenAI — Requiere clave)',    provider: 'OpenAI', tier: 'pro' },
+/* ── AI models catalog with plan gating ───────────────────────── */
+const ALL_MODELS = [
+  // ── Basic plan (included in all plans) ──
+  { value: 'llama-3.1-8b-instant',    label: 'Llama 3.1 8B Instant',      provider: 'Groq',    minPlan: 'basic' },
+  { value: 'gemma2-9b-it',            label: 'Gemma 2 9B',                 provider: 'Groq',    minPlan: 'basic' },
+  { value: 'llama-3.3-70b-versatile', label: 'Llama 3.3 70B Versatile',   provider: 'Groq',    minPlan: 'basic' },
+  { value: 'compound-beta',           label: 'Compound Beta',              provider: 'Groq',    minPlan: 'basic' },
+  { value: 'gemini-1.5-flash',        label: 'Gemini Flash 1.5',           provider: 'Google',  minPlan: 'basic' },
+  // ── Starter+ ──
+  { value: 'gpt-4o-mini',             label: 'GPT-4o Mini',                provider: 'OpenAI',  minPlan: 'starter' },
+  { value: 'gemini-2.0-flash',        label: 'Gemini 2.0 Flash',           provider: 'Google',  minPlan: 'starter' },
+  // ── Pro+ ──
+  { value: 'gpt-4o',                  label: 'GPT-4o',                     provider: 'OpenAI',  minPlan: 'pro' },
+  { value: 'claude-3-5-sonnet',       label: 'Claude 3.5 Sonnet',          provider: 'Anthropic', minPlan: 'pro' },
+  { value: 'gemini-2.5-pro',          label: 'Gemini 2.5 Pro',             provider: 'Google',  minPlan: 'pro' },
 ] as const;
 
-type ModelValue = (typeof FREE_MODELS)[number]['value'];
+type ModelValue = (typeof ALL_MODELS)[number]['value'];
+
+const PLAN_ORDER = ['basic', 'starter', 'pro', 'enterprise'];
+function planCanUseModel(clientPlan: string, minPlan: string): boolean {
+  const ci = PLAN_ORDER.indexOf((clientPlan ?? '').toLowerCase());
+  const ri = PLAN_ORDER.indexOf(minPlan);
+  return ci >= 0 && ri >= 0 && ci >= ri;
+}
 
 const PROVIDER_COLORS: Record<string, string> = {
-  Groq:   'bg-orange-500/10 text-orange-400 border-orange-500/20',
-  Google: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  OpenAI: 'bg-green-500/10 text-green-400 border-green-500/20',
+  Groq:      'bg-orange-500/10 text-orange-400 border-orange-500/20',
+  Google:    'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  OpenAI:    'bg-green-500/10 text-green-400 border-green-500/20',
+  Anthropic: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
 };
+
 
 export default function MyBotPage() {
   const [botConfig, setBotConfig]   = useState<any>(null);
@@ -38,25 +51,36 @@ export default function MyBotPage() {
   const [testMsg,   setTestMsg]     = useState('');
   const [testReply, setTestReply]   = useState('');
   const [testing,   setTesting]     = useState(false);
+  const [clientPlan, setClientPlan] = useState('basic');
 
   const supabase = createClient();
+
+  // Compute available models based on plan
+  const availableModels = ALL_MODELS.map(m => ({
+    ...m,
+    enabled: planCanUseModel(clientPlan, m.minPlan),
+  }));
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) { setLoading(false); return; }
 
-    const [{ data: bConfig }, { data: cData }] = await Promise.all([
+    const [{ data: bConfig }, { data: cData }, { data: subData }] = await Promise.all([
       supabase.from('bot_configs').select('*').eq('client_id', user.id).maybeSingle(),
       supabase.from('clients').select('*').eq('id', user.id).maybeSingle(),
+      supabase.from('subscriptions').select('plan').eq('client_id', user.id).maybeSingle(),
     ]);
 
     if (bConfig) setBotConfig(bConfig);
     if (cData) setClient(cData);
+    const plan = subData?.plan ?? cData?.plan ?? 'basic';
+    setClientPlan((plan as string).toLowerCase());
     setLoading(false);
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
+
 
   const handleSave = async () => {
     if (!botConfig?.id) return;
@@ -121,8 +145,10 @@ export default function MyBotPage() {
     );
   }
 
-  const isPro = client?.plan && client.plan !== 'Starter';
-  const selectedModel = FREE_MODELS.find(m => m.value === botConfig.model) ?? FREE_MODELS[0];
+  const isPro = ['pro', 'enterprise'].includes(clientPlan);
+  // selectedModel kept for backward compat — use ALL_MODELS now
+  // (actual active model display is in the model selector section)
+
 
   return (
     <div className="space-y-8 animate-in fade-in duration-700">
@@ -225,9 +251,9 @@ export default function MyBotPage() {
             <p className="text-xs text-[var(--muted)]">El modelo seleccionado procesa TODAS las conversaciones reales de tus usuarios. Puedes cambiar en cualquier momento.</p>
 
             <div className="space-y-2">
-              {FREE_MODELS.map((m) => {
-                const isSelected = (botConfig.model ?? 'llama3-8b-8192') === m.value;
-                const isLocked   = m.tier === 'pro' && !isPro;
+              {availableModels.map((m) => {
+                const isSelected = (botConfig.model ?? 'llama-3.1-8b-instant') === m.value;
+                const isLocked   = !m.enabled;
                 return (
                   <button
                     key={m.value}
@@ -249,10 +275,12 @@ export default function MyBotPage() {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      {m.tier === 'free'
-                        ? <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">GRATIS</span>
-                        : <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 flex items-center gap-1"><Lock className="w-2.5 h-2.5" /> Pro</span>
-                      }
+                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full border ${PROVIDER_COLORS[m.provider]}`}>{m.provider}</span>
+                      {isLocked && (
+                        <span className="text-[9px] font-bold px-2 py-0.5 rounded-full bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 flex items-center gap-1">
+                          <Lock className="w-2.5 h-2.5" /> {m.minPlan.charAt(0).toUpperCase() + m.minPlan.slice(1)}+
+                        </span>
+                      )}
                     </div>
                   </button>
                 );
@@ -260,9 +288,14 @@ export default function MyBotPage() {
             </div>
 
             {/* Active model summary */}
-            <div className={`p-4 rounded-xl border text-xs ${PROVIDER_COLORS[selectedModel.provider]}`}>
-              <strong>Activo:</strong> {selectedModel.label} — responderá a todos tus usuarios en tiempo real.
-            </div>
+            {(() => {
+              const activeModel = ALL_MODELS.find(m => m.value === (botConfig.model ?? 'llama-3.1-8b-instant')) ?? ALL_MODELS[0];
+              return (
+                <div className={`p-4 rounded-xl border text-xs ${PROVIDER_COLORS[activeModel.provider]}`}>
+                  <strong>Activo:</strong> {activeModel.label} ({activeModel.provider}) — responderá a todos tus usuarios en tiempo real.
+                </div>
+              );
+            })()}
           </div>
 
           {/* ── Prompt / Personalidad ─────────────────────── */}
@@ -394,7 +427,7 @@ export default function MyBotPage() {
               <MessageSquare className="w-4 h-4 text-emerald-400" />
               Probar Agente en Vivo (Real)
             </h4>
-            <p className="text-[10px] text-[var(--muted)]">Envía un mensaje real al motor IA ({selectedModel.label}) para verificar que responde correctamente.</p>
+            <p className="text-[10px] text-[var(--muted)]">Envía un mensaje real al motor IA ({(ALL_MODELS.find(m => m.value === (botConfig?.model ?? 'llama-3.1-8b-instant')) ?? ALL_MODELS[0]).label}) para verificar que responde correctamente.</p>
             <div className="flex gap-2">
               <input
                 type="text"
@@ -412,7 +445,8 @@ export default function MyBotPage() {
                 {testing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
               </button>
             </div>
-            {testing && <p className="text-xs text-[var(--muted)] animate-pulse">Llamando a {selectedModel.label}…</p>}
+            {testing && <p className="text-xs text-[var(--muted)] animate-pulse">Llamando a {(ALL_MODELS.find(m => m.value === (botConfig?.model ?? 'llama-3.1-8b-instant')) ?? ALL_MODELS[0]).label}…</p>}
+
             {testReply && !testing && (
               <div className="p-3 bg-emerald-500/5 border border-emerald-500/20 rounded-xl text-xs text-emerald-300 leading-relaxed">
                 <strong className="block text-emerald-400 mb-1">Respuesta real del agente:</strong>
