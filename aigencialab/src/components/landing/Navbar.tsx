@@ -87,7 +87,7 @@ export function Navbar() {
             <Link href="/login" className="text-[#A09CB0] hover:text-[#F1F0F5] text-sm transition-colors px-2 py-2">
               Iniciar sesión
             </Link>
-            <Link href="/register" className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
+            <Link href="/precios" className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-4 py-2 rounded-lg text-sm font-semibold transition-all">
               Comenzar gratis
             </Link>
           </div>
@@ -138,7 +138,7 @@ export function Navbar() {
           <Link href="/blog" className="block text-[#A09CB0] py-2 font-semibold">Blog</Link>
           <hr className="border-white/10 my-2" />
           <Link href="/audit" className="block text-center border border-[#7C3AED]/50 text-[#C084FC] py-2.5 rounded-xl font-semibold">Auditoría Gratis</Link>
-          <Link href="/register" className="block text-center bg-[#7C3AED] text-white py-2.5 rounded-xl font-semibold mt-2">Comenzar gratis</Link>
+          <Link href="/precios" className="block text-center bg-[#7C3AED] text-white py-2.5 rounded-xl font-semibold mt-2">Comenzar gratis</Link>
         </div>
       )}
     </nav>

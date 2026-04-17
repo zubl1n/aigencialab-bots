@@ -61,8 +61,8 @@ export function ProductPageTemplate({
           </h1>
           <p className="text-[#A09CB0] text-lg md:text-xl max-w-2xl mx-auto mb-10">{subtitle}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register" className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-8 py-4 rounded-xl font-bold transition hover:shadow-[0_8px_30px_rgba(124,58,237,0.4)]">
-              Probar gratis 14 días →
+            <Link href="/precios" className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-8 py-4 rounded-xl font-bold transition hover:shadow-[0_8px_30px_rgba(124,58,237,0.4)]">
+              Ver Planes y Empezar →
             </Link>
             <Link href="/audit" className="border border-[#7C3AED]/40 text-[#C084FC] hover:bg-[#7C3AED]/10 px-8 py-4 rounded-xl font-semibold transition">
               Auditoría Gratis

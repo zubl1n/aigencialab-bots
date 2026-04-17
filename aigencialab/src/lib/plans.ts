@@ -49,11 +49,12 @@ export const PLANS_LIST: Plan[] = [
     isContact: false,
     trialDays: 14,
     ctaLabel: 'Comenzar prueba gratis',
-    ctaHref: '/register',
+    ctaHref: '/checkout/starter',
     features: [
       { text: 'Widget de chat en tu sitio web', included: true },
       { text: '1 Agente IA conversacional', included: true },
       { text: '3 Chatbots programables', included: true },
+
       { text: '500 conversaciones/mes', included: true },
       { text: 'Captura de leads automática', included: true },
       { text: 'Panel de leads básico', included: true },
@@ -77,11 +78,12 @@ export const PLANS_LIST: Plan[] = [
     isContact: false,
     trialDays: 14,
     ctaLabel: 'Comenzar prueba gratis',
-    ctaHref: '/register',
+    ctaHref: '/checkout/pro',
     features: [
       { text: 'Todo lo de Starter', included: true },
       { text: '3 Agentes IA especializados', included: true },
       { text: '10 Chatbots IA', included: true },
+
       { text: '2.000 conversaciones IA/mes', included: true },
       { text: 'CRM de leads integrado', included: true },
       { text: 'Historial de conversaciones', included: true },
@@ -104,11 +106,12 @@ export const PLANS_LIST: Plan[] = [
     isContact: false,
     trialDays: 14,
     ctaLabel: 'Comenzar prueba gratis',
-    ctaHref: '/register',
+    ctaHref: '/checkout/business',
     features: [
       { text: 'Todo lo de Pro', included: true },
       { text: '5 Agentes IA especializados', included: true },
       { text: '20 Chatbots IA', included: true },
+
       { text: '4.000 conversaciones IA/mes', included: true },
       { text: 'Mensajes salientes (HSM)', included: true },
       { text: 'Integración WhatsApp API oficial', included: true },

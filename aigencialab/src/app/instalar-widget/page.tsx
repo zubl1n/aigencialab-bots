@@ -61,10 +61,10 @@ export default function InstalarWidgetPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/register"
+              href="/precios"
               className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-8 py-4 rounded-xl font-bold text-lg transition"
             >
-              Obtener mi API Key gratis →
+              Obtener mi API Key →
             </Link>
             <Link
               href="/audit"
@@ -98,8 +98,8 @@ export default function InstalarWidgetPage() {
                   <p className="text-sm font-semibold text-[#C084FC] mb-1">¿No tienes tu API Key aún?</p>
                   <p className="text-sm text-[#A09CB0]">
                     Regístrate gratis y obtén tu clave en menos de 3 minutos.{' '}
-                    <Link href="/register" className="text-[#7C3AED] hover:text-[#C084FC] font-semibold">
-                      Crear cuenta →
+                    <Link href="/precios" className="text-[#7C3AED] hover:text-[#C084FC] font-semibold">
+                      Ver planes →
                     </Link>
                   </p>
                 </div>
@@ -179,8 +179,8 @@ export default function InstalarWidgetPage() {
             tu sitio web tendrá un asistente IA conversacional funcionando 24/7.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/register" className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-8 py-4 rounded-xl font-bold transition">
-              Crear cuenta gratis →
+            <Link href="/precios" className="bg-[#7C3AED] hover:bg-[#6D28D9] text-white px-8 py-4 rounded-xl font-bold transition">
+              Ver planes y comenzar →
             </Link>
             <Link href="/precios" className="border border-[#7C3AED]/40 text-[#C084FC] hover:bg-[#7C3AED]/10 px-8 py-4 rounded-xl font-semibold transition">
               Ver planes y precios
