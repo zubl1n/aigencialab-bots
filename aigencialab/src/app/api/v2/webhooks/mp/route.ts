@@ -10,6 +10,8 @@
  */
 import { createClient } from '@supabase/supabase-js';
 import { getPlanBySlug } from '@/config/plans';
+import { sendImplWelcomeEmail } from '@/lib/emails';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -30,74 +32,32 @@ async function mpGet<T = any>(path: string): Promise<T> {
   return res.json();
 }
 
-async function sendEmail(payload: object) {
-  const key = process.env.RESEND_API_KEY;
+// Admin notification via Resend (plain monospace for quick readability)
+async function notifyAdmin(event: string, details: Record<string, unknown>) {
+  const key      = process.env.RESEND_API_KEY;
+  const adminTo  = process.env.ADMIN_NOTIFICATION_EMAIL ?? 'admin@aigencialab.cl';
+  const from     = process.env.RESEND_FROM_EMAIL        ?? 'noreply@aigencialab.cl';
+  const siteUrl  = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl').replace(/[\r\n\s]+/g, '');
   if (!key || key.includes('REPLACE')) return;
-  return fetch('https://api.resend.com/emails', {
+
+  const labels: Record<string, string> = {
+    new_client_activated:  `[AIgenciaLab] Nuevo cliente · ${details.planName} · $${Number(details.implAmountCLP).toLocaleString('es-CL')} CLP`,
+    recurring_payment_ok:  `[AIgenciaLab] Cobro recurrente OK · ${details.planName}`,
+    subscription_suspended:`[AIgenciaLab] Suscripción suspendida · ${details.userId}`,
+  };
+
+  await fetch('https://api.resend.com/emails', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${key}`,
-    },
-    body: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${key}` },
+    body: JSON.stringify({
+      from,
+      to: adminTo,
+      subject: labels[event] ?? `[AIgenciaLab] Evento: ${event}`,
+      html: `<pre style="font-family:monospace;font-size:13px;background:#f1f5f9;padding:20px;border-radius:8px">${JSON.stringify({ event, ...details }, null, 2)}</pre><p><a href="${siteUrl}/admin">Ver en Admin →</a></p>`,
+    }),
   }).catch(console.error);
 }
 
-async function notifyAdmin(event: string, details: Record<string, unknown>) {
-  const adminEmail = process.env.ADMIN_NOTIFICATION_EMAIL ?? 'admin@aigencialab.cl';
-  const from = process.env.RESEND_FROM_EMAIL ?? 'noreply@aigencialab.cl';
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl';
-
-  const subjects: Record<string, string> = {
-    new_client_activated: `[AIgenciaLab] Nuevo cliente activado · ${details.planName} · $${Number(details.implAmountCLP).toLocaleString('es-CL')} CLP`,
-    recurring_payment_ok: `[AIgenciaLab] Cobro recurrente OK · ${details.planName} · $${Number(details.amount).toLocaleString('es-CL')} CLP`,
-    subscription_suspended: `[AIgenciaLab] Suscripción suspendida · ${details.userId}`,
-  };
-
-  await sendEmail({
-    from,
-    to: adminEmail,
-    subject: subjects[event] ?? `[AIgenciaLab] Evento: ${event}`,
-    html: `<pre style="font-family: monospace; font-size: 13px; background: #f1f5f9; padding: 20px; border-radius: 8px;">${JSON.stringify({ event, ...details }, null, 2)}</pre><p><a href="${siteUrl}/admin">Ver en Admin →</a></p>`,
-  });
-}
-
-async function sendWelcomeEmail(opts: { email: string; planName: string; userId: string }) {
-  const from = process.env.RESEND_FROM_EMAIL ?? 'noreply@aigencialab.cl';
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl';
-  await sendEmail({
-    from,
-    to: opts.email,
-    subject: `¡Bienvenido a AIgenciaLab! Tu Plan ${opts.planName} está listo 🎉`,
-    html: `
-      <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
-        <div style="background: #0a0f1e; color: #fff; padding: 32px; border-radius: 12px 12px 0 0; text-align: center;">
-          <h1 style="margin: 0; font-size: 24px;">¡Bienvenido a AIgenciaLab!</h1>
-          <p style="color: #94a3b8; margin: 8px 0 0;">Tu agente IA está en camino.</p>
-        </div>
-        <div style="background: #f8fafc; padding: 32px; border: 1px solid #e2e8f0;">
-          <h2 style="color: #0f172a; font-size: 18px; margin-top: 0;">Plan ${opts.planName} activado ✅</h2>
-          <p style="color: #475569; line-height: 1.6;">Recibimos tu pago de implementación. Aquí están tus próximos pasos:</p>
-          <div style="background: #eff6ff; border-left: 4px solid #1d4ed8; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0;">
-            <strong>📅 Próximas 48 horas</strong><br>
-            <span style="color: #475569; font-size: 14px;">Tu ingeniero asignado te contactará por WhatsApp para coordinar el onboarding.</span>
-          </div>
-          <div style="background: #f0fdf4; border-left: 4px solid #10b981; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0;">
-            <strong>🤖 Días 1–14</strong><br>
-            <span style="color: #475569; font-size: 14px;">Implementación y entrenamiento de tu agente IA.</span>
-          </div>
-          <div style="background: #fefce8; border-left: 4px solid #f59e0b; padding: 16px; border-radius: 0 8px 8px 0; margin: 20px 0;">
-            <strong>⚡ Días 15–60</strong><br>
-            <span style="color: #475569; font-size: 14px;">Ajustes y optimización sin cobro mensual.</span>
-          </div>
-          <a href="${siteUrl}/dashboard" style="display: inline-block; background: #1d4ed8; color: #fff; padding: 12px 28px; border-radius: 8px; text-decoration: none; font-weight: 600; margin-top: 8px;">
-            Ir al Dashboard →
-          </a>
-        </div>
-      </div>
-    `,
-  });
-}
 
 export async function POST(req: Request) {
   try {
@@ -192,12 +152,19 @@ export async function POST(req: Request) {
 
           // If status was 'pending', send init_point to user so they can authorize
           if (subRes.status === 'pending' && subRes.init_point) {
-            await sendEmail({
-              from: process.env.RESEND_FROM_EMAIL ?? 'noreply@aigencialab.cl',
-              to: payment.payer?.email,
-              subject: `[AIgenciaLab] Autoriza tu suscripción mensual — Paso final`,
-              html: `<p>Para activar tu suscripción mensual a partir del día 61, haz clic aquí:</p><a href="${subRes.init_point}" style="background:#1d4ed8;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:600;">Autorizar suscripción →</a>`,
-            });
+            const resendKey = process.env.RESEND_API_KEY;
+            if (resendKey && !resendKey.includes('REPLACE')) {
+              await fetch('https://api.resend.com/emails', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${resendKey}` },
+                body: JSON.stringify({
+                  from: process.env.RESEND_FROM_EMAIL ?? 'noreply@aigencialab.cl',
+                  to: payment.payer?.email,
+                  subject: `[AIgenciaLab] Autoriza tu suscripción mensual — Paso final`,
+                  html: `<p>Para activar tu suscripción mensual a partir del día 61, haz clic aquí:</p><a href="${subRes.init_point}" style="background:#1d4ed8;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;display:inline-block;font-weight:600;">Autorizar suscripción →</a>`,
+                }),
+              }).catch(console.error);
+            }
           }
         } catch (subErr: any) {
           console.warn('[webhooks/mp] Could not create recurring subscription:', subErr.message);
@@ -225,8 +192,8 @@ export async function POST(req: Request) {
         });
       }
 
-      // 6. Welcome email to client
-      await sendWelcomeEmail({
+      // 6. Welcome email to client (impl payment flow)
+      await sendImplWelcomeEmail({
         email: payment.payer?.email,
         planName: plan.name,
         userId,

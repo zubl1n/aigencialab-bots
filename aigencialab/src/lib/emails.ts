@@ -482,6 +482,117 @@ export async function sendAdminPaymentFailedEmail(data: {
 
 
 /* ══════════════════════════════════════════════════════════════
+   18. WELCOME (IMPLEMENTATION PAYMENT) — v2 checkout flow
+   Sent when impl_payment is approved in /api/v2/webhooks/mp
+   Different from sendWelcomeEmail (which is for form registration)
+   ══════════════════════════════════════════════════════════════ */
+export async function sendImplWelcomeEmail(data: {
+  email: string; name?: string; company?: string; planName: string; userId: string
+}) {
+  const name    = data.name    ?? 'Cliente'
+  const company = data.company ?? ''
+  await sendEmail({
+    to: data.email,
+    subject: `¡Bienvenido a AIgenciaLab! Tu Plan ${data.planName} está activo 🎉`,
+    html: wrap(
+      `<h1 style="${H1}">¡Bienvenido, ${name}! 🎉</h1>
+       <p style="${SUB}">Plan ${data.planName.toUpperCase()} activado · ${company}</p>`,
+      `<p style="${MUTED}">Recibimos tu pago de implementación con éxito. Tu agente IA está en camino.</p>
+       <div style="${BOX_G}">
+         <p style="color:#34d399;font-weight:700;margin:0 0 12px">📅 Próximas 48 horas</p>
+         <p style="color:#A09CB0;font-size:13px;margin:0">Tu ingeniero asignado te contactará por WhatsApp para coordinar el onboarding.</p>
+       </div>
+       <div style="${BOX_P}">
+         <p style="color:#C084FC;font-weight:700;margin:0 0 12px">🤖 Días 1–14: Implementación</p>
+         <p style="color:#A09CB0;font-size:13px;margin:0">Entrenamiento y configuración de tu agente IA personalizado.</p>
+       </div>
+       <p style="text-align:center;margin:28px 0"><a href="${SITE_URL}/dashboard" style="${BTN}">Ir a mi Dashboard →</a></p>`,
+      `Este email confirma la activación de tu plan ${data.planName}. Guárdalo como comprobante.`
+    ),
+  })
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   19. ONBOARDING FOLLOW-UP — Sequence: día 3, 7, 14
+   Triggered by CRON /api/cron/onboarding-followup daily
+   ══════════════════════════════════════════════════════════════ */
+export async function sendOnboardingFollowupEmail(data: {
+  email: string; name: string; company: string; planName: string
+  day: 3 | 7 | 14
+}) {
+  type DayKey = 3 | 7 | 14
+  const configs: Record<DayKey, { subject: string; headline: string; body: string; cta: string; ctaHref: string }> = {
+    3: {
+      subject:  `Día 3: ¿Cómo va tu implementación? — AIgenciaLab`,
+      headline: `¿Cómo va la implementación? 🔧`,
+      body: `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+             <p style="${MUTED}">Llevamos 3 días juntos y queremos saber cómo te ha ido el primer contacto con tu agente IA.</p>
+             <div style="${BOX_P}">
+               <p style="color:#C084FC;font-weight:700;margin:0 0 12px">✅ Esta semana deberías poder:</p>
+               <ul style="color:#A09CB0;font-size:13px;margin:0;padding-left:20px;line-height:2">
+                 <li>Instalar el widget en tu sitio web</li>
+                 <li>Enviar tu primer mensaje de prueba al bot</li>
+                 <li>Personalizar el nombre y color de tu asistente</li>
+               </ul>
+             </div>
+             <p style="${MUTED}">Si tienes alguna duda, responde este email y te ayudamos en menos de 24 horas.</p>`,
+      cta:     '🚀 Configurar mi bot',
+      ctaHref: `${SITE_URL}/dashboard/bot`,
+    },
+    7: {
+      subject:  `Día 7: ¡1 semana de IA! Tips para sacarle el máximo — AIgenciaLab`,
+      headline: `¡1 semana con tu agente IA! 🎯`,
+      body: `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+             <p style="${MUTED}">¡Llevas una semana! Este es el momento perfecto para revisar tus primeras conversaciones y ajustar el bot.</p>
+             <div style="${BOX_G}">
+               <p style="color:#34d399;font-weight:700;margin:0 0 12px">📊 3 cosas que deberías revisar hoy:</p>
+               <ol style="color:#A09CB0;font-size:13px;margin:0;padding-left:20px;line-height:2.2">
+                 <li><strong style="color:#fff">Conversaciones:</strong> ¿Responde bien a las preguntas reales?</li>
+                 <li><strong style="color:#fff">Leads:</strong> ¿Estás capturando contactos automáticamente?</li>
+                 <li><strong style="color:#fff">Prompt:</strong> ¿El tono del bot refleja tu marca?</li>
+               </ol>
+             </div>`,
+      cta:     '📊 Ver mis conversaciones',
+      ctaHref: `${SITE_URL}/dashboard/conversations`,
+    },
+    14: {
+      subject:  `Día 14: Revisión de tu implementación + ¿qué sigue? — AIgenciaLab`,
+      headline: `Revisión de 14 días 🏁`,
+      body: `<p style="${MUTED}">Hola <strong style="color:#fff">${data.name}</strong>,</p>
+             <p style="${MUTED}">¡Dos semanas! Es el momento de la revisión oficial de tu implementación.</p>
+             <div style="${BOX_P}">
+               <p style="color:#C084FC;font-weight:700;margin:0 0 12px">🎯 Checklist de implementación:</p>
+               <ul style="color:#A09CB0;font-size:13px;margin:0;padding-left:20px;line-height:2.2">
+                 <li>Widget instalado ✅</li>
+                 <li>Bot configurado con datos de tu empresa</li>
+                 <li>Primeros leads capturados</li>
+                 <li>Conversaciones revisadas y ajustadas</li>
+               </ul>
+             </div>
+             <div style="${BOX_G}">
+               <p style="color:#34d399;font-weight:700;margin:0 0 8px">💰 Tu suscripción mensual inicia el día 61</p>
+               <p style="color:#A09CB0;font-size:13px;margin:0">Hasta entonces tienes acceso completo sin costo adicional.</p>
+             </div>`,
+      cta:     '📞 Hablar con soporte',
+      ctaHref: `${SITE_URL}/dashboard/support`,
+    },
+  }
+
+  const cfg = configs[data.day]
+  await sendEmail({
+    to:      data.email,
+    subject: cfg.subject,
+    html: wrap(
+      `<h1 style="${H1}">${cfg.headline}</h1>
+       <p style="${SUB}">Día ${data.day} de implementación · Plan ${data.planName} · ${data.company}</p>`,
+      `${cfg.body}
+       <p style="text-align:center;margin:32px 0"><a href="${cfg.ctaHref}" style="${BTN}">${cfg.cta}</a></p>`,
+      `Recibes este email porque eres cliente de AIgenciaLab con Plan ${data.planName}.`
+    ),
+  })
+}
+/* ══════════════════════════════════════════════════════════════
    16. CUOTA AL 80% — CRON activated
 
    ══════════════════════════════════════════════════════════════ */
