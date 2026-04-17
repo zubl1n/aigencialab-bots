@@ -20,6 +20,10 @@ export default function InstallationPage() {
   const [generating, setGenerating]     = useState(false);
   const [genError, setGenError]         = useState<string | null>(null);
   const [simulatorOpen, setSimulatorOpen] = useState(false);
+  // Widget verification
+  const [verifying, setVerifying]       = useState(false);
+  const [verifyResult, setVerifyResult] = useState<{ installed: boolean; domain: string | null; checkedAt: string; error?: string | null } | null>(null);
+
 
   const supabase = createClient();
 
@@ -138,7 +142,59 @@ export default function InstallationPage() {
         </p>
       </div>
 
-      {/* Tabs */}
+      {/* Widget verification */}
+      <div className="glass rounded-2xl p-6 border border-[var(--border)]">
+        <div className="flex items-center justify-between mb-3">
+          <h3 className="text-sm font-bold text-white flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-emerald-400" /> Verificar Instalación
+          </h3>
+          <button
+            onClick={async () => {
+              setVerifying(true); setVerifyResult(null);
+              try {
+                const res  = await fetch('/api/client/verify-widget');
+                const data = await res.json();
+                setVerifyResult(data);
+              } catch { setVerifyResult({ installed: false, domain: null, checkedAt: new Date().toISOString(), error: 'Error de red al verificar.' }); }
+              finally { setVerifying(false); }
+            }}
+            disabled={verifying}
+            className="flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-white border border-emerald-500/20 bg-emerald-500/5 hover:bg-emerald-500/15 px-3 py-1.5 rounded-lg transition disabled:opacity-50"
+          >
+            {verifying ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Verificando…</> : <><Eye className="w-3.5 h-3.5" /> Verificar ahora</>}
+          </button>
+        </div>
+        <p className="text-[11px] text-[var(--muted)] mb-4">
+          Comprobamos automáticamente si el snippet está instalado en tu dominio registrado.
+        </p>
+        {verifyResult && (
+          <div className={`flex items-start gap-3 p-4 rounded-xl border text-sm ${
+            verifyResult.installed
+              ? 'bg-emerald-500/8 border-emerald-500/20 text-emerald-300'
+              : 'bg-red-500/8 border-red-500/20 text-red-300'
+          }`}>
+            {verifyResult.installed
+              ? <CheckCircle2 className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" />
+              : <XCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />}
+            <div>
+              <p className="font-bold mb-0.5">
+                {verifyResult.installed ? '✅ Widget detectado en tu sitio' : '❌ Widget no detectado'}
+              </p>
+              <p className="text-xs opacity-80">
+                {verifyResult.error ?? `Dominio verificado: ${verifyResult.domain}`}
+              </p>
+              <p className="text-[10px] opacity-50 mt-1">
+                Verificado: {new Date(verifyResult.checkedAt).toLocaleString('es-CL')}
+              </p>
+            </div>
+          </div>
+        )}
+        {!verifyResult && !verifying && (
+          <p className="text-[11px] text-gray-700 italic">Haz clic en "Verificar ahora" para comprobar tu instalación.</p>
+        )}
+      </div>
+
+
       <div className="flex p-1 bg-white/5 border border-white/10 rounded-2xl w-full max-w-xl">
         {(['snippet', 'wordpress', 'api'] as const).map((tab) => (
           <button key={tab} onClick={() => setActiveTab(tab)}

@@ -48,6 +48,26 @@ function formatDate(iso: string) {
   return d.toLocaleDateString('es-CL', { day: '2-digit', month: 'short' });
 }
 
+// SLA helpers
+function formatElapsed(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime();
+  const h  = Math.floor(ms / 3_600_000);
+  const m  = Math.floor((ms % 3_600_000) / 60_000);
+  if (h >= 48) return `${Math.floor(h / 24)} d`;
+  if (h >= 1)  return `${h} h ${m} min`;
+  return `${m} min`;
+}
+
+function getSLAStatus(createdAt: string, status: TicketStatus): 'ok' | 'warning' | 'breach' | null {
+  if (status === 'resolved' || status === 'closed') return null;
+  const ms = Date.now() - new Date(createdAt).getTime();
+  const h  = ms / 3_600_000;
+  if (h >= 24) return 'breach';   // > 24h sin respuesta = SLA breach
+  if (h >= 4)  return 'warning';  // > 4h = améber
+  return 'ok';
+}
+
+
 export default function TicketsPage() {
   const [tickets,     setTickets]   = useState<TicketRow[]>([]);
   const [loading,     setLoading]   = useState(true);
@@ -202,6 +222,21 @@ export default function TicketsPage() {
                     <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full border ${pr.cls}`}>
                       {pr.label}
                     </span>
+                    {/* SLA badge */}
+                    {(() => {
+                      const sla = getSLAStatus(t.created_at, t.status);
+                      if (!sla || sla === 'ok') return null;
+                      return (
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full border flex items-center gap-0.5 ${
+                          sla === 'breach'
+                            ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                            : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                        }`}>
+                          <Clock className="w-2.5 h-2.5" />
+                          {sla === 'breach' ? 'SLA vencido' : `${formatElapsed(t.created_at)}`}
+                        </span>
+                      );
+                    })()}
                     <span className="text-[10px] text-gray-600 ml-auto">{formatDate(t.updated_at)}</span>
                   </div>
                 </button>
@@ -230,20 +265,43 @@ export default function TicketsPage() {
           <div className="flex-1 flex items-center justify-center"><Loader2 className="w-6 h-6 text-purple-400 animate-spin" /></div>
         ) : (
           <>
-            {/* Ticket header */}
-            <div className="p-5 border-b border-white/5 flex items-center justify-between">
+              <div className="p-5 border-b border-white/5 flex items-center justify-between">
               <div>
                 <h2 className="font-bold text-white text-base">{ticketDetail?.subject}</h2>
-                <div className="flex items-center gap-2 mt-1">
+                <div className="flex items-center gap-2 mt-1 flex-wrap">
                   {ticketDetail && (
                     <span className={`flex items-center gap-0.5 text-[10px] font-bold px-2 py-0.5 rounded-full border ${STATUS_STYLE[ticketDetail.status]?.cls}`}>
                       {STATUS_STYLE[ticketDetail.status]?.icon} {STATUS_STYLE[ticketDetail.status]?.label}
                     </span>
                   )}
                   <span className="text-xs text-gray-600">Creado {ticketDetail ? formatDate(ticketDetail.created_at) : ''}</span>
+                  {/* SLA elapsed time in detail view */}
+                  {ticketDetail && (() => {
+                    const sla = getSLAStatus(ticketDetail.created_at, ticketDetail.status);
+                    if (!sla) return (
+                      <span className="text-[10px] text-gray-600 flex items-center gap-1">
+                        <Clock className="w-3 h-3" /> Resuelto en {formatElapsed(ticketDetail.created_at)}
+                      </span>
+                    );
+                    return (
+                      <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border flex items-center gap-1 ${
+                        sla === 'breach'
+                          ? 'bg-red-500/10 text-red-400 border-red-500/20'
+                          : sla === 'warning'
+                          ? 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                          : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+                      }`}>
+                        <Clock className="w-3 h-3" />
+                        {sla === 'breach' ? `SLA vencido — ${formatElapsed(ticketDetail.created_at)} sin respuesta` :
+                         sla === 'warning' ? `Esperando ${formatElapsed(ticketDetail.created_at)}` :
+                         `Abierto hace ${formatElapsed(ticketDetail.created_at)}`}
+                      </span>
+                    );
+                  })()}
                 </div>
               </div>
             </div>
+
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-5 space-y-4">

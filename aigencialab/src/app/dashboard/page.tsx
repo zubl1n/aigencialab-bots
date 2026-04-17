@@ -4,8 +4,9 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   Bot, CreditCard, MessageSquare, Bell, Zap, ArrowRight,
   TrendingUp, Users, Clock, CheckCircle2, AlertCircle,
-  ChevronRight, Loader2, Calendar, RefreshCw
+  ChevronRight, Loader2, Calendar, RefreshCw, Lock, Plug
 } from 'lucide-react';
+
 import { createClient } from '@/lib/supabase/client';
 import Link from 'next/link';
 
@@ -28,12 +29,20 @@ interface Notification {
   read: boolean;
 }
 
+const PLAN_ORDER = ['basic', 'starter', 'pro', 'enterprise'];
+function planCanAccess(clientPlan: string, required: string): boolean {
+  const ci = PLAN_ORDER.indexOf((clientPlan ?? 'basic').toLowerCase());
+  const ri = PLAN_ORDER.indexOf(required.toLowerCase());
+  return ci >= 0 && ri >= 0 && ci >= ri;
+}
+
 const PLAN_LIMITS: Record<string, number> = {
-  Starter: 500,
-  Pro: 2000,
-  Business: 10000,
+  Basic:      500,
+  Starter:    2000,
+  Pro:        10000,
   Enterprise: 99999,
 };
+
 
 function getPlanColor(plan: string) {
   if (plan === 'Enterprise') return '#f59e0b';
@@ -330,24 +339,53 @@ export default function DashboardHomePage() {
       {/* ── Quick actions ── */}
       <div>
         <h3 className="text-[10px] text-gray-600 uppercase font-bold tracking-widest mb-3">Accesos rápidos</h3>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {[
-            { href: '/dashboard/installation', label: 'Instalar widget', icon: <Zap className="w-4 h-4" />, color: '#6366f1' },
-            { href: '/dashboard/leads',        label: 'Ver leads',       icon: <Users className="w-4 h-4" />, color: '#10b981' },
-            { href: '/dashboard/tickets',      label: 'Mis tickets',     icon: <MessageSquare className="w-4 h-4" />, color: '#f59e0b' },
-            { href: '/dashboard/billing',      label: 'Facturación',     icon: <CreditCard className="w-4 h-4" />, color: '#8b5cf6' },
-          ].map(a => (
-            <Link
-              key={a.href}
-              href={a.href}
-              className="flex items-center gap-3 p-4 rounded-2xl border border-white/5 hover:border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition group"
-            >
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: a.color + '15' }}>
-                <div style={{ color: a.color }}>{a.icon}</div>
-              </div>
-              <span className="text-sm font-medium text-gray-400 group-hover:text-white transition">{a.label}</span>
-            </Link>
-          ))}
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          {([
+            { href: '/dashboard/installation', label: 'Instalar widget',   icon: <Zap className="w-4 h-4" />,          color: '#6366f1', requiresPlan: null },
+            { href: '/dashboard/leads',        label: 'Ver leads',          icon: <Users className="w-4 h-4" />,         color: '#10b981', requiresPlan: null },
+            { href: '/dashboard/tickets',      label: 'Mis tickets',        icon: <MessageSquare className="w-4 h-4" />, color: '#f59e0b', requiresPlan: null },
+            { href: '/dashboard/billing',      label: 'Facturación',        icon: <CreditCard className="w-4 h-4" />,    color: '#8b5cf6', requiresPlan: null },
+            { href: '/dashboard/connect',      label: 'Integraciones',      icon: <Plug className="w-4 h-4" />,         color: '#06b6d4', requiresPlan: 'starter' },
+            { href: '/dashboard/conversations',label: 'Conversaciones IA',  icon: <Bot className="w-4 h-4" />,          color: '#a855f7', requiresPlan: null },
+          ] as const).map(a => {
+            const locked = !!(a.requiresPlan && !planCanAccess(plan, a.requiresPlan));
+            const upgradeLabel = a.requiresPlan
+              ? `${a.requiresPlan.charAt(0).toUpperCase()}${a.requiresPlan.slice(1)}+`
+              : '';
+
+            if (locked) {
+              return (
+                <div
+                  key={a.href}
+                  title={`Requiere plan ${upgradeLabel}`}
+                  className="flex items-center gap-3 p-4 rounded-2xl border border-white/5 bg-white/[0.01] opacity-40 cursor-not-allowed relative group"
+                >
+                  <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: a.color + '15' }}>
+                    <div style={{ color: a.color }}>{a.icon}</div>
+                  </div>
+                  <span className="text-sm font-medium text-gray-500 flex-1">{a.label}</span>
+                  <Lock className="w-3 h-3 text-gray-600 flex-shrink-0" />
+                  {/* Hover tooltip */}
+                  <div className="absolute -top-9 left-1/2 -translate-x-1/2 invisible group-hover:visible bg-[#1a1a2e] border border-purple-500/20 text-purple-300 text-[10px] font-bold px-2.5 py-1.5 rounded-lg whitespace-nowrap z-20 shadow-xl">
+                    🔒 Plan {upgradeLabel} — <a href="/dashboard/billing" className="underline">Mejorar →</a>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <Link
+                key={a.href}
+                href={a.href}
+                className="flex items-center gap-3 p-4 rounded-2xl border border-white/5 hover:border-white/10 bg-white/[0.02] hover:bg-white/[0.04] transition group"
+              >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0" style={{ background: a.color + '15' }}>
+                  <div style={{ color: a.color }}>{a.icon}</div>
+                </div>
+                <span className="text-sm font-medium text-gray-400 group-hover:text-white transition">{a.label}</span>
+              </Link>
+            );
+          })}
         </div>
       </div>
     </div>
