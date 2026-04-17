@@ -21,11 +21,18 @@ import {
   Lock
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
-import { PLANS, PLAN_MRR, getPlan } from '@/lib/plans';
+import { PLANS, formatCLP } from '@/config/plans';
 import CardEntryForm from '@/components/billing/CardEntryForm';
 
-// FASE 1 Bug 9: prices from plans.ts
-const PLAN_PRICES = Object.fromEntries(Object.entries(PLANS).map(([k, v]) => [k, v.price])) as Record<string, number>;
+// Map plan name (from DB, any case) to config/plans.ts slug
+function getPlanSlug(planName: string | null | undefined): keyof typeof PLANS {
+  const s = (planName ?? '').toLowerCase();
+  if (s in PLANS) return s as keyof typeof PLANS;
+  // Legacy mappings
+  if (s === 'business') return 'pro'; // closest match
+  return 'basic';
+}
+
 
 export default function BillingPage() {
   const [client, setClient] = useState<any>(null);
@@ -115,8 +122,12 @@ export default function BillingPage() {
     );
   }
 
-  const plan = client.plan || 'Starter';
-  const planPrice = PLAN_PRICES[plan] || 0;
+  const plan      = client.plan || 'basic';
+  const planSlug  = getPlanSlug(plan);
+  const planCfg   = PLANS[planSlug];
+  const planPrice = planCfg?.monthlyPriceCLP ?? 0;
+  const planName  = planCfg?.name ?? plan;
+
 
   // FASE 1 Bug 7: isTrialing uses subscription.status
   const isTrialing = trialDaysLeft !== null && trialDaysLeft > 0 &&
@@ -142,47 +153,17 @@ export default function BillingPage() {
   // handleSubscribe defaults to the current client plan, never forces Pro
   const handleSubscribe = async (selectedPlan?: string) => {
     // If no plan given, use the current client plan (the one they already have)
-    const planToSubscribe = selectedPlan ?? plan;
-    // Enterprise requires contacting sales — no payment flow
-    if (planToSubscribe === 'Enterprise') {
-      window.location.href = '/contacto';
+    const planToSubscribe = selectedPlan ?? planSlug;
+    // Enterprise → contact sales
+    if (planToSubscribe === 'enterprise') {
+      window.location.href = '/agendar';
       return;
     }
-
+    // Redirect to v2 checkout page
     setCheckoutLoading(true);
-    try {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        window.location.href = '/login';
-        return;
-      }
+    window.location.href = `/checkout/${planToSubscribe}`;
+    setCheckoutLoading(false);
 
-      const res = await fetch('/api/billing/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-        body: JSON.stringify({ plan: planToSubscribe }),
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        window.location.href = data.url;
-      } else if (data.redirect) {
-        window.location.href = data.redirect;
-      } else {
-        // Surface the real error instead of a generic message
-        const msg = data.error ?? 'Error iniciando el pago. Contacte soporte.';
-        alert(`Error: ${msg}`);
-      }
-    } catch (err) {
-      console.error('[billing] checkout error:', err);
-      alert('Error de conexión. Por favor intente nuevamente.');
-    } finally {
-      setCheckoutLoading(false);
-    }
   };
 
   // PRIORITY 4: Open card management modal (not the subscription checkout)
@@ -381,9 +362,8 @@ export default function BillingPage() {
         )}
       </div>
 
-      {/* ─── PRIORITY 3 FIX: Subscribe Modal — uses CURRENT plan, not hardcoded Pro ── */}
+      {/* ─── Subscribe Modal — uses CURRENT plan from config/plans.ts ── */}
       {modalOpen && (() => {
-        const currentPlanData = getPlan(plan);
         const isAlreadyActive = subscription?.status === 'active';
         return (
           <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
@@ -401,19 +381,17 @@ export default function BillingPage() {
                     <Zap className="w-6 h-6 text-blue-400" />
                   </div>
                   <div>
-                    {/* PRIORITY 3: Title reflects current plan */}
-                    <h2 className="text-2xl font-bold text-white">Suscríbete al Plan {currentPlanData.name}</h2>
+                    <h2 className="text-2xl font-bold text-white">Suscríbete al Plan {planName}</h2>
                     <p className="text-slate-400 text-sm">Sin comisión · Cancela cuando quieras</p>
                   </div>
                 </div>
 
-                {/* PRIORITY 3: If already active, show informational state instead of checkout */}
                 {isAlreadyActive ? (
                   <div className="bg-emerald-500/10 border border-emerald-500/20 rounded-2xl p-6 text-center space-y-2">
                     <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
                     <p className="font-bold text-white">Ya estás suscrito a este plan</p>
                     <p className="text-xs text-slate-400">
-                      Tu suscripción al Plan {currentPlanData.name} está activa hasta el {formatDate(subscription?.current_period_end)}.
+                      Tu suscripción al Plan {planName} está activa hasta el {formatDate(subscription?.current_period_end)}.
                     </p>
                     <button
                       onClick={() => setModalOpen(false)}
@@ -426,17 +404,16 @@ export default function BillingPage() {
                   <>
                     <div className="bg-blue-600/5 border border-blue-500/10 rounded-2xl p-6">
                       <div className="text-4xl font-extrabold text-white mb-1 tracking-tight">
-                        {/* PRIORITY 3: Price from the CURRENT plan, not hardcoded Pro */}
-                        {currentPlanData.isContact ? 'A consultar' : `$${currentPlanData.monthlyUSD} USD/mes`}
+                        {planCfg?.monthlyPriceCLP ? formatCLP(planCfg.monthlyPriceCLP) + '/mes' : 'A consultar'}
                       </div>
                       <p className="text-xs text-slate-400">+ IVA si aplica · Pagado mensualmente vía MercadoPago</p>
                     </div>
 
                     <ul className="space-y-2.5">
-                      {currentPlanData.features.filter(f => f.included).slice(0, 5).map(f => (
-                        <li key={f.text} className="flex items-center gap-2.5 text-sm text-slate-300">
+                      {(planCfg?.features ?? []).slice(0, 5).map((f: string) => (
+                        <li key={f} className="flex items-center gap-2.5 text-sm text-slate-300">
                           <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                          {f.text}
+                          {f}
                         </li>
                       ))}
                     </ul>
@@ -470,18 +447,20 @@ export default function BillingPage() {
               {Object.entries(PLANS).map(([key, p]) => (
                 <button
                   key={key}
-                  id={`select-plan-${key.toLowerCase()}`}
+                  id={`select-plan-${key}`}
                   onClick={() => handleSubscribe(key)}
-                  disabled={checkoutLoading || key === plan}
+                  disabled={checkoutLoading || key === planSlug}
                   className={`w-full flex items-center justify-between p-4 rounded-2xl border transition-all ${
-                    key === plan ? 'bg-primary/10 border-primary/30 cursor-default' : 'bg-white/5 border-white/10 hover:border-primary/30 hover:bg-primary/5'
+                    key === planSlug ? 'bg-primary/10 border-primary/30 cursor-default' : 'bg-white/5 border-white/10 hover:border-primary/30 hover:bg-primary/5'
                   }`}
                 >
                   <div className="text-left">
                     <span className="font-bold text-white block">{p.name}</span>
-                    <span className="text-xs text-slate-400">{p.priceDisplay}</span>
+                    <span className="text-xs text-slate-400">
+                      {p.monthlyPriceCLP ? formatCLP(p.monthlyPriceCLP) + '/mes' : 'A consultar'}
+                    </span>
                   </div>
-                  {key === plan ? <span className="text-[10px] font-bold text-primary px-2 py-1 bg-primary/10 rounded-lg">Plan actual</span> : <ArrowRight className="w-4 h-4 text-slate-400" />}
+                  {key === planSlug ? <span className="text-[10px] font-bold text-primary px-2 py-1 bg-primary/10 rounded-lg">Plan actual</span> : <ArrowRight className="w-4 h-4 text-slate-400" />}
                 </button>
               ))}
             </div>

@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { PLANS_LIST } from '@/lib/plans';
+import { PLANS, formatCLP } from '@/config/plans';
+
 import Link from 'next/link';
 
 export const dynamic = 'force-dynamic';
@@ -10,18 +11,20 @@ const PAGE_SIZE = 25;
 /* ─── Badges ─────────────────────────────────────────────── */
 function PlanBadge({ plan }: { plan: string | null }) {
   const map: Record<string, string> = {
-    Starter:    'bg-blue-100 text-blue-700',
-    Pro:        'bg-purple-100 text-purple-700',
-    Business:   'bg-indigo-100 text-indigo-700',
-    Enterprise: 'bg-orange-100 text-orange-700',
+    basic:      'bg-gray-100 text-gray-700',
+    starter:    'bg-blue-100 text-blue-700',
+    pro:        'bg-purple-100 text-purple-700',
+    enterprise: 'bg-orange-100 text-orange-700',
   };
-  const p = plan ?? 'Starter';
+  const p = (plan ?? 'basic').toLowerCase();
+  const label = PLANS[p as keyof typeof PLANS]?.name ?? plan ?? 'Basic';
   return (
     <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${map[p] ?? 'bg-gray-100 text-gray-600'}`}>
-      {p}
+      {label}
     </span>
   );
 }
+
 
 function StatusBadge({ status, trialEnd }: { status: string | null; trialEnd?: string | null }) {
   const expired = trialEnd && new Date(trialEnd) < new Date();
@@ -163,8 +166,9 @@ export default async function AdminClientes({
           className="flex-1 min-w-48 border border-gray-200 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-300" />
         <select name="plan" defaultValue={planFilter} className="border border-gray-200 rounded-lg px-3 py-2 text-sm">
           <option value="">Todos los planes</option>
-          {['Starter','Pro','Business','Enterprise'].map(p => <option key={p} value={p}>{p}</option>)}
+          {Object.values(PLANS).map(p => <option key={p.slug} value={p.slug}>{p.name}</option>)}
         </select>
+
         <select name="status" defaultValue={statusFilter} className="border border-gray-200 rounded-lg px-3 py-2 text-sm">
           <option value="">Todos los estados</option>
           <option value="active">Activo</option>
@@ -205,7 +209,9 @@ export default async function AdminClientes({
               const name     = c.company_name || c.company || c.contact_name || c.email?.split('@')[0] || '—';
               const trialEnd = sub?.trial_ends_at ?? c.trial_ends_at;
               const subStatus = sub?.status ?? c.status;
-              const planInfo  = PLANS_LIST.find(p => p.name.toLowerCase() === (c.plan ?? 'starter').toLowerCase());
+              const planSlug  = (c.plan ?? 'basic').toLowerCase() as keyof typeof PLANS;
+              const planInfo  = PLANS[planSlug];
+
 
               return (
                 <tr key={c.id} className="hover:bg-gray-50 transition-colors">
@@ -225,7 +231,8 @@ export default async function AdminClientes({
                   {/* Plan */}
                   <td className="px-5 py-4">
                     <PlanBadge plan={c.plan} />
-                    {planInfo && <div className="text-xs text-gray-400 mt-1">${planInfo.monthlyUSD}/mes</div>}
+                    {planInfo && <div className="text-xs text-gray-400 mt-1">{formatCLP(planInfo.monthlyPriceCLP)}/mes</div>}
+
                   </td>
 
                   {/* Estado */}
@@ -285,12 +292,14 @@ export default async function AdminClientes({
                       {/* Cambio de plan rápido */}
                       <form action="/api/admin/set-plan" method="POST" className="flex gap-1">
                         <input type="hidden" name="client_id" value={c.id} />
-                        <select name="plan" defaultValue={c.plan ?? 'Starter'}
+                        <select name="plan" defaultValue={c.plan ?? 'basic'}
                           className="flex-1 text-xs border border-gray-200 rounded-lg px-1 py-1 focus:outline-none">
-                          {['Starter','Pro','Business','Enterprise'].map(p =>
-                            <option key={p} value={p}>{p}</option>
+                          {Object.values(PLANS).filter(p => !p.isEnterprise).map(p =>
+                            <option key={p.slug} value={p.slug}>{p.name}</option>
                           )}
+                          <option value="enterprise">Enterprise</option>
                         </select>
+
                         <button type="submit"
                           className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2 py-1 rounded-lg font-semibold transition">✓</button>
                       </form>

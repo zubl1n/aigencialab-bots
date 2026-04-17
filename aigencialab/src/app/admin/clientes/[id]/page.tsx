@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { PLANS_LIST } from '@/lib/plans';
+import { PLANS, formatCLP } from '@/config/plans';
+
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
@@ -112,7 +113,9 @@ export default async function AdminClienteDetalle({
 
   // ── Derived ───────────────────────────────────────────────
   const displayName  = client.company_name || client.company || client.contact_name || client.email?.split('@')[0] || '—';
-  const planInfo     = PLANS_LIST.find(p => p.name.toLowerCase() === (client.plan ?? 'starter').toLowerCase());
+  const planSlug = (client.plan ?? 'basic').toLowerCase() as keyof typeof PLANS;
+  const planInfo = PLANS[planSlug];
+
   const totalConvs   = conversations?.length ?? 0;
   const totalLeads   = leads?.length ?? 0;
   const convRate     = totalConvs > 0 ? Math.round((totalLeads / totalConvs) * 100) : 0;
@@ -140,7 +143,8 @@ export default async function AdminClienteDetalle({
           <InfoRow label="Sitio web" value={client.url ? <a href={client.url} target="_blank" rel="noreferrer" className="text-purple-600 hover:underline text-xs">{client.url}</a> : '—'} />
           <InfoRow label="Rubro" value={client.rubro ?? '—'} />
           <InfoRow label="Plan" value={<Badge cls="bg-purple-100 text-purple-700">{client.plan ?? 'Starter'}</Badge>} />
-          {planInfo && <InfoRow label="Precio" value={`$${planInfo.monthlyUSD} USD/mes`} />}
+          {planInfo && <InfoRow label="Precio" value={formatCLP(planInfo.monthlyPriceCLP) + '/mes'} />}
+
           <InfoRow label="Estado Suscripción" value={
             <Badge cls={sub?.status === 'active' ? 'bg-green-100 text-green-700' : sub?.status === 'trialing' ? 'bg-sky-100 text-sky-700' : 'bg-gray-100 text-gray-600'}>
               {sub?.status ?? 'sin suscripción'}
@@ -213,15 +217,17 @@ export default async function AdminClienteDetalle({
             <form action="/api/admin/set-plan" method="POST">
               <input type="hidden" name="client_id" value={client.id} />
               <div className="flex gap-2">
-                <select name="plan" defaultValue={client.plan ?? 'Starter'}
+                <select name="plan" defaultValue={client.plan ?? 'basic'}
                   className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none">
-                  <option value="Starter">Starter ($45/mo)</option>
-                  <option value="Pro">Pro ($119/mo)</option>
-                  <option value="Business">Business ($259/mo)</option>
-                  <option value="Enterprise">Enterprise</option>
+                  {Object.values(PLANS).map(p => (
+                    <option key={p.slug} value={p.slug}>
+                      {p.name}{p.monthlyPriceCLP ? ` (${formatCLP(p.monthlyPriceCLP)}/mes)` : ' (A consultar)'}
+                    </option>
+                  ))}
                 </select>
                 <button className="bg-purple-100 text-purple-700 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-purple-200 transition">Cambiar Plan</button>
               </div>
+
             </form>
 
             {/* Extender trial */}

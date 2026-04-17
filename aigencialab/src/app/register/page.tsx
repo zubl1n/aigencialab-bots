@@ -5,7 +5,8 @@ import { createClient } from '@/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Bot, Building2, Globe, Mail, User, Eye, EyeOff, CheckCircle2, Loader2, ArrowRight, Lock } from 'lucide-react';
-import { PLANS } from '@/lib/plans';
+import { PLANS, formatCLP } from '@/config/plans';
+
 
 function RegisterForm() {
   const router = useRouter();
@@ -25,7 +26,8 @@ function RegisterForm() {
     website: '',
     password: '',
     confirmPassword: '',
-    plan: 'Starter'
+    plan: 'basic'
+
   });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -241,31 +243,34 @@ function RegisterForm() {
           <div className="space-y-2">
             <label className="text-sm font-medium text-slate-300">Plan de Suscripción</label>
             <div className="grid grid-cols-3 gap-3">
-              {/* Bug 9: plan options from plans.ts — single source of truth */}
-              {(Object.values(PLANS) as typeof PLANS[keyof typeof PLANS][]).map((plan) => (
-                <label 
-                  key={plan.name}
+              {/* Plan options from config/plans.ts — single source of truth */}
+              {Object.values(PLANS).filter(p => !p.isEnterprise).map((plan) => (
+                <label
+                  key={plan.slug}
                   className={`
                     relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer transition-all
-                    ${formData.plan === plan.name 
-                      ? 'bg-primary/20 border-primary text-primary' 
+                    ${formData.plan === plan.slug
+                      ? 'bg-primary/20 border-primary text-primary'
                       : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10'}
                   `}
                 >
                   <input
                     type="radio"
                     name="plan"
-                    value={plan.name}
-                    checked={formData.plan === plan.name}
+                    value={plan.slug}
+                    checked={formData.plan === plan.slug}
                     onChange={handleInputChange}
                     className="sr-only"
                   />
                   <span className="text-sm font-bold">{plan.name}</span>
-                  <span className="text-[10px] mt-0.5 opacity-70">{plan.priceDisplay}</span>
+                  <span className="text-[10px] mt-0.5 opacity-70">
+                    {plan.monthlyPriceCLP ? formatCLP(plan.monthlyPriceCLP) + '/mes' : 'Gratis'}
+                  </span>
                 </label>
               ))}
             </div>
           </div>
+
 
           {error && (
             <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">

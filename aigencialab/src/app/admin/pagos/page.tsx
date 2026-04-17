@@ -1,5 +1,6 @@
 import { createClient } from '@supabase/supabase-js';
-import { PLANS, formatPrice } from '@/lib/plans';
+import { PLANS, formatCLP } from '@/config/plans';
+
 
 export const dynamic = 'force-dynamic';
 
@@ -23,9 +24,11 @@ export default async function AdminPagos() {
     .eq('status', 'active');
 
   const mrr = (activeSubs ?? []).reduce((acc, s) => {
-    const p = PLANS[s.plan as keyof typeof PLANS];
-    return acc + (p?.price ?? 0);
+    const slug = (s.plan ?? '').toLowerCase() as keyof typeof PLANS;
+    const p    = PLANS[slug];
+    return acc + (p?.monthlyPriceCLP ?? 0);
   }, 0);
+
 
   const failedPayments = (billing ?? []).filter(b => b.payment_status === 'failed');
 
@@ -50,11 +53,12 @@ export default async function AdminPagos() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-purple-500 border border-gray-100">
           <div className="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-2">MRR Actual</div>
-          <div className="text-3xl font-bold text-gray-900">{formatPrice(mrr)}</div>
+          <div className="text-3xl font-bold text-gray-900">{formatCLP(mrr)}</div>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-green-500 border border-gray-100">
           <div className="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-2">ARR Proyectado</div>
-          <div className="text-3xl font-bold text-gray-900">{formatPrice(mrr * 12)}</div>
+          <div className="text-3xl font-bold text-gray-900">{formatCLP(mrr * 12)}</div>
+
         </div>
         <div className="bg-white rounded-xl p-6 shadow-sm border-l-4 border-red-500 border border-gray-100">
           <div className="text-sm text-gray-500 font-semibold uppercase tracking-wider mb-2">Pagos Fallidos</div>
@@ -121,8 +125,13 @@ export default async function AdminPagos() {
                     </span>
                   </td>
                   <td className="px-6 py-4 font-semibold text-gray-900">
-                    {plan ? formatPrice(plan.price) : 'Gratis'}
+                    {(() => {
+                      const slug = (client?.plan ?? '').toLowerCase() as keyof typeof PLANS;
+                      const p = PLANS[slug];
+                      return p ? formatCLP(p.monthlyPriceCLP) : '—';
+                    })()}
                   </td>
+
                   <td className="px-6 py-4">{badge(b.payment_status)}</td>
                   <td className="px-6 py-4 font-mono text-xs text-gray-400">
                     {b.mp_payment_id ?? '—'}

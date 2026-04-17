@@ -83,7 +83,29 @@ export default async function AdminAlertasPage({
       .gte('created_at', new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString())
       .order('created_at', { ascending: false }),
     supabase.from('alerts').select('*').order('created_at', { ascending: false }).limit(100),
+    // Health: bots config
+    supabase.from('bot_configs')
+      .select('client_id, active, bot_name, clients(id, email, company_name)')
+      .eq('active', false),
+    // Health: clients without bot_config
+    supabase.from('clients')
+      .select('id, email, company_name, plan, created_at')
+      .eq('status', 'active'),
   ]);
+
+  // Check which active clients have no bot_config
+  const { data: allBotConfigs } = await supabase
+    .from('bot_configs')
+    .select('client_id');
+  const botClientIds = new Set((allBotConfigs ?? []).map((b: any) => b.client_id));
+  const activeClients = (await supabase.from('clients').select('id, email, company_name, plan').eq('status','active')).data ?? [];
+  const clientsWithoutBot = activeClients.filter((c: any) => !botClientIds.has(c.id));
+
+  const inactiveBots = (await supabase
+    .from('bot_configs')
+    .select('client_id, bot_name, active, clients(id, email, company_name)')
+    .eq('active', false)).data ?? [];
+
 
   const alerts: AlertItem[] = [];
 
@@ -180,7 +202,75 @@ export default async function AdminAlertasPage({
 
   return (
     <div>
+      {/* ─── System Health Panel ─────────────────────────────────────────── */}
+      <div className="mb-8">
+        <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+          📰 Salud del Sistema
+        </h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Bots inactivos */}
+          <div className={`rounded-xl border p-4 shadow-sm ${
+            inactiveBots.length > 0 ? 'bg-red-50 border-red-100' : 'bg-green-50 border-green-100'
+          }`}>
+            <div className={`text-3xl font-bold ${inactiveBots.length > 0 ? 'text-red-600' : 'text-green-600'}`}>
+              {inactiveBots.length}
+            </div>
+            <div className="text-xs font-semibold uppercase text-gray-500 mt-1">Bots Inactivos</div>
+            {inactiveBots.length > 0 && (
+              <ul className="mt-2 space-y-1">
+                {inactiveBots.slice(0,3).map((b: any) => {
+                  const c = b.clients as any;
+                  return (
+                    <li key={b.client_id} className="text-xs text-red-700">
+                      <a href={`/admin/clientes/${c?.id}`} className="hover:underline">
+                        {c?.company_name || c?.email || '—'}
+                      </a>
+                    </li>
+                  );
+                })}
+                {inactiveBots.length > 3 && <li className="text-xs text-red-400">+{inactiveBots.length - 3} más</li>}
+              </ul>
+            )}
+          </div>
+
+          {/* Clientes sin bot */}
+          <div className={`rounded-xl border p-4 shadow-sm ${
+            clientsWithoutBot.length > 0 ? 'bg-amber-50 border-amber-100' : 'bg-green-50 border-green-100'
+          }`}>
+            <div className={`text-3xl font-bold ${clientsWithoutBot.length > 0 ? 'text-amber-600' : 'text-green-600'}`}>
+              {clientsWithoutBot.length}
+            </div>
+            <div className="text-xs font-semibold uppercase text-gray-500 mt-1">Clientes sin Bot</div>
+            {clientsWithoutBot.length > 0 && (
+              <ul className="mt-2 space-y-1">
+                {clientsWithoutBot.slice(0,3).map((c: any) => (
+                  <li key={c.id} className="text-xs text-amber-700">
+                    <a href={`/admin/clientes/${c.id}`} className="hover:underline">
+                      {c.company_name || c.email || '—'}
+                    </a>
+                  </li>
+                ))}
+                {clientsWithoutBot.length > 3 && <li className="text-xs text-amber-400">+{clientsWithoutBot.length - 3} más</li>}
+              </ul>
+            )}
+          </div>
+
+          {/* Estado general */}
+          <div className="rounded-xl border bg-blue-50 border-blue-100 p-4 shadow-sm">
+            <div className="text-3xl font-bold text-blue-600">{activeClients.length}</div>
+            <div className="text-xs font-semibold uppercase text-gray-500 mt-1">Clientes Activos</div>
+            <div className="mt-2 text-xs text-blue-600">
+              {inactiveBots.length === 0 && clientsWithoutBot.length === 0
+                ? '✅ Todo operativo'
+                : `⚠️ ${inactiveBots.length + clientsWithoutBot.length} elementos requieren atención`
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Alertas del Sistema</h1>

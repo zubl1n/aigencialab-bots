@@ -20,6 +20,16 @@ import {
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+
+// Channel access by plan (matches config/plans.ts channels field)
+const PLAN_CHANNELS: Record<string, string[]> = {
+  basic:      ['web'],
+  starter:    ['web', 'whatsapp', 'email'],  // instagram shown as beta but allowed
+  pro:        ['web', 'whatsapp', 'email'],
+  enterprise: ['web', 'whatsapp', 'email'],
+};
+
 
 type ConvStatus = 'open' | 'resolved' | 'needs_human';
 type ConvChannel = 'whatsapp' | 'web' | 'email';
@@ -74,21 +84,38 @@ export default function ClientConversationsPage() {
   const [selectedConv, setSelectedConv]     = useState<Conversation | null>(null);
   const [detail, setDetail]                 = useState<ConversationDetail | null>(null);
   const [loadingDetail, setLoadingDetail]   = useState(false);
+  const [clientPlan, setClientPlan]         = useState('basic');
   const messagesEndRef                      = useRef<HTMLDivElement>(null);
+  const supabase                            = createClient();
 
-  // ── Fetch conversations from real API ─────────────────────
+  // Load client plan on mount
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      supabase.from('clients').select('plan').eq('id', user.id).maybeSingle()
+        .then(({ data }) => setClientPlan((data?.plan ?? 'basic').toLowerCase()));
+    });
+  }, []);
+
+  const allowedChannels = PLAN_CHANNELS[clientPlan] ?? PLAN_CHANNELS.basic;
+
+
+  // ── Fetch conversations from real API – filtered by allowed channels
   const fetchConversations = useCallback(async () => {
     setLoading(true);
     const params = new URLSearchParams();
     if (filter !== 'all') params.set('status', filter);
     if (searchTerm)        params.set('q', searchTerm);
     params.set('limit', '50');
+    // Only request channels the plan allows
+    allowedChannels.forEach(ch => params.append('channel', ch));
 
     const res  = await fetch(`/api/conversations?${params.toString()}`);
     const data = await res.json();
     setConversations(data.conversations ?? []);
     setLoading(false);
-  }, [filter, searchTerm]);
+  }, [filter, searchTerm, allowedChannels]);
+
 
   useEffect(() => {
     const t = setTimeout(fetchConversations, 250); // debounce search

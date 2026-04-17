@@ -1,0 +1,13 @@
+.app-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+main {
+  position: relative;
+  z-index: 1;
+}
+
+section {
+  position: relative;
+}
