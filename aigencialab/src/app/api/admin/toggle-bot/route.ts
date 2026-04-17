@@ -1,5 +1,7 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextRequest, NextResponse } from 'next/server';
+import { sendBotActivatedEmail, sendBotDeactivatedEmail } from '@/lib/emails';
+
 
 export async function POST(request: NextRequest) {
   const supabase = createClient(
@@ -47,13 +49,33 @@ export async function POST(request: NextRequest) {
     await supabase.from('audit_logs').insert({
       event: active ? 'bot_activated' : 'bot_deactivated',
       module: 'admin',
-      metadata: {
-        client_id: clientId,
-        bot_id: botId,
-        new_state: active,
-        timestamp: new Date().toISOString(),
-      },
+      metadata: { client_id: clientId, bot_id: botId, new_state: active, timestamp: new Date().toISOString() },
     });
+
+    // Notify client by email
+    if (clientId) {
+      const { data: clientRow } = await supabase
+        .from('clients')
+        .select('email, company_name, company, contact_name')
+        .eq('id', clientId)
+        .maybeSingle();
+      const { data: botRow } = await supabase
+        .from('bot_configs')
+        .select('bot_name, name')
+        .eq('client_id', clientId)
+        .maybeSingle();
+      if (clientRow?.email) {
+        const name    = clientRow.contact_name || clientRow.company_name || clientRow.company || 'Cliente';
+        const company = clientRow.company_name || clientRow.company || '';
+        const botName = botRow?.bot_name || botRow?.name || 'Asistente IA';
+        if (active) {
+          await sendBotActivatedEmail({ email: clientRow.email, name, company, botName });
+        } else {
+          await sendBotDeactivatedEmail({ email: clientRow.email, name, company });
+        }
+      }
+    }
+
 
     // If this was a form submission, redirect back
     if (contentType.includes('form')) {

@@ -4,7 +4,8 @@
  */
 
 const FROM = process.env.RESEND_FROM_EMAIL ?? 'noreply@aigencialab.cl'
-const TO   = process.env.RESEND_TO_EMAIL   ?? 'contacto@aigencialab.cl'
+const TO   = process.env.RESEND_TO_EMAIL   ?? 'admin@aigencialab.cl'
+
 
 function getResend() {
   const key = process.env.RESEND_API_KEY

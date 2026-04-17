@@ -10,7 +10,13 @@
  */
 import { createClient } from '@supabase/supabase-js';
 import { getPlanBySlug } from '@/config/plans';
-import { sendImplWelcomeEmail } from '@/lib/emails';
+import {
+  sendImplWelcomeEmail,
+  sendPaymentApprovedEmail,
+  sendAdminPaymentFailedEmail,
+  sendCancellationEmail,
+} from '@/lib/emails';
+
 
 
 export const dynamic = 'force-dynamic';
@@ -228,10 +234,28 @@ export async function POST(req: Request) {
           planName: sub.plan,
           userId: sub.client_id,
           subId,
-          amount: 0, // amount fetched separately if needed
+          amount: 0,
         });
+
+        // Notify client of successful recurring payment
+        const { data: clientRow } = await supabase
+          .from('clients')
+          .select('email, company_name, company, contact_name')
+          .eq('id', sub.client_id)
+          .maybeSingle();
+        if (clientRow?.email) {
+          const nextDate = new Date(Date.now() + 30 * 86400000).toLocaleDateString('es-CL');
+          await sendPaymentApprovedEmail({
+            email: clientRow.email,
+            name:  clientRow.contact_name || clientRow.company_name || clientRow.company || 'Cliente',
+            company: clientRow.company_name || clientRow.company || '',
+            plan: sub.plan ?? 'Plan',
+            nextBillingDate: nextDate,
+          });
+        }
       }
     }
+
 
     // ── Subscription cancelled/paused ────────────────────────────────────────
     else if (type === 'subscription_preapproval') {
@@ -250,10 +274,32 @@ export async function POST(req: Request) {
             .eq('id', clientId)
             .maybeSingle();
           await notifyAdmin('subscription_suspended', {
-            userId: clientId,
-            subId: dataId,
-            reason: sub.status,
+            userId: clientId, subId: dataId, reason: sub.status,
           });
+
+          // Notify client and admin of cancellation
+          const { data: clientRow } = await supabase
+            .from('clients')
+            .select('email, company_name, company, contact_name, plan')
+            .eq('id', clientId)
+            .maybeSingle();
+          if (clientRow?.email) {
+            const endsOn = new Date(Date.now() + 30 * 86400000).toLocaleDateString('es-CL');
+            await sendCancellationEmail({
+              email:   clientRow.email,
+              name:    clientRow.contact_name || clientRow.company_name || 'Cliente',
+              company: clientRow.company_name || clientRow.company || '',
+              plan:    clientRow.plan ?? 'Plan',
+              endsOn,
+            });
+            await sendAdminPaymentFailedEmail({
+              company:  clientRow.company_name || clientRow.company || clientRow.email,
+              email:    clientRow.email,
+              plan:     clientRow.plan ?? 'Plan',
+              clientId,
+            });
+          }
+
         }
       }
     }
