@@ -95,7 +95,8 @@ async function preferenceCheckout(
 
 export async function POST(request: Request) {
   try {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl';
+    // Sanitize siteUrl — CRÍTICO: MP rechaza back_urls con trailing \n o /
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl').trim().replace(/\/+$/, '');
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
 

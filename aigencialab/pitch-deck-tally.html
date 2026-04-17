@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIgenciaLab Pitch Deck</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ 
+        startOnLoad: true,
+        theme: 'dark',
+        fontFamily: 'Inter',
+        securityLevel: 'loose'
+    });
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap');
+    body {
+        font-family: 'Inter', sans-serif;
+        background-color: #000;
+        margin: 0;
+        padding: 0;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    @page {
+        size: 1920px 1080px;
+        margin: 0;
+    }
+    .slide {
+        width: 1920px;
+        height: 1080px;
+        page-break-after: always;
+        position: relative;
+        overflow: hidden;
+        background: radial-gradient(circle at top right, #111827, #030712 60%);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        padding: 100px;
+        box-sizing: border-box;
+    }
+    .slide:last-child {
+        page-break-after: avoid;
+    }
+    .glass {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+    }
+    .gradient-text {
+        background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+    .glow {
+        position: absolute;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle at center, rgba(59, 130, 246, 0.15), transparent 70%);
+        border-radius: 50%;
+        filter: blur(40px);
+        z-index: 0;
+    }
+    .content {
+        z-index: 10;
+    }
+    .watermark {
+        position: absolute;
+        bottom: 40px;
+        right: 50px;
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.2);
+        z-index: 10;
+        font-weight: 600;
+        letter-spacing: 2px;
+    }
+    .page-number {
+        position: absolute;
+        bottom: 40px;
+        left: 50px;
+        font-size: 1.2rem;
+        color: rgba(255,255,255,0.4);
+        z-index: 10;
+        font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Slide 1 -->
+  <section class="slide items-center justify-center text-center">
+    <div class="glow" style="top: 20%; left: 30%;"></div>
+    <div class="content flex flex-col items-center justify-center">
+        <div class="w-32 h-32 rounded-3xl bg-gradient-to-tr from-blue-600 to-purple-600 mb-8 flex items-center justify-center shadow-2xl shadow-blue-500/20">
+            <svg class="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        </div>
+        <h1 class="text-9xl font-extrabold mb-6 tracking-tight">AIgencia<span class="gradient-text">Lab</span></h1>
+        <p class="text-4xl text-gray-400 font-light mb-12">La Fuerza Laboral Autónoma para la Agencia Moderna.</p>
+        <div class="glass px-8 py-4 inline-block">
+            <span class="text-2xl font-semibold text-blue-400 uppercase tracking-widest">Tally Ignite Pitch</span>
+        </div>
+    </div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 2 -->
+  <section class="slide">
+    <div class="glow" style="top: -10%; right: -10%;"></div>
+    <div class="content w-full h-full flex flex-col">
+        <h2 class="text-7xl font-bold mb-16"><span class="gradient-text">El Problema</span> en las Agencias Clásicas</h2>
+        <div class="grid grid-cols-3 gap-12 flex-grow">
+            <div class="glass p-12 flex flex-col justify-start">
+                <div class="text-red-500 mb-6">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </div>
+                <h3 class="text-4xl font-bold mb-6">Cuello de Botella Humano</h3>
+                <p class="text-2xl text-gray-400 leading-relaxed">Las operaciones dependen del capital humano para micro-tareas repetitivas, limitando el escalamiento. El tiempo es bloqueante.</p>
+            </div>
+            <div class="glass p-12 flex flex-col justify-start border-red-500/20">
+                <div class="text-pink-500 mb-6">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 17h8m0 0V9m0 8l-8-8-4 4-6-6"></path></svg>
+                </div>
+                <h3 class="text-4xl font-bold mb-6">SLA Roto & Fuga</h3>
+                <p class="text-2xl text-gray-400 leading-relaxed">Durante las horas no operativas los SLAs se rompen. La tasa de abandono y la conversión perdida se dispara dramáticamente.</p>
+            </div>
+            <div class="glass p-12 flex flex-col justify-start pt-12 relative overflow-hidden">
+                <div class="absolute inset-0 bg-red-500/5"></div>
+                <div class="text-orange-500 mb-6 relative z-10">
+                    <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                </div>
+                <h3 class="text-4xl font-bold mb-6 relative z-10">Bots Obsoletos</h3>
+                <p class="text-2xl text-gray-400 leading-relaxed relative z-10">Los chatbots síncronos y reglas rígidas frustran al usuario. No mantienen contexto paralelo ni orquestación de tareas.</p>
+            </div>
+        </div>
+    </div>
+    <div class="page-number">02</div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 3 -->
+  <section class="slide">
+    <div class="glow" style="bottom: 0%; left: -10%;"></div>
+    <div class="content w-full h-full flex items-center gap-16">
+        <div class="w-1/2">
+            <h2 class="text-7xl font-bold mb-10">La Solución:<br><span class="gradient-text">Inteligencia Operativa</span></h2>
+            <p class="text-3xl text-gray-300 leading-relaxed mb-10">
+                AIgenciaLab no es un chatbot. Somos una <b class="text-white">"Fábrica de Agentes"</b>. Desplegamos clones operativos por cada cliente, gestionando flujos críticos (Ventas, Soporte, Backoffice) asíncronamente y 24/7.
+            </p>
+            <ul class="space-y-6 text-2xl text-gray-400">
+                <li class="flex items-center gap-4"><svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg> Orquestación distribuida e inteligente</li>
+                <li class="flex items-center gap-4"><svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg> Tokens únicos y RLS por espacio de trabajo</li>
+                <li class="flex items-center gap-4"><svg class="w-8 h-8 text-blue-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg> 100% integrables al ecosistema de la marca</li>
+            </ul>
+        </div>
+        <div class="w-1/2 glass p-12 h-4/5 relative overflow-hidden flex flex-col">
+            <div class="absolute inset-0 bg-blue-500/5"></div>
+            <div class="relative z-10 flex-grow rounded-xl bg-[#0B1120] border border-gray-800 p-8 shadow-2xl flex flex-col justify-center gap-6">
+                <!-- Mock UI -->
+                <div class="flex items-center gap-4 border-b border-gray-800 pb-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center font-bold">AL</div>
+                    <div>
+                        <div class="text-xl font-bold">Workspace Activo</div>
+                        <div class="text-sm text-green-400">3 Agentes Desplegados • 99.9% Uptime</div>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-4">
+                    <div class="bg-gray-900 rounded-lg p-4 flex justify-between items-center border border-gray-800">
+                        <span class="text-lg font-medium">Agente de Ventas</span>
+                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">Operando</span>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4 flex justify-between items-center border border-gray-800">
+                        <span class="text-lg font-medium">Agente Soporte L1</span>
+                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">Operando</span>
+                    </div>
+                    <div class="bg-gray-900 rounded-lg p-4 flex justify-between items-center border border-gray-800">
+                        <span class="text-lg font-medium">Agente Cobranza (CLP/USD)</span>
+                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded-full text-sm">Operando</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-number">03</div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 4 -->
+  <section class="slide">
+    <div class="content w-full h-full flex flex-col">
+        <h2 class="text-6xl font-bold mb-4">Core Tech I: <span class="gradient-text">Nuestro Moat Defendible</span></h2>
+        <p class="text-2xl text-gray-400 mb-10 border-b border-gray-800 pb-6">Esquema real: Arquitectura Multi-Agente Asíncrona que vence a los bots bloqueantes.</p>
+        
+        <div class="glass flex-1 w-full p-4 flex items-center justify-center">
+            <div class="mermaid text-2xl w-full flex justify-center">
+                graph TD
+                    Client[Cliente Múltiple] -->|API Snippet RLS| Router[Next.js Edge API]
+                    
+                    subgraph Sistema AIgenciaLab Asíncrono
+                        Router --> |Encola sin bloqueo| Queue[(Supabase Queue)]
+                        Queue --> Orchestrator{Orquestador IA}
+                        
+                        Orchestrator -->|Clasificación Ventas| AgentA[Micro-Agente Cierre]
+                        Orchestrator -->|Clasificación Soporte| AgentB[Micro-Agente Soporte]
+                        Orchestrator -->|Analítica de BD| AgentC[Micro-Agente SLA]
+                        
+                        AgentA <--> LLM[Modelos OpenAI Concurrentes]
+                        AgentB <--> LLM
+                        AgentC <--> LLM
+                    end
+                    
+                    AgentA --> DB[(DB Relacional V2)]
+                    AgentB --> DB
+                    AgentC --> DB
+            </div>
+        </div>
+        <div class="mt-8 text-2xl text-gray-300 font-light grid grid-cols-2 gap-8 text-center bg-gray-900/50 p-6 rounded-2xl border border-gray-800">
+            <div><b class="text-white">🚀 Tolerancia a fallos:</b> Si un proceso LLM cae, no rompe el flujo general de la empresa.</div>
+            <div><b class="text-white">⚡ Cero Latencia Aparente:</b> El usuario final no sufre demoras cíclicas al procesar.</div>
+        </div>
+    </div>
+    <div class="page-number">04</div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 5 -->
+  <section class="slide items-center">
+    <div class="glow" style="top: 50%; right: 20%;"></div>
+    <div class="content w-full flex flex-col">
+        <h2 class="text-6xl font-bold mb-16 text-center">Core Tech II: <span class="gradient-text">Stack PRD Escalar y Resiliente</span></h2>
+        
+        <div class="grid grid-cols-4 gap-8">
+            <div class="glass p-10 flex flex-col items-center text-center">
+                <div class="w-24 h-24 mb-6"><img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/Nextjs-logo.svg" alt="Next" class="invert opacity-90 h-full w-full object-contain"></div>
+                <h4 class="text-3xl font-bold mb-4">Next.js 16+ Edge</h4>
+                <p class="text-xl text-gray-400">Rutas dinámicas, renderizado híbrido y despliegue global ultra veloz en Vercel.</p>
+            </div>
+            
+            <div class="glass p-10 flex flex-col items-center text-center">
+                <div class="w-24 h-24 mb-6 flex items-center justify-center"><svg class="w-20 h-20 text-emerald-500" fill="currentColor" viewBox="0 0 24 24"><path d="M21.36 8.54l-8.62-4.98a1.99 1.99 0 0 0-1.99 0L2.13 8.54a1.99 1.99 0 0 0-.99 1.72v9.96c0 .72.4 1.39 1.05 1.76l8.86 5.12c.56.32 1.24.32 1.8 0l8.86-5.12c.65-.37 1.05-1.04 1.05-1.76V10.26c0-.72-.4-1.39-1-1.72z"/></svg></div>
+                <h4 class="text-3xl font-bold mb-4">Supabase RLS</h4>
+                <p class="text-xl text-gray-400">Bases de datos relacionales aseguradas por token (V2 Migrations Completas).</p>
+            </div>
+            
+            <div class="glass p-10 flex flex-col items-center text-center">
+                <div class="w-24 h-24 mb-6 flex items-center justify-center"><svg class="w-20 h-20 text-blue-400" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/></svg></div>
+                <h4 class="text-3xl font-bold mb-4">Billing Nativo</h4>
+                <p class="text-xl text-gray-400">Integración con MercadoPago activa. Alternancia perfecta entre planes CLP/USD.</p>
+            </div>
+            
+            <div class="glass p-10 flex flex-col items-center text-center">
+                <div class="w-24 h-24 mb-6 flex items-center justify-center"><svg class="w-20 h-20 text-indigo-400" fill="currentColor" viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg></div>
+                <h4 class="text-3xl font-bold mb-4">Dashboard Analytics</h4>
+                <p class="text-xl text-gray-400">Motor Recharts con React 19 para visualización de "Conversión Perdida" y SLA.</p>
+            </div>
+        </div>
+        <div class="mt-12 text-center text-2xl text-purple-400 font-bold tracking-wide uppercase border border-purple-500/20 bg-purple-500/10 py-4 px-8 rounded-full self-center">
+            El 100% de la infraestructura ya se encuentra viva en Producción.
+        </div>
+    </div>
+    <div class="page-number">05</div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 6 -->
+  <section class="slide">
+    <div class="glow" style="top: 10%; right: 50%;"></div>
+    <div class="content w-full h-full flex flex-col">
+        <h2 class="text-6xl font-bold mb-16 text-center">¿Por qué somos únicos? <span class="gradient-text">Data vs Competencia</span></h2>
+        
+        <div class="glass w-full rounded-3xl overflow-hidden shadow-2xl">
+            <table class="w-full text-2xl text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-900 border-b border-gray-700">
+                        <th class="p-8 text-gray-300 font-semibold w-1/4">Característica</th>
+                        <th class="p-8 text-white font-bold bg-blue-900/30 w-1/4">🤖 AIgenciaLab <span class="ml-2 px-2 py-1 bg-blue-500 rounded text-sm text-white">Nostros</span></th>
+                        <th class="p-8 text-gray-500 font-semibold w-1/4">❌ Vambe.ai</th>
+                        <th class="p-8 text-gray-500 font-semibold w-1/4">🔻 Chatbots Genéricos</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800">
+                    <tr>
+                        <td class="p-8 font-medium text-gray-300">Arquitectura de Procesamiento</td>
+                        <td class="p-8 bg-blue-900/10 text-blue-300 font-bold border-l border-r border-blue-900/20"><svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Multi-Agente Asíncrono</td>
+                        <td class="p-8 text-gray-400">Mono-Agente Síncrono</td>
+                        <td class="p-8 text-gray-500">Árboles Estáticos</td>
+                    </tr>
+                    <tr>
+                        <td class="p-8 font-medium text-gray-300">Resiliencia y Uptime</td>
+                        <td class="p-8 bg-blue-900/10 text-blue-300 font-bold border-l border-r border-blue-900/20"><svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Fallo Aislado (Escalable)</td>
+                        <td class="p-8 text-gray-400">Cuello de Botella Central</td>
+                        <td class="p-8 text-gray-500">Dependiente del Host</td>
+                    </tr>
+                    <tr>
+                        <td class="p-8 font-medium text-gray-300">Integración de Negocio B2B</td>
+                        <td class="p-8 bg-blue-900/10 text-blue-300 font-bold border-l border-r border-blue-900/20"><svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> SDK, API REST nativo & RLS</td>
+                        <td class="p-8 text-gray-400">Widgets cerrados</td>
+                        <td class="p-8 text-gray-500">iFrame iframe básico</td>
+                    </tr>
+                    <tr>
+                        <td class="p-8 font-medium text-gray-300">Sistemas de Facturación SaaS</td>
+                        <td class="p-8 bg-blue-900/10 text-blue-300 font-bold border-l border-r border-blue-900/20 rounded-b-xl"><svg class="w-6 h-6 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Localizado (MP / Stripe)</td>
+                        <td class="p-8 text-gray-400">Infra Rígida</td>
+                        <td class="p-8 text-gray-500">N/A</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="page-number">06</div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 7 -->
+  <section class="slide items-center justify-center">
+    <div class="glow" style="bottom: 10%; right: 10%;"></div>
+    <div class="content flex flex-col items-center">
+        <h2 class="text-6xl font-bold mb-16"><span class="gradient-text">El Equipo</span> Detrás del Código</h2>
+        
+        <div class="glass p-16 flex items-center gap-16 max-w-6xl w-full">
+            <div class="w-64 h-64 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center shrink-0 border-4 border-gray-800 p-2">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Miguel&backgroundColor=transparent" alt="Miguel Angel Vallejos Salazar" class="w-full h-full rounded-full bg-gray-900 object-cover">
+            </div>
+            
+            <div class="flex flex-col flex-1">
+                <h3 class="text-5xl font-bold mb-4">Miguel Ángel Vallejos Salazar</h3>
+                <h4 class="text-3xl text-blue-400 font-medium mb-8">Founder & Lead Full-Stack Architect</h4>
+                
+                <ul class="space-y-6 text-2xl text-gray-300">
+                    <li class="flex items-start gap-4"><svg class="w-8 h-8 text-blue-500 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> <span>Creador <i>end-to-end</i> de toda la infraestructura desplegada (Next.js, Edge, Supabase).</span></li>
+                    <li class="flex items-start gap-4"><svg class="w-8 h-8 text-blue-500 shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> <span><b>Ventaja Injusta Ignite:</b> Al ser un <i>Solo-Founder Técnico</i> de alta velocidad, los recursos se destinan íntegros al crecimiento (GTM), no en agencias terciarizadas y burocracias de desarrollo.</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="page-number">07</div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 8 -->
+  <section class="slide">
+    <div class="glow" style="top: 30%; right: 40%; width: 800px; height:800px; filter: blur(100px); background: radial-gradient(circle at center, rgba(139, 92, 246, 0.1), transparent 70%);"></div>
+    <div class="content w-full h-full flex flex-col justify-center">
+        <h2 class="text-6xl font-bold text-center mb-20">Tracción Técnica & <span class="gradient-text">Roadmap</span></h2>
+        
+        <div class="relative max-w-7xl mx-auto w-full">
+            <div class="absolute top-1/2 left-0 w-full h-1 bg-gray-800 -translate-y-1/2 rounded-full z-0"></div>
+            
+            <div class="grid grid-cols-3 gap-16 relative z-10">
+                <!-- Milestone 1 -->
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center font-bold text-3xl mb-8 shadow-xl shadow-blue-600/30 ring-8 ring-gray-900">1</div>
+                    <h4 class="text-3xl font-bold mb-4 text-center">Hoy (PRD Live)</h4>
+                    <p class="text-xl text-gray-400 text-center px-4">SaaS desplegado, facturación activa y roles de seguridad BD validados. Landing page indexado.</p>
+                </div>
+                
+                <!-- Milestone 2 -->
+                <div class="flex flex-col items-center">
+                    <div class="w-20 h-20 bg-purple-600 rounded-full flex items-center justify-center font-bold text-3xl mb-8 shadow-xl shadow-purple-600/30 ring-8 ring-gray-900 border-2 border-white">2</div>
+                    <h4 class="text-3xl font-bold mb-4 text-center">Q3 2026</h4>
+                    <p class="text-xl text-gray-400 text-center px-4">Beta Pipeline. Onboarding de las primeras 5 "Agencias Beta" sin costo para afinar Modelos Analíticos y Testing E2E.</p>
+                </div>
+                
+                <!-- Milestone 3 -->
+                <div class="flex flex-col items-center opacity-70">
+                    <div class="w-20 h-20 bg-gray-800 border-2 border-gray-600 rounded-full flex items-center justify-center font-bold text-3xl mb-8 ring-8 ring-gray-900">3</div>
+                    <h4 class="text-3xl font-bold mb-4 text-center">Q4 2026</h4>
+                    <p class="text-xl text-gray-400 text-center px-4">Escalamiento elástico (Edge Workers) e integraciones directas a CRMs empresariales top-tier.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="page-number">08</div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+
+  <!-- Slide 9 -->
+  <section class="slide items-center justify-center text-center">
+    <div class="glow" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1000px; height: 1000px; opacity: 0.8; background: radial-gradient(circle at center, rgba(59, 130, 246, 0.2), transparent 70%);"></div>
+    <div class="content flex flex-col items-center">
+        <h2 class="text-8xl font-black mb-12">El "Ask" para <span class="gradient-text">Tally Ignite</span></h2>
+        
+        <p class="text-4xl text-gray-300 leading-relaxed max-w-5xl mb-16 font-light">
+            Tenemos el chasis de un superdeportivo B2B armado con precisión de ingeniería. Postulamos a <b class="text-white">Ignite</b> para ganar aceleración en distribución y estrategia Go-To-Market comercial.
+        </p>
+
+        <div class="grid grid-cols-2 gap-8 text-left max-w-5xl mb-16">
+            <div class="glass p-8 flex items-center gap-6">
+                <svg class="w-12 h-12 text-green-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <div class="text-2xl">Riesgo Tecnológico Eliminado</div>
+            </div>
+            <div class="glass p-8 flex items-center gap-6">
+                <svg class="w-12 h-12 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                <div class="text-2xl">Velocidad Extrema de Entrega</div>
+            </div>
+        </div>
+        
+        <div class="text-3xl font-semibold mb-6">
+            AIgenciaLab.cl
+        </div>
+        <div class="text-gray-400 text-xl tracking-widest uppercase">
+            Preparados para Escalar.
+        </div>
+    </div>
+    <div class="watermark">AIGENCIALAB.CL</div>
+  </section>
+</body>
+</html>

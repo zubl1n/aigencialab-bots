@@ -59,7 +59,11 @@ export async function POST(req: Request) {
     const accessToken = process.env.MP_ACCESS_TOKEN;
     if (!accessToken) throw new Error('MP_ACCESS_TOKEN no configurado');
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl';
+    // Sanitize siteUrl — strip trailing slashes/whitespace/newlines (critical for MP back_urls)
+    const siteUrl = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl').trim().replace(/\/+$/, '');
+    if (!siteUrl.startsWith('https://') && !siteUrl.startsWith('http://')) {
+      throw new Error(`NEXT_PUBLIC_SITE_URL inválida: "${siteUrl}"`);
+    }
 
     // Create MP Preference for Month 1 (implementation payment)
     const mpRes = await fetch('https://api.mercadopago.com/checkout/preferences', {
