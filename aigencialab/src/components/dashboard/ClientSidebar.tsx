@@ -22,20 +22,22 @@ import {
   Moon,
   Clock,
   Zap,
-  AlertTriangle
+  AlertTriangle,
+  TicketIcon,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Client, BotConfig } from '@/types/client';
 
 const navItems = [
-  { name: 'Inicio', href: '/dashboard', icon: Home },
-  { name: 'Mi bot', href: '/dashboard/bot', icon: Bot, showStatus: true },
+  { name: 'Inicio',         href: '/dashboard',              icon: Home },
+  { name: 'Mi bot',         href: '/dashboard/bot',          icon: Bot,          showStatus: true },
   { name: 'Conversaciones', href: '/dashboard/conversations', icon: MessageSquare },
-  { name: 'Leads capturados', href: '/dashboard/leads', icon: Target },
-  { name: 'Instalación', href: '/dashboard/installation', icon: Download },
-  { name: 'Facturación', href: '/dashboard/billing', icon: CreditCard },
-  { name: 'Soporte', href: '/dashboard/support', icon: HelpCircle },
-  { name: 'Configuración', href: '/dashboard/settings', icon: Settings },
+  { name: 'Leads capturados',href: '/dashboard/leads',       icon: Target },
+  { name: 'Instalación',   href: '/dashboard/installation',  icon: Download },
+  { name: 'Facturación',   href: '/dashboard/billing',       icon: CreditCard },
+  { name: 'Tickets',       href: '/dashboard/tickets',       icon: TicketIcon,   showUnread: true },
+  { name: 'Soporte',       href: '/dashboard/support',       icon: HelpCircle },
+  { name: 'Configuración', href: '/dashboard/settings',      icon: Settings },
 ];
 
 export function ClientSidebar() {

@@ -406,16 +406,13 @@ export default function ClientSettingsPage() {
           )}
 
           {activeTab === 'security' && (
-            <div className="glass rounded-[40px] p-10 border border-[var(--border)] space-y-6">
+            <div className="glass rounded-[40px] p-10 border border-[var(--border)] space-y-8">
               <h3 className="text-xl font-bold text-white flex items-center gap-3">
                 <Shield className="text-blue-400" /> Seguridad de Acceso
               </h3>
-              <div className="space-y-4">
-                <SecurityCard title="Autenticación de Dos Factores (2FA)" status="Desactivado" action="Configurar" />
-                <SecurityCard title="Alertas de Inicio de Sesión" status="Activado" action="Gestionar" />
-                <SecurityCard title="Direcciones IP Permitidas" status="Cualquiera" action="Restringir" />
-              </div>
-              <div className="space-y-2 pt-4 border-t border-white/5">
+
+              {/* Email display */}
+              <div className="space-y-2">
                 <label className="text-[10px] uppercase font-bold text-[var(--muted)] tracking-widest block px-1">
                   Email de cuenta
                 </label>
@@ -423,8 +420,30 @@ export default function ClientSettingsPage() {
                   {client?.email ?? '—'}
                 </p>
               </div>
+
+              {/* Password change */}
+              <PasswordChangeForm />
+
+              {/* Security info */}
+              <div className="space-y-3 pt-4 border-t border-white/5">
+                {[
+                  { title: 'Sesión activa', status: 'Verificado', hint: 'Tu sesión está activa y verificada' },
+                  { title: 'Alertas de inicio de sesión', status: 'Activo', hint: 'Recibirás email si alguien accede desde un nuevo dispositivo' },
+                ].map(n => (
+                  <div key={n.title} className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-bold text-white">{n.title}</p>
+                      <p className="text-xs text-[var(--muted)] mt-0.5">{n.hint}</p>
+                    </div>
+                    <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg border border-emerald-500/20">
+                      {n.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
+
 
           {activeTab === 'notifications' && (
             <div className="glass rounded-[40px] p-10 border border-[var(--border)] space-y-6">
@@ -527,5 +546,86 @@ function SecurityCard({ title, status, action }: { title: string; status: string
         {action}
       </button>
     </div>
+  );
+}
+
+function PasswordChangeForm() {
+  const [current, setCurrent]   = React.useState('');
+  const [next,    setNext]      = React.useState('');
+  const [confirm, setConfirm]   = React.useState('');
+  const [saving,  setSaving]    = React.useState(false);
+  const [msg,     setMsg]       = React.useState<{ text: string; ok: boolean } | null>(null);
+  const supabase = createClient();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setMsg(null);
+
+    if (next.length < 8) {
+      setMsg({ text: 'La nueva contraseña debe tener al menos 8 caracteres.', ok: false }); return;
+    }
+    if (next !== confirm) {
+      setMsg({ text: 'Las contraseñas no coinciden.', ok: false }); return;
+    }
+
+    setSaving(true);
+    try {
+      // Re-authenticate with current password first
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error('No se pudo verificar el usuario');
+
+      // Sign in again to validate current password
+      const { error: signInErr } = await supabase.auth.signInWithPassword({
+        email: user.email,
+        password: current,
+      });
+      if (signInErr) throw new Error('La contraseña actual es incorrecta.');
+
+      // Update to new password
+      const { error: updateErr } = await supabase.auth.updateUser({ password: next });
+      if (updateErr) throw new Error(updateErr.message);
+
+      setMsg({ text: '✅ Contraseña actualizada correctamente.', ok: true });
+      setCurrent(''); setNext(''); setConfirm('');
+    } catch (err: any) {
+      setMsg({ text: err.message ?? 'Error al actualizar la contraseña', ok: false });
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5 pt-4 border-t border-white/5">
+      <h4 className="text-sm font-bold text-white uppercase tracking-wide flex items-center gap-2">
+        🔑 Cambiar Contraseña
+      </h4>
+
+      {msg && (
+        <div className={`flex items-center gap-3 p-4 rounded-2xl border text-sm font-medium ${
+          msg.ok
+            ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-300'
+            : 'bg-red-500/10 border-red-500/20 text-red-400'
+        }`}>
+          {msg.text}
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 gap-4">
+        <InputGroup id="pw-current" label="Contraseña actual" type="password" value={current} onChange={setCurrent} placeholder="Tu contraseña actual" />
+        <div className="grid grid-cols-2 gap-4">
+          <InputGroup id="pw-new"     label="Nueva contraseña"    type="password" value={next}    onChange={setNext}    placeholder="Mín. 8 caracteres" />
+          <InputGroup id="pw-confirm" label="Confirmar contraseña" type="password" value={confirm} onChange={setConfirm} placeholder="Repetir nueva contraseña" />
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        disabled={saving || !current || !next || !confirm}
+        className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 disabled:opacity-40 text-white rounded-xl font-bold text-sm transition"
+      >
+        {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+        Actualizar contraseña
+      </button>
+    </form>
   );
 }
