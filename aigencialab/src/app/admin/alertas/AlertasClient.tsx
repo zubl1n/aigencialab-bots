@@ -103,6 +103,46 @@ export default function AdminAlertasClient({ alerts, counts, inactiveBots, clien
         ))}
       </div>
 
+      {/* Churn Predictor */}
+      {(inactiveBots.length > 0 || clientsWithoutBot.length > 0) && (
+        <div className="glass rounded-2xl border border-amber-500/15 p-5 space-y-3">
+          <h3 className="text-sm font-bold text-amber-400 flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4" /> Predictor de Churn — Clientes en riesgo
+          </h3>
+          <p className="text-xs text-gray-600">Clientes con bots inactivos o sin configuración de bot tienen mayor probabilidad de churn.</p>
+          <div className="space-y-2">
+            {inactiveBots.slice(0, 5).map((b: any) => (
+              <div key={b.client_id} className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-3 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-red-400" />
+                  <div>
+                    <Link href={`/admin/clientes/${b.clients?.id}`} className="text-xs font-medium text-white hover:text-purple-400 transition">
+                      {b.clients?.company_name || b.clients?.email || '—'}
+                    </Link>
+                    <div className="text-[10px] text-gray-700">Bot inactivo: {b.bot_name || 'Sin nombre'}</div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-red-400 bg-red-500/10 px-2 py-1 rounded-full border border-red-500/20">Alto riesgo</span>
+              </div>
+            ))}
+            {clientsWithoutBot.slice(0, 5).map((c: any) => (
+              <div key={c.id} className="flex items-center justify-between bg-white/[0.02] border border-white/5 p-3 rounded-xl">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full bg-amber-400" />
+                  <div>
+                    <Link href={`/admin/clientes/${c.id}`} className="text-xs font-medium text-white hover:text-purple-400 transition">
+                      {c.company_name || c.email || '—'}
+                    </Link>
+                    <div className="text-[10px] text-gray-700">Sin bot configurado</div>
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 px-2 py-1 rounded-full border border-amber-500/20">Medio riesgo</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Filters */}
       <div className="glass rounded-2xl border border-white/5 p-4 flex flex-wrap gap-3 items-center">
         <Filter className="w-4 h-4 text-gray-600" />

@@ -15,8 +15,11 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
+import { usePlan } from '@/hooks/usePlan';
+import { PLAN_CONFIG, formatLimit } from '@/lib/plans.config';
+import { PlanGate } from '@/components/shared/PlanGate';
 
-type Tab = 'profile' | 'security' | 'notifications' | 'connections';
+type Tab = 'profile' | 'security' | 'notifications' | 'connections' | 'usage';
 
 interface ClientConfig {
   id: string;
@@ -50,6 +53,7 @@ export default function ClientSettingsPage() {
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [saveError, setSaveError]   = useState<string | null>(null);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const usePlanData = usePlan();
 
   // Local editable state
   const [form, setForm] = useState({
@@ -166,6 +170,7 @@ export default function ClientSettingsPage() {
     { id: 'security',      icon: Shield, label: 'Seguridad & Password' },
     { id: 'notifications', icon: Bell,   label: 'Notificaciones' },
     { id: 'connections',   icon: Globe,  label: 'Conexiones & API' },
+    { id: 'usage',          icon: RefreshCw, label: 'Uso & API Keys' },
   ];
 
   if (loading) {
@@ -498,6 +503,67 @@ export default function ClientSettingsPage() {
                   {bot?.active ? '● Bot Activo' : '● Bot Inactivo'}
                 </p>
               </div>
+            </div>
+          )}
+
+          {activeTab === 'usage' && (
+            <div className="space-y-6">
+              {/* Plan usage bars */}
+              <div className="glass rounded-[40px] p-10 border border-[var(--border)] space-y-6">
+                <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                  📊 Uso del Plan
+                </h3>
+                {(() => {
+                  const { planId, limit } = usePlanData;
+                  const plan = PLAN_CONFIG[planId];
+                  const features = [
+                    { key: 'conversations_month' as const, label: 'Conversaciones/mes', icon: '💬' },
+                    { key: 'leads' as const, label: 'Leads', icon: '👤' },
+                    { key: 'bots' as const, label: 'Bots', icon: '🤖' },
+                    { key: 'knowledge_files' as const, label: 'Archivos Knowledge Base', icon: '📄' },
+                  ];
+                  return features.map(f => {
+                    const maxVal = plan.limits[f.key];
+                    if (typeof maxVal !== 'number') return null;
+                    const usage = limit(f.key);
+                    const pct = usage ? Math.min(usage.percentage, 100) : 0;
+                    return (
+                      <div key={f.key} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-gray-400">{f.icon} {f.label}</span>
+                          <span className="text-xs text-gray-600 font-mono">{maxVal - (usage?.limit ?? maxVal)} / {maxVal}</span>
+                        </div>
+                        <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                          <div className={`h-full rounded-full transition-all ${
+                            pct >= 90 ? 'bg-red-500' : pct >= 70 ? 'bg-amber-500' : 'bg-purple-500'
+                          }`} style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  });
+                })()}
+              </div>
+
+              {/* API Keys section */}
+              <PlanGate feature="api_access" requiredPlan="pro">
+                <div className="glass rounded-[40px] p-10 border border-[var(--border)] space-y-6">
+                  <h3 className="text-xl font-bold text-white flex items-center gap-3">
+                    🔑 API Keys
+                  </h3>
+                  <p className="text-sm text-gray-500">Genera API keys para integrar AIgenciaLab con tus sistemas.</p>
+                  <div className="space-y-2">
+                    <label className="text-[10px] uppercase font-bold text-[var(--muted)] tracking-widest block px-1">Tu Client ID</label>
+                    <div className="flex gap-2">
+                      <code className="flex-1 px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white text-xs font-mono">{client?.id ?? '—'}</code>
+                      <button onClick={() => navigator.clipboard.writeText(client?.id ?? '')}
+                        className="px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-xs text-gray-400 hover:text-white transition">📋</button>
+                    </div>
+                  </div>
+                  <div className="p-4 bg-amber-500/5 border border-amber-500/10 rounded-xl">
+                    <p className="text-xs text-amber-400">⚠️ Usa tu Client ID en el header <code>x-client-id</code> al llamar al endpoint <code>/api/chat</code>.</p>
+                  </div>
+                </div>
+              </PlanGate>
             </div>
           )}
         </form>

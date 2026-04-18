@@ -196,6 +196,7 @@ export default async function AdminClientes({
               <th className="px-5 py-4">Bot</th>
               <th className="px-5 py-4">Pago MP</th>
               <th className="px-5 py-4">Leads</th>
+              <th className="px-5 py-4">Health</th>
               <th className="px-5 py-4">Registrado</th>
               <th className="px-5 py-4">Acciones</th>
             </tr>
@@ -266,6 +267,21 @@ export default async function AdminClientes({
                   <td className="px-5 py-4">
                     <Link href={`/admin/leads?client=${c.id}`}
                       className="text-purple-600 hover:underline font-bold text-sm">{nLeads}</Link>
+                  </td>
+
+                  {/* Health Score */}
+                  <td className="px-5 py-4">
+                    {(() => {
+                      let score = 0;
+                      if (bot?.active) score += 40;
+                      if (subStatus === 'active') score += 30;
+                      else if (subStatus === 'trialing') score += 15;
+                      if (nLeads > 0) score += 20;
+                      if (billing?.payment_status === 'approved') score += 10;
+                      score = Math.min(score, 100);
+                      const cls = score >= 70 ? 'text-emerald-700 bg-emerald-100' : score >= 40 ? 'text-amber-700 bg-amber-100' : 'text-red-700 bg-red-100';
+                      return <span className={`px-2.5 py-1 rounded-full text-xs font-bold ${cls}`}>{score}%</span>;
+                    })()}
                   </td>
 
                   {/* Registrado */}
