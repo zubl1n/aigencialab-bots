@@ -35,7 +35,8 @@ const createSchema = z.object({
   email:        z.string().email().optional().or(z.literal('')),
   score:        z.number().min(0).max(100).optional().default(0),
   notes:        z.string().optional(),
-  source:       z.enum(['audit','manual','whatsapp','landing']).optional().default('manual'),
+  source:       z.enum(['audit','manual','whatsapp','landing','popup_landing']).optional().default('manual'),
+  offer:        z.string().optional(),
 })
 
 export async function POST(req: NextRequest) {
@@ -45,13 +46,31 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) return NextResponse.json({ error: 'Datos inválidos', details: parsed.error.flatten() }, { status: 400 })
 
     const d = parsed.data
-    const score = d.score ?? 0
+
+    // El popup requiere email — el CRM lo tiene como opcional
+    if (d.source === 'popup_landing' && !d.email) {
+      return NextResponse.json({ error: 'Email requerido' }, { status: 400 })
+    }
+
+    // Popup leads son warm por defecto (score 50) si no se envía score
+    const score = d.score ?? (d.source === 'popup_landing' ? 50 : 0)
     const tier  = score >= 70 ? 'hot' : score >= 45 ? 'warm' : 'cold'
 
     const supabase = createAdminSupabase()
-    const { data, error } = await supabase.from('leads').insert({ ...d, tier, prob: Math.round(score * 0.85) }).select().single()
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-    return NextResponse.json({ data }, { status: 201 })
+    const { data, error } = await supabase
+      .from('leads')
+      .insert({ ...d, score, tier, prob: Math.round(score * 0.85) })
+      .select()
+      .single()
+
+    if (error) {
+      // Email duplicado — para el popup no es error, el lead ya está registrado
+      if (error.code === '23505') {
+        return NextResponse.json({ success: true, duplicate: true }, { status: 200 })
+      }
+      return NextResponse.json({ error: error.message }, { status: 500 })
+    }
+    return NextResponse.json({ data, success: true }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Error interno' }, { status: 500 })
   }

@@ -191,11 +191,12 @@ function TicketCard({ ticket, onRespond, onStatus }: {
 
 // ── Main Admin Dashboard ──────────────────────────────────────────────────
 export default function AdminTicketsPage() {
-  const [tickets,  setTickets]  = useState<TicketItem[]>([]);
-  const [loading,  setLoading]  = useState(true);
-  const [filter,   setFilter]   = useState('all');
-  const [search,   setSearch]   = useState('');
-  const [toast,    setToast]    = useState<{ msg: string; ok: boolean } | null>(null);
+  const [tickets,        setTickets]       = useState<TicketItem[]>([]);
+  const [loading,        setLoading]       = useState(true);
+  const [filter,         setFilter]        = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [search,         setSearch]        = useState('');
+  const [toast,          setToast]         = useState<{ msg: string; ok: boolean } | null>(null);
 
   const showToast = (msg: string, ok = true) => {
     setToast({ msg, ok });
@@ -241,7 +242,8 @@ export default function AdminTicketsPage() {
   };
 
   const filtered = tickets
-    .filter(t => filter === 'all' || t.status === filter)
+    .filter(t => filter         === 'all' || t.status   === filter)
+    .filter(t => priorityFilter === 'all' || t.priority === priorityFilter)
     .filter(t => !search || t.subject.toLowerCase().includes(search.toLowerCase()) ||
       (t.client?.email ?? '').toLowerCase().includes(search.toLowerCase()) ||
       (t.client?.company_name ?? '').toLowerCase().includes(search.toLowerCase()));
@@ -290,35 +292,54 @@ export default function AdminTicketsPage() {
       </div>
 
       {/* Filter + Search */}
-      <div className="flex flex-col sm:flex-row gap-3">
-        <div className="flex bg-white/[0.03] border border-white/[0.06] rounded-xl p-1 gap-1 flex-wrap">
-          {([['all','Todos'], ['open','Abiertos'], ['in_progress','En proceso'], ['resolved','Resueltos'], ['closed','Cerrados']] as [string,string][]).map(([val, label]) => (
-            <button
-              key={val}
-              onClick={() => setFilter(val)}
-              className={`px-3 py-1.5 text-xs font-bold rounded-lg transition relative ${
-                filter === val ? 'bg-[#7C3AED] text-white' : 'text-[#A09CB0] hover:text-white hover:bg-white/5'
-              }`}
-            >
-              {label}
-              {counts[val as keyof typeof counts] > 0 && (
-                <span className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full ${
-                  filter === val ? 'bg-white/20' : 'bg-white/5'
-                }`}>
-                  {counts[val as keyof typeof counts]}
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
-        <div className="relative flex-1 max-w-sm ml-auto">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B6480]" />
-          <input
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            placeholder="Buscar por empresa, email o asunto..."
-            className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-[#4B4860] focus:outline-none focus:border-[#7C3AED]/50 transition"
-          />
+      <div className="flex flex-col gap-3">
+        {/* Row 1: Status filter tabs */}
+        <div className="flex flex-wrap gap-2">
+          <div className="flex bg-white/[0.03] border border-white/[0.06] rounded-xl p-1 gap-1 flex-wrap">
+            {([['all','Todos'], ['open','Abiertos'], ['in_progress','En proceso'], ['resolved','Resueltos'], ['closed','Cerrados']] as [string,string][]).map(([val, label]) => (
+              <button
+                key={val}
+                onClick={() => setFilter(val)}
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition relative ${
+                  filter === val ? 'bg-[#7C3AED] text-white' : 'text-[#A09CB0] hover:text-white hover:bg-white/5'
+                }`}
+              >
+                {label}
+                {counts[val as keyof typeof counts] > 0 && (
+                  <span className={`ml-1.5 text-[10px] px-1.5 py-0.5 rounded-full ${
+                    filter === val ? 'bg-white/20' : 'bg-white/5'
+                  }`}>
+                    {counts[val as keyof typeof counts]}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Priority filter */}
+          <select
+            value={priorityFilter}
+            onChange={e => setPriorityFilter(e.target.value)}
+            className="bg-white/[0.04] border border-white/[0.08] rounded-xl px-3 py-1.5 text-xs font-bold text-[#A09CB0] focus:outline-none focus:border-[#7C3AED]/50 transition cursor-pointer"
+          >
+            <option value="all">Prioridad: Todas</option>
+            <option value="urgent">🔴 Urgente</option>
+            <option value="high">🟠 Alta</option>
+            <option value="normal">🔵 Normal</option>
+            <option value="medium">🔵 Media</option>
+            <option value="low">⚪ Baja</option>
+          </select>
+
+          {/* Search box */}
+          <div className="relative flex-1 min-w-[200px]">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B6480]" />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Buscar por empresa, email o asunto..."
+              className="w-full bg-white/[0.04] border border-white/[0.08] rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-[#4B4860] focus:outline-none focus:border-[#7C3AED]/50 transition"
+            />
+          </div>
         </div>
       </div>
 
