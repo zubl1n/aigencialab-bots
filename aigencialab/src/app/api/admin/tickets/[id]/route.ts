@@ -57,6 +57,16 @@ export async function PATCH(
   const { error } = await supabase.from('tickets').update(update).eq('id', id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
+  // BUG FIX B1: Insert admin reply into ticket_messages so client chat view shows it
+  if (admin_response) {
+    void supabase.from('ticket_messages').insert({
+      ticket_id: id,
+      author_id: 'admin',
+      role:      'agent',
+      body:      admin_response,
+    });
+  }
+
   // Email notification to client
   const { data: ticket } = await supabase
     .from('tickets').select('client_id, subject').eq('id', id).maybeSingle();
