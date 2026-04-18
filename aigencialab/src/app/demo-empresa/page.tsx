@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import { WidgetTester } from './WidgetTester';
+import { ArchitecturePanel } from './ArchitecturePanel';
 
 export const metadata: Metadata = {
   title: 'Valle Alto Propiedades | Inicio',
@@ -11,6 +12,7 @@ export default function DemoEmpresaPage() {
   return (
     <div className="min-h-screen bg-[#F9FAFB] text-[#111827] font-sans">
       <WidgetTester />
+      <ArchitecturePanel />
       {/* ── ALERTS (The "Pains") ── */}
       <div className="bg-[#DC2626] text-white text-xs font-bold text-center py-2 px-4 shadow-sm">
         ⚠️ Atención: Debido a la alta demanda, nuestros ejecutivos están tardando entre 48 y 72 horas hábiles en responder solicitudes. Agradecemos su paciencia.
