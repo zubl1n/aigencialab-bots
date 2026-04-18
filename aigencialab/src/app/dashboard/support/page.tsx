@@ -152,7 +152,8 @@ export default function ClientSupportPage() {
           <span className="text-emerald-700"> Escríbenos directamente por WhatsApp y te responderemos en minutos.</span>
         </div>
         <a
-          href="https://wa.me/56912345678"
+          href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56991234567'}`}
+
           target="_blank"
           rel="noopener noreferrer"
           className="flex-shrink-0 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold px-3 py-2 rounded-lg transition-all"

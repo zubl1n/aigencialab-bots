@@ -208,7 +208,8 @@ export default function DocsInstalacionPage() {
               <div className="text-sm text-slate-500">Tu ingeniero asignado te acompaña en todo el proceso durante el período de implementación.</div>
             </div>
             <a
-              href="https://wa.me/56912345678"
+              href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56991234567'}`}
+
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2.5 rounded-xl font-semibold text-sm transition-all flex-shrink-0"

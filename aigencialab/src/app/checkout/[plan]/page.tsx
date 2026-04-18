@@ -340,7 +340,8 @@ export default function CheckoutPage() {
                 <div className="flex items-center justify-center gap-2">
                   <MessageSquare className="w-4 h-4 text-emerald-500" />
                   <a
-                    href="https://wa.me/56912345678"
+                    href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56991234567'}`}
+
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-xs text-slate-500 hover:text-slate-700 transition-colors"

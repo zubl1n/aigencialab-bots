@@ -140,7 +140,8 @@ export default function ContactoPage() {
               <h3 className="font-bold text-[#F1F0F5] mb-4">Contacto directo</h3>
               <div className="space-y-3 text-sm text-[#A09CB0]">
                 <p>📧 <a href="mailto:hola@aigencialab.cl" className="text-[#C084FC] hover:underline">hola@aigencialab.cl</a></p>
-                <p>📱 <a href="https://wa.me/56912345678" className="text-[#C084FC] hover:underline">+569 1234 5678 (WhatsApp)</a></p>
+                <p>📱 <a href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56991234567'}`} className="text-[#C084FC] hover:underline">+569 1234 5678 (WhatsApp)</a></p>
+
                 <p>🕐 Lunes a viernes, 9:00 – 18:00 (CLT)</p>
               </div>
             </div>

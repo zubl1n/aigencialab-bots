@@ -28,7 +28,8 @@ function FailedContent() {
             <RefreshCw className="w-4 h-4" /> Intentar de nuevo
           </Link>
           <a
-            href="https://wa.me/56912345678"
+            href={`https://wa.me/${process.env.NEXT_PUBLIC_WA_SALES_NUMBER ?? '56991234567'}`}
+
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white py-3.5 rounded-xl font-bold transition-all duration-200"

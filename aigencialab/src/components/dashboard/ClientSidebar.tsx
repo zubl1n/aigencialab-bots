@@ -58,9 +58,11 @@ export function ClientSidebar() {
   const [client, setClient] = useState<Client | null>(null);
   const [botConfig, setBotConfig] = useState<BotConfig | null>(null);
   const [trialDaysLeft, setTrialDaysLeft] = useState<number | null>(null);
-  const [trialExpired, setTrialExpired] = useState(false);
+  const [trialExpired, setTrialExpired]   = useState(false);
+  const [trialTotalDays, setTrialTotalDays] = useState(14);
   const [unreadTickets, setUnreadTickets] = useState(0);
-  const [clientPlan, setClientPlan] = useState('basic');
+  const [clientPlan, setClientPlan]       = useState('basic');
+
   const supabase = createClient();
 
   useEffect(() => {
@@ -89,15 +91,16 @@ export function ClientSidebar() {
 
       const trialEndStr = subRes.data?.trial_ends_at ?? (clientRes.data as any)?.trial_ends_at;
       if (trialEndStr) {
-        const daysLeft = Math.ceil((new Date(trialEndStr).getTime() - Date.now()) / 86400000);
-        if (daysLeft <= 0) {
-          setTrialExpired(true);
-          setTrialDaysLeft(0);
-        } else {
-          setTrialDaysLeft(daysLeft);
-          setTrialExpired(false);
-        }
+        const trialEnd  = new Date(trialEndStr).getTime();
+        const created   = new Date((clientRes.data as any)?.created_at ?? trialEndStr).getTime();
+        const totalDays = Math.max(7, Math.round((trialEnd - created) / 86400000));
+        const daysLeft  = Math.ceil((trialEnd - Date.now()) / 86400000);
+        setTrialTotalDays(totalDays);
+        if (daysLeft <= 0) { setTrialExpired(true); setTrialDaysLeft(0); }
+        else               { setTrialDaysLeft(daysLeft); setTrialExpired(false); }
       }
+
+
     }
     fetchData();
   }, []);
@@ -196,7 +199,8 @@ export function ClientSidebar() {
                 <div className="w-full h-1 bg-white/10 rounded-full mb-2 overflow-hidden">
                   <div
                     className="h-full bg-amber-400 rounded-full transition-all"
-                    style={{ width: `${Math.min(100, ((14 - (trialDaysLeft || 0)) / 14) * 100)}%` }}
+                    style={{ width: `${Math.min(100, ((trialTotalDays - (trialDaysLeft || 0)) / trialTotalDays) * 100)}%` }}
+
                   />
                 </div>
                 <Link
