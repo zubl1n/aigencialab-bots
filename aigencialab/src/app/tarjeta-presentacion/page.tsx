@@ -1,7 +1,44 @@
 'use client';
 
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import QRCode from 'react-qr-code';
+
+const LOGO_SVGS = {
+  gcp: "https://www.vectorlogo.zone/logos/google_cloud/google_cloud-icon.svg",
+  openai: "https://upload.wikimedia.org/wikipedia/commons/0/04/ChatGPT_logo.svg",
+  meta: "https://upload.wikimedia.org/wikipedia/commons/7/7b/Meta_Platforms_Inc._logo.svg"
+};
+
+const PartnerBadges = ({ theme = 'light', mode = 'horizontal' }) => (
+  <div className={`flex ${mode === 'vertical' ? 'flex-col gap-2' : 'flex-wrap gap-2 items-center'} mt-auto pt-4 border-t ${theme === 'light' ? 'border-black/5' : 'border-white/10'}`}>
+    <div className={`flex items-center gap-1.5 px-2 py-1 rounded text-[0.55rem] font-bold tracking-wider border ${theme === 'light' ? 'border-black/10 bg-white/50 text-slate-800' : 'border-white/10 bg-black/20 text-slate-200'}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={LOGO_SVGS.gcp} className="w-3.5 h-3.5 object-contain" alt="Google Cloud" />
+      CLOUD PARTNER
+    </div>
+    <div className={`flex items-center gap-1.5 px-2 py-1 rounded text-[0.55rem] font-bold tracking-wider border ${theme === 'light' ? 'border-black/10 bg-white/50 text-slate-800' : 'border-white/10 bg-black/20 text-slate-200'}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={LOGO_SVGS.openai} className={`w-3 h-3 object-contain ${theme === 'light' ? '' : 'invert opacity-90'}`} alt="OpenAI" />
+      AI INTEGRATOR
+    </div>
+    <div className={`flex items-center gap-1.5 px-2 py-1 rounded text-[0.55rem] font-bold tracking-wider border ${theme === 'light' ? 'border-black/10 bg-white/50 text-slate-800' : 'border-white/10 bg-black/20 text-slate-200'}`}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={LOGO_SVGS.meta} className="w-3.5 h-3.5 object-contain" alt="Meta" />
+      TECH PROVIDER
+    </div>
+  </div>
+);
+
+const Logo = ({ theme = 'dark', className = '' }) => (
+  <div className={`flex items-center gap-2 ${className}`}>
+    <div className="bg-gradient-to-br from-purple-500 to-purple-600 w-11 h-11 rounded-[0.8rem] flex items-center justify-center shadow-[0_4px_15px_rgba(168,85,247,0.4)]">
+      <span className="text-white font-black text-xl font-['Outfit'] tracking-tighter">AI</span>
+    </div>
+    <span className={`font-black text-[1.7rem] tracking-tight font-['Outfit'] ${theme === 'light' ? 'text-slate-900' : 'text-white'}`}>
+      genciaLab
+    </span>
+  </div>
+);
 
 export default function TarjetasPage() {
   const [printId, setPrintId] = useState<number | null>(null);
@@ -22,11 +59,10 @@ export default function TarjetasPage() {
   const qrUrl = "https://aigencialab.cl/audit";
 
   return (
-    <div className="min-h-screen bg-gray-50 py-12 px-4 selection:bg-blue-500/30">
+    <div className="min-h-screen bg-gray-100 py-12 px-4 selection:bg-purple-500/30">
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;600&family=Outfit:wght@400;700;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;600;700;800;900&family=Space+Grotesk:wght@500;700&display=swap');
 
-        /* BASE PRINT STYLES */
         @media print {
           title { display: none; }
           @page { margin: 0; size: auto; }
@@ -35,325 +71,364 @@ export default function TarjetasPage() {
           
           .print-target, .print-target * { visibility: visible; }
           .print-target { 
-            position: absolute !important; 
-            left: 0 !important; 
-            top: 0 !important; 
-            margin: 0 !important;
-            padding: 0 !important;
-            transform: scale(0.95);
-            transform-origin: top left;
+            position: absolute !important; left: 0 !important; top: 0 !important; margin: 0 !important; padding: 0 !important;
+            transform: scale(0.95); transform-origin: top left;
           }
-          
           .no-print { display: none !important; }
         }
 
-        /* CARD SIZES AND STRUCTURE */
-        .card-wrapper-inner {
-           width: 900px;
-           display: flex;
-           gap: 30px;
-        }
-
+        .card-wrapper-inner { width: 900px; display: flex; gap: 30px; font-family: 'Inter', sans-serif; }
         .card-panel {
-          width: 900px;
-          height: 500px;
-          border-radius: 18px;
-          overflow: hidden;
-          position: relative;
-          background: white; /* fallback */
-          -webkit-print-color-adjust: exact !important;
-          print-color-adjust: exact !important;
-          flex-shrink: 0;
-          box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+          width: 900px; height: 500px; border-radius: 18px; overflow: hidden; position: relative;
+          -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important;
+          flex-shrink: 0; box-shadow: 0 20px 40px rgba(0,0,0,0.15);
         }
 
-        /* -------------- CARD TYPE 1: ORIGINAL (Cyberpunk) -------------- */
-        .card-t1-front { background: #0a0c14; display: flex; align-items: stretch; color: white;}
-        .card-t1-front .grid-bg {
-          position: absolute; inset: 0;
-          background-image: linear-gradient(rgba(37,99,235,.06) 1px, transparent 1px), linear-gradient(90deg, rgba(37,99,235,.06) 1px, transparent 1px);
-          background-size: 40px 40px;
-        }
-        .card-t1-front .glow-orb {
-          position: absolute; width: 300px; height: 300px; border-radius:50%;
-          background: radial-gradient(circle, rgba(37,99,235,.15) 0%, transparent 70%); top: -80px; right: 180px; pointer-events: none;
-        }
-        .card-t1-front .content { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding: 44px 48px; }
-        .card-t1-front .logo { font-size: 2rem; font-weight: 800; font-family:'Inter'; letter-spacing: -.02em;}
-        .card-t1-front .logo span { color: #00cfff; }
-        .card-t1-front .qr-side { position: relative; z-index: 2; width: 220px; background: rgba(255,255,255,.03); border-left: 1px solid rgba(255,255,255,.06); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; }
-        .card-t1-front .qr-frame { background: #fff; border-radius: 12px; padding: 10px; width: 140px; height: 140px; display: flex; align-items: center; justify-content: center; }
-
-        .card-t1-back { background: #0a0c14; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 28px; position:relative; }
-        .card-t1-back .hex-bg { position: absolute; inset: 0; opacity: .04; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='57.74'%3E%3Cpolygon points='25,3 47,15.87 47,41.87 25,54.74 3,41.87 3,15.87' fill='none' stroke='%23ffffff' stroke-width='1'/%3E%3C/svg%3E"); background-size: 50px 57.74px; }
-        .card-t1-back .logo-mono { z-index:2; font-size: 4rem; font-weight: 800; font-family:'Inter'; background: linear-gradient(135deg, #2563eb, #7c3aed); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-
-        /* -------------- CARD TYPE 2: EXECUTIVE MINIMAL -------------- */
-        .card-t2-front { background: #ffffff; color: #111827; display: flex; align-items: center; }
-        .card-t2-front .deco-line { position: absolute; top:0; bottom:0; left: 0; width: 6px; background: linear-gradient(180deg, #1d4ed8, #4f46e5); }
-        .card-t2-front .content { padding: 50px 60px; flex: 1; display:flex; flex-direction:column; justify-content:center; }
-        .card-t2-front .title { font-family: 'Outfit', sans-serif; font-size: 2.8rem; font-weight: 900; letter-spacing: -0.03em; color: #0f172a; line-height: 1.1; }
-        .card-t2-front .subtitle { font-family: 'Inter', sans-serif; font-size: 1rem; color: #64748b; margin-top: 5px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; }
-        .card-t2-front .qr-area { width: 300px; padding-right: 60px; display:flex; flex-direction:column; align-items:flex-end; }
-        .card-t2-front .qr-box { background: white; padding: 12px; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05); }
-
-        .card-t2-back { background: #f8fafc; display:flex; justify-content:center; align-items:center; }
-        .card-t2-back .logo-large { font-family: 'Outfit', sans-serif; font-size: 3rem; font-weight: 900; color: #0f172a; }
-        .card-t2-back .logo-large span { color: #2563eb; }
-
-        /* -------------- CARD TYPE 3: NEON GLASSMORPHISM -------------- */
-        .card-t3-front { background: #030712; color: white; display: flex; overflow: hidden; font-family:'Inter'; }
-        .card-t3-front .bg-blobs { position: absolute; inset:0; z-index:0; overflow:hidden;}
-        .card-t3-front .blob1 { position: absolute; width: 500px; height: 500px; background: #6d28d9; filter: blur(100px); border-radius: 50%; top: -200px; left: -100px; opacity:0.6; }
-        .card-t3-front .blob2 { position: absolute; width: 400px; height: 400px; background: #2563eb; filter: blur(90px); border-radius: 50%; bottom: -100px; right: -50px; opacity:0.5; }
-        .card-t3-front .glass-panel { position:relative; z-index:1; border: 1px solid rgba(255,255,255,0.1); background: rgba(25,25,35,0.4); backdrop-filter: blur(20px); border-radius: 16px; margin: 30px; display:flex; width: calc(100% - 60px); }
-        .card-t3-front .content { padding: 40px; flex:1; display:flex; flex-direction:column; justify-content:center; }
-        .card-t3-front .brand { font-size:2.4rem; font-weight:700; font-family:'Outfit'; }
-        .card-t3-front .qr-sec { width: 250px; display:flex; flex-direction:column; align-items:center; justify-content:center; border-left: 1px solid rgba(255,255,255,0.05); }
-        .card-t3-front .qr-wrapper { background: rgba(255,255,255,0.9); padding:10px; border-radius:10px; }
-
-        .card-t3-back { background: #030712; display:flex; align-items:center; justify-content:center; position:relative;}
-        .card-t3-back .blob-c { position: absolute; width: 600px; height: 600px; background: conic-gradient(from 180deg at 50% 50%, #4c1d95 0deg, #1e3a8a 180deg, #4c1d95 360deg); filter: blur(120px); opacity:0.4; }
-        .card-t3-back .z-10 { position:relative; z-index:10; font-family:'Outfit'; font-size:2rem; letter-spacing:8px; font-weight:500; color:#cbd5e1; display:flex; flex-direction:column; align-items:center; gap:20px; }
-
-        /* -------------- CARD TYPE 4: CORPORATE ELITE -------------- */
-        .card-t4-front { background: #011627; color: white; display: flex; font-family:'Inter'; align-items:stretch;}
-        .card-t4-front .blue-accent { width: 40%; background: #0a2540; position:relative; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding: 40px;}
-        .card-t4-front .blue-accent::after { content:''; position:absolute; right:-50px; top:-50px; width:200px; height:200px; border-radius:50%; border: 30px solid rgba(0, 207, 255, 0.05); }
-        .card-t4-front .content { flex: 1; padding: 50px; display:flex; flex-direction:column; justify-content:center;}
-        .card-t4-front .info-item { display:flex; align-items:center; gap:12px; font-size:1rem; color:#94a3b8; font-weight:400; margin-bottom:15px;}
-        .card-t4-front .info-item i { color: #00cfff; font-size:1.2rem; font-style:normal; font-family:system-ui;}
+        /* 1. CYBERPUNK ORIGINAL */
+        .t1-bg { background: #0a0c14; }
+        .t1-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(147,51,234,.1) 1px, transparent 1px), linear-gradient(90deg, rgba(147,51,234,.1) 1px, transparent 1px); background-size: 30px 30px; }
         
-        .card-t4-back { background: #0a2540; display:flex; align-items:center; justify-content:center; }
-        .card-t4-back .circle-line { position:absolute; width:400px; height:400px; border:1px solid rgba(255,255,255,0.05); border-radius:50%; }
-        .card-t4-back .circle-line-2 { position:absolute; width:600px; height:600px; border:1px solid rgba(255,255,255,0.02); border-radius:50%; }
+        /* 2. EXECUTIVE MINIMAL */
+        .t2-line { position: absolute; top:0; bottom:0; left: 0; width: 8px; background: linear-gradient(180deg, #6b21a8, #3b82f6); }
+        
+        /* 3. NEON GLASSMORPHISM */
+        .t3-blob1 { position: absolute; width: 500px; height: 500px; background: #9333ea; filter: blur(120px); border-radius: 50%; top: -200px; left: -100px; opacity:0.6; }
+        .t3-blob2 { position: absolute; width: 400px; height: 400px; background: #3b82f6; filter: blur(100px); border-radius: 50%; bottom: -100px; right: -50px; opacity:0.5; }
+        
+        /* 4. CORPORATE ELITE */
+        .t4-accent::after { content:''; position:absolute; right:-60px; top:-60px; width:250px; height:250px; border-radius:50%; border: 40px solid rgba(0, 207, 255, 0.05); }
+        
+        /* 5. DARK MATTER & GOLD */
+        .t5-bg { background: #050505; }
+        .t5-gold { background: linear-gradient(135deg, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .t5-border { border: 1px solid rgba(252, 246, 186, 0.2); }
+        
+        /* 6. ECO TECH */
+        .t6-bg { background: border-box #022c22; }
+        .t6-emerald { color: #34d399; }
+        .t6-glow { box-shadow: 0 0 40px rgba(52,211,153,0.2); }
+        
+        /* 7. HOLOGRAPHIC MESH */
+        .t7-bg { background-image: radial-gradient(at 40% 20%, hsla(250,100%,74%,1) 0px, transparent 50%), radial-gradient(at 80% 0%, hsla(189,100%,56%,1) 0px, transparent 50%), radial-gradient(at 0% 50%, hsla(333,100%,70%,1) 0px, transparent 50%), radial-gradient(at 80% 50%, hsla(33,100%,70%,1) 0px, transparent 50%), radial-gradient(at 0% 100%, hsla(22,100%,77%,1) 0px, transparent 50%), radial-gradient(at 80% 100%, hsla(242,100%,70%,1) 0px, transparent 50%), radial-gradient(at 0% 0%, hsla(343,100%,76%,1) 0px, transparent 50%); background-color: #f8fafc; }
+        
+        /* 8. BRUTALISM */
+        .t8-bg { background: #fff; border: 12px solid #000; box-sizing: border-box; }
+        
+        /* 9. FROST GLASS */
+        .t9-bg { background: linear-gradient(135deg, #f0f9ff 0%, #e0e7ff 100%); }
+        .t9-glass { background: rgba(255,255,255,0.6); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.8); }
+        
+        /* 10. AI MATRIX */
+        .t10-bg { background: #000; }
+        .t10-grid { position:absolute; bottom:0; left:0; width:100%; height:60%; background-image: linear-gradient(transparent 95%, rgba(0, 255, 128, 0.4) 1px), linear-gradient(90deg, transparent 95%, rgba(0, 255, 128, 0.4) 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg); transform-origin: bottom; }
       `}} />
 
-      <div className="max-w-7xl mx-auto flex flex-col gap-16 pb-20">
+      <div className="max-w-[1000px] mx-auto flex flex-col gap-16 pb-20">
         
-        <div className="text-center no-print space-y-4">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">Tarjetas de Presentación</h1>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            Hemos renovado los diseños resolviendo el problema del QR. Ahora el QR es 100% nativo y funcional en todos los formatos. Tienes 4 estilos premium para imprimir, haz clic en el botón de impresión del estilo que desees. 
+        <div className="text-center no-print space-y-4 mb-8">
+          <h1 className="text-5xl font-extrabold text-gray-900 tracking-tight font-['Outfit']">Business Cards Collection</h1>
+          <p className="text-gray-600 max-w-2xl mx-auto text-lg">
+            10 Variaciones Ultra-Premium enfocadas en UX y Marketing.<br/>
+            Incluyen sellos de Partners Oficiales listos para imprimir.
           </p>
         </div>
 
-        {/* ----------------- TYPE 1: ORIGINAL (UPDATED QR) ----------------- */}
+        {/* ---------------- 1. CYBERPUNK ---------------- */}
         <div className={`space-y-4 ${printId !== null && printId !== 1 ? 'no-print' : ''} ${printId === 1 ? 'print-target' : ''}`}>
-          <div className="no-print flex items-center justify-between bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
-            <div>
-              <h3 className="font-bold text-lg text-gray-800">1. Estilo Clásico (Cyberpunk)</h3>
-              <p className="text-sm text-gray-500">Diseño original restaurado. (Con WhatsApp)</p>
-            </div>
-            <button onClick={() => handlePrint(1)} className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition">🖨️ Imprimir Estilo 1</button>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">1. Cyberpunk Original</h3><p className="text-sm text-gray-500">Dark mode con gradientes. El clásico restaurado con insignias.</p></div>
+            <button onClick={() => handlePrint(1)} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 1</button>
           </div>
-
-          <div className="card-wrapper-inner mx-auto scale-[0.5] sm:scale-[0.6] md:scale-75 lg:scale-100 origin-top">
-            <div className="card-panel card-t1-front">
-              <div className="grid-bg"></div>
-              <div className="glow-orb"></div>
-              <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-blue-600 via-purple-600 to-cyan-400"></div>
-              <div className="content">
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel t1-bg text-white flex">
+              <div className="t1-grid"></div>
+              <div className="absolute top-[-100px] right-[100px] w-[400px] h-[400px] bg-purple-600/20 rounded-full blur-[80px]"></div>
+              <div className="relative z-10 flex flex-col justify-between p-12 w-2/3 border-r border-white/10">
                 <div>
-                  <div className="logo">AigenciaLab<span>.cl</span></div>
-                  <div className="text-[0.85rem] text-white/50 tracking-wider mt-1 font-light">Automatización IA para Empresas B2B</div>
+                  <Logo theme="dark" />
+                  <p className="mt-4 text-purple-200 font-medium tracking-widest text-sm uppercase">Automatización B2B</p>
                 </div>
-                <div className="flex flex-col gap-3 mt-6">
-                  <div className="flex items-center gap-3 text-[0.82rem] text-white/75">
-                    <div className="w-6 h-6 rounded flex items-center justify-center bg-blue-600/20 border border-blue-500/30">🌐</div> <span>aigencialab.cl</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[0.82rem] text-white/75">
-                    <div className="w-6 h-6 rounded flex items-center justify-center bg-blue-600/20 border border-blue-500/30">📩</div> <span>hola@aigencialab.cl</span>
-                  </div>
-                  <div className="flex items-center gap-3 text-[0.82rem] text-white/75">
-                    <div className="w-6 h-6 rounded flex items-center justify-center bg-blue-600/20 border border-blue-500/30">💬</div> <span>WhatsApp · LinkedIn · Instagram</span>
-                  </div>
+                <div className="flex flex-col gap-4 text-sm text-gray-300">
+                  <div className="flex items-center gap-3"><span className="w-8 h-8 rounded bg-white/5 flex items-center justify-center border border-white/10">🌐</span> aigencialab.cl</div>
+                  <div className="flex items-center gap-3"><span className="w-8 h-8 rounded bg-white/5 flex items-center justify-center border border-white/10">📸</span> @aigencialab</div>
+                  <div className="flex items-center gap-3"><span className="w-8 h-8 rounded bg-white/5 flex items-center justify-center border border-white/10">✉️</span> hola@aigencialab.cl</div>
                 </div>
-                <div className="flex flex-wrap gap-2 mt-4">
-                  {['🤖 Agentes IA', '💬 WhatsApp API', '📊 BI & Analytics', '🛒 Ecommerce'].map(tag => (
-                    <span key={tag} className="text-[0.68rem] px-3 py-1 rounded-full border border-purple-500/30 bg-purple-500/10 text-white/60">{tag}</span>
-                  ))}
-                </div>
+                <PartnerBadges theme="dark" />
               </div>
-              <div className="qr-side">
-                <div className="qr-frame">
-                  <QRCode value={qrUrl} size={120} level="H" />
-                </div>
-                <div className="text-[0.7rem] text-[#00cfff] text-center leading-snug tracking-wider">🔍 Auditoría<br/>IA Gratuita</div>
-                <div className="text-[0.6rem] text-white/30 text-center">Escanea para tu<br/>diagnóstico</div>
+              <div className="relative z-10 w-1/3 flex flex-col items-center justify-center bg-white/5 backdrop-blur-md">
+                <div className="bg-white p-3 rounded-2xl shadow-xl"><QRCode value={qrUrl} size={150} level="H" /></div>
+                <p className="mt-6 text-center text-xs font-bold tracking-[0.2em] text-cyan-400 uppercase">Auditoría IA<br/><span className="text-white opacity-50">Escanea aquí</span></p>
               </div>
-            </div>
-
-            <div className="card-panel card-t1-back">
-              <div className="hex-bg"></div>
-              <div className="logo-mono">A</div>
-              <div className="z-10 flex gap-4 mt-2">
-                {['Agentes IA', 'WhatsApp', 'Analytics'].map(tag => (
-                  <span key={tag} className="text-[0.72rem] px-4 py-1.5 rounded-full border border-purple-500/40 bg-purple-500/10 text-white/70 backdrop-blur-sm">{tag}</span>
-                ))}
-              </div>
-              <div className="z-10 text-[0.9rem] text-[#00cfff] tracking-[0.08em] font-medium">aigencialab.cl</div>
             </div>
           </div>
         </div>
 
-
-        {/* ----------------- TYPE 2: EXECUTIVE MINIMAL ----------------- */}
+        {/* ---------------- 2. EXECUTIVE MINIMAL ---------------- */}
         <div className={`space-y-4 ${printId !== null && printId !== 2 ? 'no-print' : ''} ${printId === 2 ? 'print-target' : ''}`}>
-          <div className="no-print flex items-center justify-between bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
-            <div>
-              <h3 className="font-bold text-lg text-gray-800">2. Executive Minimal (White)</h3>
-              <p className="text-sm text-gray-500">Diseño B2B ultralimpio. Alta autoridad. (Web, Insta, Correo / Sin WhatsApp)</p>
-            </div>
-            <button onClick={() => handlePrint(2)} className="bg-gray-800 hover:bg-black text-white px-5 py-2 rounded-lg font-medium shadow-sm transition">🖨️ Imprimir Estilo 2</button>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">2. Executive Minimal</h3><p className="text-sm text-gray-500">Diseño B2B blanco corporativo con máxima legibilidad.</p></div>
+            <button onClick={() => handlePrint(2)} className="bg-slate-800 hover:bg-slate-900 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 2</button>
           </div>
-
-          <div className="card-wrapper-inner mx-auto scale-[0.5] sm:scale-[0.6] md:scale-75 lg:scale-100 origin-top">
-            <div className="card-panel card-t2-front">
-              <div className="deco-line"></div>
-              <div className="content">
-                <div className="title">AigenciaLab.cl</div>
-                <div className="subtitle">Data & Artificial Intelligence</div>
-                
-                <div className="flex flex-col gap-4 mt-12 pl-4 border-l-2 border-slate-200">
-                  <div className="flex items-center gap-4 text-[0.95rem] text-slate-600 font-medium tracking-wide">
-                    <span className="text-slate-400 font-bold w-6 text-center">W</span> aigencialab.cl
-                  </div>
-                  <div className="flex items-center gap-4 text-[0.95rem] text-slate-600 font-medium tracking-wide">
-                    <span className="text-slate-400 font-bold w-6 text-center">@</span> @aigencialab
-                  </div>
-                  <div className="flex items-center gap-4 text-[0.95rem] text-slate-600 font-medium tracking-wide">
-                    <span className="text-slate-400 font-bold w-6 text-center">E</span> hola@aigencialab.cl
-                  </div>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel bg-white text-slate-900 flex">
+              <div className="t2-line"></div>
+              <div className="flex-1 p-[60px] flex flex-col justify-center">
+                <Logo theme="light" />
+                <p className="text-slate-500 text-sm font-semibold tracking-[0.15em] uppercase mt-2">Data & Artificial Intelligence</p>
+                <div className="mt-12 pl-4 border-l-2 border-slate-200 flex flex-col gap-4 text-[0.95rem] font-medium text-slate-600">
+                  <div className="flex items-center gap-4"><span className="text-slate-400 font-bold w-6 text-center">W</span> aigencialab.cl</div>
+                  <div className="flex items-center gap-4"><span className="text-slate-400 font-bold w-6 text-center">@</span> @aigencialab</div>
+                  <div className="flex items-center gap-4"><span className="text-slate-400 font-bold w-6 text-center">E</span> hola@aigencialab.cl</div>
                 </div>
+                <div className="mt-auto pt-4"><PartnerBadges theme="light" /></div>
               </div>
-              <div className="qr-area">
-                <div className="qr-box">
-                   <QRCode value={qrUrl} size={140} level="M" fgColor="#0f172a" />
-                </div>
-                <p className="mt-4 text-center text-[0.7rem] uppercase tracking-widest text-slate-500 font-bold leading-relaxed">
-                  Auditoría Gratuita<br/>Escanear Código
-                </p>
+              <div className="w-[300px] pr-[60px] flex flex-col justify-center items-end">
+                <div className="bg-white p-3 border border-slate-200 rounded-xl shadow-lg"><QRCode value={qrUrl} size={150} level="M" fgColor="#0f172a" /></div>
+                <p className="mt-4 text-center text-[0.7rem] uppercase tracking-widest text-slate-500 font-bold w-[176px]">Auditoría Gratuita Escanear Código</p>
               </div>
-            </div>
-
-            <div className="card-panel card-t2-back">
-               <div className="text-center">
-                 <div className="logo-large">AigenciaLab<span>.</span></div>
-                 <p className="uppercase tracking-[0.2em] text-slate-400 text-xs mt-3 font-semibold">Transformación Digital Inteligente</p>
-               </div>
             </div>
           </div>
         </div>
 
-        {/* ----------------- TYPE 3: NEON GLASSMORPHISM ----------------- */}
+        {/* ---------------- 3. NEON GLASSMORPHISM ---------------- */}
         <div className={`space-y-4 ${printId !== null && printId !== 3 ? 'no-print' : ''} ${printId === 3 ? 'print-target' : ''}`}>
-          <div className="no-print flex items-center justify-between bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
-            <div>
-              <h3 className="font-bold text-lg text-gray-800">3. Neon Glassmorphism</h3>
-              <p className="text-sm text-gray-500">Destaca como Startup SaaS. Vibrante, disruptivo. (Web, Insta, Correo / Sin WhatsApp)</p>
-            </div>
-            <button onClick={() => handlePrint(3)} className="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition">🖨️ Imprimir Estilo 3</button>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">3. Neon Glassmorphism</h3><p className="text-sm text-gray-500">Diseño vibrante tipo Fintech/Startup para impactar.</p></div>
+            <button onClick={() => handlePrint(3)} className="bg-fuchsia-600 hover:bg-fuchsia-700 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 3</button>
           </div>
-
-          <div className="card-wrapper-inner mx-auto scale-[0.5] sm:scale-[0.6] md:scale-75 lg:scale-100 origin-top">
-            <div className="card-panel card-t3-front">
-              <div className="bg-blobs">
-                <div className="blob1"></div>
-                <div className="blob2"></div>
-              </div>
-              <div className="glass-panel">
-                 <div className="content">
-                    <div className="brand">AigenciaLab</div>
-                    <div className="text-sm text-purple-200 mt-1 uppercase tracking-widest font-semibold opacity-80">Software & IA</div>
-
-                    <div className="mt-auto flex flex-col gap-4">
-                      <div className="flex items-center gap-4">
-                         <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/5 text-sm">🌐</div>
-                         <span className="font-medium tracking-wide">aigencialab.cl</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                         <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/5 text-sm">📸</div>
-                         <span className="font-medium tracking-wide">@aigencialab</span>
-                      </div>
-                      <div className="flex items-center gap-4">
-                         <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/5 text-sm">✉️</div>
-                         <span className="font-medium tracking-wide">hola@aigencialab.cl</span>
-                      </div>
-                    </div>
-                 </div>
-                 <div className="qr-sec">
-                    <div className="qr-wrapper">
-                      <QRCode value={qrUrl} size={150} level="M" fgColor="#1e1b4b" />
-                    </div>
-                    <div className="mt-4 font-bold text-sm tracking-widest uppercase text-center text-white/90">
-                      Escanea<br/>Auditoría IA
-                    </div>
-                 </div>
-              </div>
-            </div>
-
-            <div className="card-panel card-t3-back">
-              <div className="blob-c"></div>
-              <div className="z-10">
-                <span className="text-[4rem] font-bold text-white">AIGENCIALAB</span>
-                <div className="h-[2px] w-12 bg-white/30"></div>
-                <span className="text-sm font-medium tracking-[0.4em] text-white/60">AUTOPILOT FOR BUSINESS</span>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel bg-[#030712] text-white flex overflow-hidden">
+              <div className="t3-blob1"></div><div className="t3-blob2"></div>
+              <div className="relative z-10 m-8 w-[calc(100%-64px)] rounded-2xl border border-white/20 bg-white/5 backdrop-blur-2xl flex shadow-2xl">
+                <div className="flex-1 p-10 flex flex-col justify-between">
+                  <Logo theme="dark" />
+                  <div className="flex flex-col gap-4 text-sm font-medium tracking-wide">
+                    <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/5">🌐</div> aigencialab.cl</div>
+                    <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/5">📸</div> @aigencialab</div>
+                    <div className="flex items-center gap-4"><div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center border border-white/5">✉️</div> hola@aigencialab.cl</div>
+                  </div>
+                  <PartnerBadges theme="dark" />
+                </div>
+                <div className="w-[300px] border-l border-white/10 bg-black/20 flex flex-col items-center justify-center rounded-r-2xl">
+                  <div className="bg-white/95 p-3 rounded-xl"><QRCode value={qrUrl} size={150} level="M" fgColor="#312e81" /></div>
+                  <p className="mt-6 text-sm font-bold tracking-widest uppercase text-white/90 text-center">Escanea<br/>Diagnóstico IA</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* ----------------- TYPE 4: CORPORATE ELITE ----------------- */}
+        {/* ---------------- 4. CORPORATE ELITE ---------------- */}
         <div className={`space-y-4 ${printId !== null && printId !== 4 ? 'no-print' : ''} ${printId === 4 ? 'print-target' : ''}`}>
-          <div className="no-print flex items-center justify-between bg-white border border-gray-200 p-4 rounded-xl shadow-sm">
-            <div>
-              <h3 className="font-bold text-lg text-gray-800">4. Corporate Elite (Navy Blue)</h3>
-              <p className="text-sm text-gray-500">Enfoque corporativo. Fondo azul oscuro con cyan. (Web, Insta, Correo / Sin WhatsApp)</p>
-            </div>
-            <button onClick={() => handlePrint(4)} className="bg-cyan-700 hover:bg-cyan-800 text-white px-5 py-2 rounded-lg font-medium shadow-sm transition">🖨️ Imprimir Estilo 4</button>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">4. Corporate Elite</h3><p className="text-sm text-gray-500">Azul marino corporativo (Navy), máxima seriedad.</p></div>
+            <button onClick={() => handlePrint(4)} className="bg-cyan-700 hover:bg-cyan-800 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 4</button>
           </div>
-
-          <div className="card-wrapper-inner mx-auto scale-[0.5] sm:scale-[0.6] md:scale-75 lg:scale-100 origin-top">
-            <div className="card-panel card-t4-front">
-              <div className="content">
-                <h2 className="text-[2.2rem] font-bold text-white tracking-tight mb-1">AigenciaLab<span className="text-[#00cfff]">.cl</span></h2>
-                <p className="text-cyan-500 font-medium text-sm tracking-widest uppercase mb-12">Soluciones en Inteligencia Artificial</p>
-                
-                <div className="info-item">
-                  <i>◆</i> <span>aigencialab.cl</span>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel bg-[#011627] text-white flex">
+              <div className="flex-1 p-[50px] flex flex-col">
+                <Logo theme="dark" />
+                <p className="text-[#00cfff] font-medium text-sm tracking-[0.2em] uppercase mt-2">Soluciones de Inteligencia Artificial</p>
+                <div className="mt-12 flex flex-col gap-4 text-[#94a3b8]">
+                  <div className="flex items-center gap-3"><span className="text-[#00cfff] text-lg">◆</span> aigencialab.cl</div>
+                  <div className="flex items-center gap-3"><span className="text-[#00cfff] text-lg">◆</span> @aigencialab</div>
+                  <div className="flex items-center gap-3"><span className="text-[#00cfff] text-lg">◆</span> hola@aigencialab.cl</div>
                 </div>
-                <div className="info-item">
-                  <i>◆</i> <span>@aigencialab</span>
-                </div>
-                <div className="info-item">
-                  <i>◆</i> <span>hola@aigencialab.cl</span>
-                </div>
-
-                <div className="mt-8 border-t border-white/10 pt-6">
-                  <p className="text-xs text-slate-400 max-w-[280px] leading-relaxed">
-                    Especialistas en software automatizado, agentes de IA corporativos y optimización de flujos B2B.
-                  </p>
-                </div>
+                <PartnerBadges theme="dark" />
               </div>
-              <div className="blue-accent">
-                <div className="bg-white p-3 rounded-lg shadow-2xl relative z-10 mb-4">
-                  <QRCode value={qrUrl} size={160} level="M" fgColor="#0a2540" />
-                </div>
-                <p className="text-white text-center font-bold text-sm tracking-widest uppercase relative z-10">
-                  Diagnóstico IA<br/><span className="text-cyan-400 font-normal">Sin Costo</span>
-                </p>
+              <div className="w-[350px] bg-[#0a2540] relative overflow-hidden flex flex-col items-center justify-center p-10 t4-accent border-l border-white/5">
+                <div className="bg-white p-4 rounded-2xl shadow-2xl relative z-10"><QRCode value={qrUrl} size={160} level="M" fgColor="#011627" /></div>
+                <p className="text-white text-center font-bold text-sm tracking-[0.2em] uppercase mt-6 relative z-10">Auditoría IA<br/><span className="text-[#00cfff] font-normal">Sin Costo</span></p>
               </div>
             </div>
+          </div>
+        </div>
 
-            <div className="card-panel card-t4-back">
-              <div className="circle-line"></div>
-              <div className="circle-line-2"></div>
-              <div className="relative z-10 flex flex-col items-center">
-                 <div className="w-20 h-20 mb-6 bg-gradient-to-br from-[#00cfff] to-blue-600 rounded-2xl flex items-center justify-center transform rotate-45 shadow-[0_0_40px_rgba(0,207,255,0.4)]">
-                   <span className="text-white text-4xl font-black transform -rotate-45 font-['Outfit']">A</span>
+        {/* ---------------- 5. DARK MATTER & GOLD ---------------- */}
+        <div className={`space-y-4 ${printId !== null && printId !== 5 ? 'no-print' : ''} ${printId === 5 ? 'print-target' : ''}`}>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">5. Dark Matter & Gold</h3><p className="text-sm text-gray-500">Lujo absoluto. Negro puro con acabados dorados metalizados.</p></div>
+            <button onClick={() => handlePrint(5)} className="bg-yellow-600 hover:bg-yellow-700 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 5</button>
+          </div>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel t5-bg text-white border border-white/10 flex p-[30px]">
+              <div className="flex-1 border border-[#bf953f]/30 rounded-xl p-10 flex flex-col relative overflow-hidden backdrop-blur-sm bg-black/50">
+                <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-[#bf953f] blur-[150px] opacity-10 rounded-full"></div>
+                
+                <div className="flex items-center gap-2">
+                  <div className="bg-gradient-to-br from-[#bf953f] to-[#aa771c] w-11 h-11 rounded-[0.8rem] flex items-center justify-center">
+                    <span className="text-black font-black text-xl font-['Outfit'] tracking-tighter">AI</span>
+                  </div>
+                  <span className="font-black text-[1.7rem] tracking-tight font-['Outfit'] text-white">genciaLab</span>
+                </div>
+                
+                <p className="t5-gold font-bold text-xs tracking-[0.3em] uppercase mt-4">Premium Business Solutions</p>
+                
+                <div className="mt-auto grid grid-cols-2 gap-4 text-sm font-medium tracking-wider text-slate-300">
+                  <div className="col-span-2 flex items-center gap-3"><span className="t5-gold">W.</span> aigencialab.cl</div>
+                  <div className="flex items-center gap-3"><span className="t5-gold">I.</span> @aigencialab</div>
+                  <div className="flex items-center gap-3"><span className="t5-gold">E.</span> hola@aigencialab.cl</div>
+                </div>
+                <div className="mt-6"><PartnerBadges theme="dark" /></div>
+              </div>
+              <div className="w-[280px] flex flex-col items-center justify-center pl-[30px]">
+                <div className="bg-gradient-to-br from-[#fcf6ba] to-[#bf953f] p-1 rounded-xl shadow-[0_0_30px_rgba(191,149,63,0.3)]">
+                  <div className="bg-white p-3 rounded-lg"><QRCode value={qrUrl} size={150} level="Q" fgColor="#050505" /></div>
+                </div>
+                <p className="t5-gold text-center font-bold text-xs tracking-[0.3em] uppercase mt-6">Scan for Audit</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ---------------- 6. ECO TECH (EMERALD) ---------------- */}
+        <div className={`space-y-4 ${printId !== null && printId !== 6 ? 'no-print' : ''} ${printId === 6 ? 'print-target' : ''}`}>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">6. Eco Tech (Emerald)</h3><p className="text-sm text-gray-500">Verde oscuro corporativo, transmite eficiencia y tecnología sostenible.</p></div>
+            <button onClick={() => handlePrint(6)} className="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 6</button>
+          </div>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel t6-bg text-white flex">
+              <div className="w-2 bg-[#34d399] h-full"></div>
+              <div className="flex-1 p-[60px] flex flex-col justify-center">
+                <Logo theme="dark" />
+                <p className="t6-emerald text-sm tracking-[0.2em] font-semibold uppercase mt-3">Smart Automation</p>
+                <div className="mt-12 flex flex-col gap-5 text-[1rem] text-emerald-50 font-light">
+                  <div className="flex items-center gap-4"><span className="text-[#34d399] font-bold">›</span> aigencialab.cl</div>
+                  <div className="flex items-center gap-4"><span className="text-[#34d399] font-bold">›</span> @aigencialab</div>
+                  <div className="flex items-center gap-4"><span className="text-[#34d399] font-bold">›</span> hola@aigencialab.cl</div>
+                </div>
+                <div className="mt-auto"><PartnerBadges theme="dark" /></div>
+              </div>
+              <div className="w-[320px] bg-black/20 flex flex-col items-center justify-center border-l border-[#34d399]/20">
+                <div className="bg-white p-4 rounded-xl t6-glow"><QRCode value={qrUrl} size={150} level="M" fgColor="#022c22" /></div>
+                <div className="mt-8 px-6 py-2 border border-[#34d399]/50 text-[#34d399] rounded-full text-xs font-bold tracking-widest uppercase">Escanear QR</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ---------------- 7. HOLOGRAPHIC MESH ---------------- */}
+        <div className={`space-y-4 ${printId !== null && printId !== 7 ? 'no-print' : ''} ${printId === 7 ? 'print-target' : ''}`}>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">7. Holographic Mesh</h3><p className="text-sm text-gray-500">Gradiente multicolor complejo, diseño creativo y vanguardista.</p></div>
+            <button onClick={() => handlePrint(7)} className="bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 7</button>
+          </div>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel t7-bg flex items-center p-12">
+              <div className="bg-white/40 backdrop-blur-3xl border border-white/60 p-10 rounded-2xl w-full h-full shadow-[0_8px_32px_rgba(31,38,135,0.1)] flex">
+                <div className="flex-1 flex flex-col">
+                  <Logo theme="light" />
+                  <p className="text-slate-800/80 font-bold tracking-[0.1em] text-sm mt-2 uppercase">Digital Creators & AI</p>
+                  
+                  <div className="mt-10 flex flex-col gap-4 font-semibold text-slate-800">
+                    <div className="bg-white/50 px-4 py-2 rounded-lg max-w-[250px] border border-white text-sm">🌐 aigencialab.cl</div>
+                    <div className="bg-white/50 px-4 py-2 rounded-lg max-w-[250px] border border-white text-sm">📸 @aigencialab</div>
+                    <div className="bg-white/50 px-4 py-2 rounded-lg max-w-[250px] border border-white text-sm">✉️ hola@aigencialab.cl</div>
+                  </div>
+                  <div className="mt-auto"><PartnerBadges theme="light" /></div>
+                </div>
+                <div className="w-[200px] flex flex-col items-center justify-center">
+                  <div className="bg-white p-3 rounded-xl shadow-lg border border-white"><QRCode value={qrUrl} size={150} level="M" fgColor="#000" /></div>
+                  <p className="mt-4 text-center font-black uppercase text-[0.65rem] tracking-widest text-slate-900 bg-white/60 px-4 py-1 border border-white rounded-full">Auditoría IA</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ---------------- 8. BRUTALISM ---------------- */}
+        <div className={`space-y-4 ${printId !== null && printId !== 8 ? 'no-print' : ''} ${printId === 8 ? 'print-target' : ''}`}>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">8. Monocromo Brutalism</h3><p className="text-sm text-gray-500">Blanco y negro puro. Tipografía gigante, diseño radical y honesto.</p></div>
+            <button onClick={() => handlePrint(8)} className="bg-black text-white px-5 py-2 rounded-none font-bold shadow">🖨️ Imprimir 8</button>
+          </div>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel t8-bg flex text-black font-['Space_Grotesk']">
+              <div className="flex-1 p-[40px] flex flex-col justify-between border-r-[12px] border-black">
+                <div>
+                  <h1 className="text-[4rem] font-bold leading-none tracking-tighter">AIGENCIA<br/>LAB.</h1>
+                  <p className="text-xl font-bold mt-2 uppercase border-b-4 border-black pb-4 inline-block tracking-widest">Inteligencia Artificial</p>
+                </div>
+                <div className="flex flex-col gap-1 text-xl font-bold tracking-tight">
+                  <div className="bg-black text-white px-3 py-1 self-start uppercase mb-2">Contacto</div>
+                  <div>aigencialab.cl</div>
+                  <div>@aigencialab</div>
+                  <div>hola@aigencialab.cl</div>
+                </div>
+                <div className="mt-4 border-t-[4px] border-black pt-4">
+                  <PartnerBadges theme="light" />
+                </div>
+              </div>
+              <div className="w-[300px] flex flex-col p-[30px] justify-between">
+                <div className="text-[3rem] font-black leading-none">SCAN<br/>HERE<br/>↓</div>
+                <div className="border-[8px] border-black p-2 mt-auto"><QRCode value={qrUrl} size={200} level="M" fgColor="#000" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ---------------- 9. FROST GLASS (SaaS LIGHT) ---------------- */}
+        <div className={`space-y-4 ${printId !== null && printId !== 9 ? 'no-print' : ''} ${printId === 9 ? 'print-target' : ''}`}>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">9. Frost Glass (SaaS Dashboard)</h3><p className="text-sm text-gray-500">Estilo aplicación web moderna (Dashboard UI) en modo claro.</p></div>
+            <button onClick={() => handlePrint(9)} className="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 9</button>
+          </div>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel t9-bg p-8 flex gap-8 items-stretch">
+              {/* Sidebar mímic */}
+              <div className="w-[240px] t9-glass rounded-2xl p-6 flex flex-col">
+                <Logo theme="light" className="scale-[0.8] origin-left" />
+                <div className="mt-8 flex flex-col gap-3 font-medium text-sm text-slate-600">
+                  <div className="flex items-center gap-3 bg-white/70 px-3 py-2 rounded-lg shadow-sm border border-white">🏠 Home</div>
+                  <div className="flex items-center gap-3 px-3 py-2">🌐 aigencialab.cl</div>
+                  <div className="flex items-center gap-3 px-3 py-2">📸 @aigencialab</div>
+                  <div className="flex items-center gap-3 px-3 py-2">✉️ hola@</div>
+                </div>
+                <div className="mt-auto">
+                  <PartnerBadges theme="light" mode="vertical" />
+                </div>
+              </div>
+              {/* Main content mímic */}
+              <div className="flex-1 t9-glass rounded-2xl p-8 flex flex-col items-center justify-center relative shadow-lg">
+                <div className="absolute top-4 left-6 text-sm font-bold text-slate-400">Project / Audit</div>
+                <h2 className="text-3xl font-black text-slate-800 font-['Outfit'] mb-8 text-center">Inicia tu<br/>Auditoría IA</h2>
+                <div className="bg-white p-4 rounded-2xl shadow-xl border border-slate-100">
+                  <QRCode value={qrUrl} size={160} level="M" fgColor="#1e293b" />
+                </div>
+                <button className="mt-8 bg-slate-900 text-white px-8 py-3 rounded-full font-bold text-sm tracking-widest uppercase">Escanear Ahora</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ---------------- 10. AI MATRIX GRID ---------------- */}
+        <div className={`space-y-4 ${printId !== null && printId !== 10 ? 'no-print' : ''} ${printId === 10 ? 'print-target' : ''}`}>
+          <div className="no-print flex items-center justify-between bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+            <div><h3 className="font-bold text-lg">10. AI Matrix Grid</h3><p className="text-sm text-gray-500">Perspectiva 3D con grilla neón. Estilo hacking/Desarrollo hardcore.</p></div>
+            <button onClick={() => handlePrint(10)} className="bg-green-600 hover:bg-green-700 text-white px-5 py-2 rounded-lg font-medium shadow">🖨️ Imprimir 10</button>
+          </div>
+          <div className="card-wrapper-inner mx-auto scale-[0.45] sm:scale-75 md:scale-100 origin-top">
+            <div className="card-panel t10-bg text-[#00ff80] flex flex-col relative font-['Geist_Mono']">
+              <div className="t10-grid"></div>
+              <div className="relative z-10 p-12 flex justify-between items-start h-full pb-0">
+                <div className="flex flex-col h-[350px]">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-[#00ff80] text-black font-black text-3xl px-3 py-1 font-['Outfit'] rounded shadow-[0_0_20px_#00ff80]">AI</div>
+                    <span className="font-black text-4xl text-white font-['Outfit'] tracking-tight">genciaLab</span>
+                  </div>
+                  <div className="mt-8 flex flex-col gap-4 text-sm font-bold tracking-widest bg-black/40 p-6 border border-[#00ff80]/30 rounded-xl backdrop-blur-md">
+                    <div><span className="text-white/50">host:</span> aigencialab.cl</div>
+                    <div><span className="text-white/50">user:</span> @aigencialab</div>
+                    <div><span className="text-white/50">mail:</span> hola@aigencialab.cl</div>
+                  </div>
+                  <div className="mt-12"><PartnerBadges theme="dark" /></div>
+                </div>
+                
+                <div className="bg-black/80 border-2 border-[#00ff80] p-4 rounded shadow-[0_0_30px_rgba(0,255,128,0.4)] backdrop-blur-md z-10 flex flex-col items-center">
+                   <div className="bg-white p-2 mb-4"><QRCode value={qrUrl} size={150} level="M" fgColor="#000" /></div>
+                   <span className="animate-pulse text-xs uppercase font-bold tracking-[0.3em]">System.Audit()</span>
                  </div>
-                 <div className="text-white text-xl font-bold tracking-[0.3em]">AIGENCIALAB</div>
               </div>
             </div>
           </div>
