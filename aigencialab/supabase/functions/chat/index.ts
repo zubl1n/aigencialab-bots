@@ -1,25 +1,43 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 import OpenAI from "npm:openai";
-import { Redis } from "https://esm.sh/@upstash/redis@1.28.4";
-import { Ratelimit } from "https://esm.sh/@upstash/ratelimit@1.0.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// 0. Initialize Rate Limiter (Upstash Redis)
-const redis = new Redis({
-  url: Deno.env.get("UPSTASH_REDIS_REST_URL") || "",
-  token: Deno.env.get("UPSTASH_REDIS_REST_TOKEN") || "",
-});
+// ── Rate Limiter (optional — gracefully skipped if Upstash env vars missing) ──
+let ratelimit: { limit: (id: string) => Promise<{ success: boolean }> } | null = null;
 
-const ratelimit = new Ratelimit({
-  redis: redis,
-  limiter: Ratelimit.slidingWindow(20, "60 s"),
-  analytics: true,
-});
+const upstashUrl   = Deno.env.get("UPSTASH_REDIS_REST_URL")   || "";
+const upstashToken = Deno.env.get("UPSTASH_REDIS_REST_TOKEN") || "";
+
+if (upstashUrl && upstashToken) {
+  try {
+    const { Redis }     = await import("https://esm.sh/@upstash/redis@1.28.4");
+    const { Ratelimit } = await import("https://esm.sh/@upstash/ratelimit@1.0.1");
+    const redis = new Redis({ url: upstashUrl, token: upstashToken });
+    ratelimit = new Ratelimit({
+      redis,
+      limiter: Ratelimit.slidingWindow(20, "60 s"),
+      analytics: true,
+    });
+    console.log("[CHAT] Upstash rate limiter initialized");
+  } catch (e) {
+    console.warn("[CHAT] Upstash init failed — rate limiting disabled:", (e as Error).message);
+  }
+} else {
+  console.warn("[CHAT] UPSTASH env vars missing — rate limiting disabled");
+}
+
+// ── Helper: structured JSON error response ────────────────────────────────────
+function jsonError(msg: string, status: number) {
+  return new Response(JSON.stringify({ error: msg }), {
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+    status,
+  });
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -27,18 +45,33 @@ serve(async (req) => {
   }
 
   try {
-    const { api_key, message, session_id } = await req.json();
-
-    if ((!api_key && !req.headers.get("Authorization")) || !message || !session_id) {
-      throw new Error("Missing required fields: api_key (or auth token), message, session_id");
+    // ── 0. Parse & validate input ────────────────────────────────────────────
+    let body: { api_key?: string; message?: string; session_id?: string };
+    try {
+      body = await req.json();
+    } catch {
+      return jsonError("Invalid JSON body", 400);
     }
 
-    const supabase = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
-    );
+    const { api_key, message, session_id } = body;
 
-    // 1. Identify Client (JWT or API Key)
+    if (!message?.trim()) return jsonError("Missing required field: message", 400);
+    if (!session_id)       return jsonError("Missing required field: session_id", 400);
+    if (!api_key && !req.headers.get("Authorization")) {
+      return jsonError("Missing authentication: provide api_key or Authorization header", 401);
+    }
+
+    // ── 1. Supabase client (service role) ────────────────────────────────────
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const serviceKey  = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+    if (!supabaseUrl || !serviceKey) {
+      console.error("[CHAT] SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY not set");
+      return jsonError("Server configuration error", 500);
+    }
+
+    const supabase = createClient(supabaseUrl, serviceKey);
+
+    // ── 2. Identify client (JWT → API key) ───────────────────────────────────
     let clientId: string | null = null;
     const authHeader = req.headers.get("Authorization");
 
@@ -48,48 +81,58 @@ serve(async (req) => {
     }
 
     if (!clientId && api_key) {
-      const { data: keyData, error: keyError } = await supabase
+      // Support both api_keys table AND x-client-id-style direct lookup
+      const { data: keyData } = await supabase
         .from("api_keys")
-        .select("client_id")
+        .select("client_id, active")
         .eq("key", api_key)
-        .single();
-      if (!keyError && keyData) {
+        .eq("active", true)
+        .maybeSingle();
+
+      if (keyData?.client_id) {
         clientId = keyData.client_id;
+      } else {
+        // Fallback: also try matching api_key = client_id directly (for widget tester)
+        const { data: directClient } = await supabase
+          .from("clients")
+          .select("id")
+          .eq("id", api_key)
+          .maybeSingle();
+        if (directClient) clientId = directClient.id;
       }
     }
 
     if (!clientId) {
-      const authError = new Error("UNAUTHORIZED");
-      authError.name = "AuthError";
-      throw authError;
+      console.warn("[CHAT] Auth failed — api_key not found:", api_key?.slice(0, 8) + "...");
+      return jsonError("Unauthorized: invalid api_key", 401);
     }
 
-    // 2. Perform Rate Limiting
-    const identifier = clientId; // Limit per client
-    const { success } = await ratelimit.limit(identifier);
-
-    if (!success) {
-      return new Response(JSON.stringify({ error: "Too many requests" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 429,
-      });
+    // ── 3. Rate limiting (optional) ──────────────────────────────────────────
+    if (ratelimit) {
+      const { success } = await ratelimit.limit(clientId);
+      if (!success) return jsonError("Too many requests", 429);
     }
 
-    // 3. Get Bot Config & Client info
-    const { data: botConfig } = await supabase
-      .from("bot_configs")
-      .select("*")
-      .eq("client_id", clientId)
-      .single();
-    
-    const { data: client } = await supabase
-      .from("clients")
-      .select("company_name, website")
-      .eq("id", clientId)
-      .single();
+    // ── 4. Bot config & client info ──────────────────────────────────────────
+    const [{ data: botConfig }, { data: client }] = await Promise.all([
+      supabase.from("bot_configs").select("*").eq("client_id", clientId).maybeSingle(),
+      supabase.from("clients").select("company_name, website").eq("id", clientId).maybeSingle(),
+    ]);
 
-    // 4. Get or Create Conversation
-    let { data: conversation, error: convError } = await supabase
+    if (!botConfig) {
+      return jsonError("Bot not configured for this account", 503);
+    }
+
+    if (!botConfig.active) {
+      return new Response(JSON.stringify({
+        reply: botConfig.away_message || "El asistente no está disponible en este momento.",
+        leadDetected: false,
+        conversationId: null,
+      }), { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 });
+    }
+
+    // ── 5. Conversation ──────────────────────────────────────────────────────
+    let { data: conversation } = await supabase
       .from("conversations")
       .select("id")
       .eq("session_id", session_id)
@@ -99,103 +142,103 @@ serve(async (req) => {
     if (!conversation) {
       const { data: newConv, error: newConvError } = await supabase
         .from("conversations")
-        .insert({
-          session_id,
-          client_id: clientId,
-          channel: 'web',
-          status: 'open'
-        })
+        .insert({ session_id, client_id: clientId, channel: "web", status: "open" })
         .select()
         .single();
-      if (newConvError) throw newConvError;
+      if (newConvError) {
+        console.error("[CHAT] Conversation insert error:", newConvError.message);
+        return jsonError("Failed to create conversation: " + newConvError.message, 500);
+      }
       conversation = newConv;
     }
 
-    // 5. Save User Message
+    // ── 6. Save user message ─────────────────────────────────────────────────
     await supabase.from("messages").insert({
       conversation_id: conversation.id,
-      direction: 'in',
-      content: message
+      direction: "in",
+      content: message.trim(),
     });
 
-    // 6. Call OpenAI
-    const openai = new OpenAI({
-      apiKey: Deno.env.get("OPENAI_API_KEY"),
-    });
+    // ── 7. OpenAI completion ─────────────────────────────────────────────────
+    const openaiKey = Deno.env.get("OPENAI_API_KEY");
+    if (!openaiKey) {
+      console.error("[CHAT] OPENAI_API_KEY not set");
+      return jsonError("AI service not configured", 500);
+    }
 
-    // Get history for context (last 5 messages)
+    const openai = new OpenAI({ apiKey: openaiKey });
+
+    // History (last 6 messages)
     const { data: history } = await supabase
       .from("messages")
       .select("direction, content")
       .eq("conversation_id", conversation.id)
-      .order("timestamp", { ascending: false })
+      .order("created_at", { ascending: false })
       .limit(6);
 
-    const chatHistory = history?.reverse().map(m => ({
-      role: m.direction === 'in' ? 'user' : 'assistant',
-      content: m.content
-    })) || [];
+    const chatHistory = (history ?? []).reverse().map((m) => ({
+      role: m.direction === "in" ? "user" : "assistant",
+      content: m.content,
+    })) as { role: "user" | "assistant"; content: string }[];
 
-    const customPrompt = botConfig?.llm_config?.system_prompt;
-    const systemPrompt = customPrompt || `Eres un asistente virtual de ${client?.company_name || 'AIgenciaLab'}. 
-    Tu objetivo es ayudar a los visitantes de su sitio web (${client?.website || ''}).
-    
-    Configuración:
-    - Nombre: ${botConfig?.bot_name || 'Asistente'}
-    - Bienvenida: ${botConfig?.welcome_message}
-    - Idioma: ${botConfig?.language || 'es'}
-    
-    Pautas:
-    - Sé amable, conciso y profesional.
-    - Si el usuario muestra interés en contratar, cotizar o dejar datos, dile que puede dejar su nombre y correo para ser contactado.
-    - Si detectas que el usuario quiere ser contactado, incluye discretamente la mención de "deja tus datos" o algo similar para activar el formulario.`;
+    const systemPrompt =
+      botConfig?.llm_config?.system_prompt ||
+      botConfig?.system_prompt ||
+      `Eres el asistente virtual de ${client?.company_name || "la empresa"}. ` +
+      `Nombre del bot: ${botConfig?.bot_name || "Asistente"}. ` +
+      `Idioma: ${botConfig?.language || "es"}. ` +
+      `Sé amable, conciso y profesional. ` +
+      `Si el usuario quiere cotizar o ser contactado, invítalo a dejar su nombre y email.`;
 
-    const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: systemPrompt },
-        ...chatHistory
-      ],
-    });
+    const model = botConfig?.model || "gpt-4o-mini";
 
-    const reply = completion.choices[0].message.content;
+    let completion;
+    try {
+      completion = await openai.chat.completions.create({
+        model,
+        messages: [{ role: "system", content: systemPrompt }, ...chatHistory],
+        max_tokens: botConfig?.max_tokens || 512,
+        temperature: botConfig?.temperature ?? 0.7,
+      });
+    } catch (openaiErr: unknown) {
+      const msg = openaiErr instanceof Error ? openaiErr.message : String(openaiErr);
+      console.error("[CHAT] OpenAI error:", msg);
+      return jsonError("AI provider error: " + msg, 502);
+    }
 
-    // 7. Simple Lead Detection Logic
-    const keywords = ['contacto', 'cotizar', 'comprar', 'reunion', 'agendar', 'interesado', 'precio', 'costo'];
-    const userInterested = keywords.some(k => message.toLowerCase().includes(k));
-    const botPrompted = reply?.toLowerCase().includes("deja tus datos") || reply?.toLowerCase().includes("email");
-    
-    let leadDetected = false;
-    if (userInterested || botPrompted) {
-      leadDetected = true;
+    const reply = completion.choices[0]?.message?.content ?? "";
+
+    if (!reply) {
+      console.error("[CHAT] Empty reply from OpenAI");
+      return jsonError("Empty response from AI model", 502);
+    }
+
+    // ── 8. Lead detection ────────────────────────────────────────────────────
+    const keywords = ["contacto", "cotizar", "comprar", "reunion", "agendar", "interesado", "precio", "costo", "presupuesto"];
+    const leadDetected =
+      keywords.some((k) => message.toLowerCase().includes(k)) ||
+      reply.toLowerCase().includes("deja tus datos") ||
+      reply.toLowerCase().includes("email");
+
+    if (leadDetected) {
       await supabase.from("conversations").update({ lead_detected: true }).eq("id", conversation.id);
     }
 
-    // 8. Save Bot Message
+    // ── 9. Save bot message ──────────────────────────────────────────────────
     await supabase.from("messages").insert({
       conversation_id: conversation.id,
-      direction: 'out',
-      content: reply
+      direction: "out",
+      content: reply,
     });
 
-    return new Response(JSON.stringify({ 
-      reply, 
-      leadDetected,
-      conversationId: conversation.id 
-    }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
-    });
-  } catch (error) {
-    console.error("[CHAT ERROR]:", error.message);
-    const isAuthError = error.name === "AuthError";
     return new Response(
-      JSON.stringify({ error: isAuthError ? "Unauthorized" : "Internal Server Error" }),
-      {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: isAuthError ? 401 : 500,
-      }
+      JSON.stringify({ reply, leadDetected, conversationId: conversation.id }),
+      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );
+
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    console.error("[CHAT UNHANDLED ERROR]:", msg);
+    return jsonError("Internal server error", 500);
   }
 });
-

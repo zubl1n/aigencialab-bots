@@ -275,14 +275,40 @@
     chatInput.disabled = true;
     sendBtn.disabled = true;
 
+    // Show typing indicator
+    const typingEl = document.createElement('div');
+    typingEl.className = 'message bot';
+    typingEl.style.cssText = 'opacity:0.6;font-style:italic;font-size:12px;';
+    typingEl.textContent = '...';
+    messagesContainer.appendChild(typingEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+
     try {
       const res = await fetch(`${FUNCTIONS_URL}/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ api_key: API_KEY, message: text, session_id })
       });
+
+      // Remove typing indicator
+      typingEl.remove();
+
       const data = await res.json();
-      
+
+      // ── FIX: validate HTTP status before reading `reply` ──────────────
+      if (!res.ok) {
+        const errMsg = data.error || `Error del servidor (${res.status})`;
+        console.error('[AIgenciaLab Widget] Backend error:', res.status, errMsg);
+        addMessage('Lo siento, no pude procesar tu mensaje en este momento. Por favor intenta de nuevo.', 'bot');
+        return;
+      }
+
+      if (!data.reply) {
+        console.warn('[AIgenciaLab Widget] Respuesta vacía del backend');
+        addMessage('Recibí tu mensaje pero la respuesta llegó vacía. Intenta de nuevo.', 'bot');
+        return;
+      }
+
       addMessage(data.reply, 'bot');
       currentConversationId = data.conversationId;
 
@@ -290,7 +316,9 @@
         leadForm.classList.add('active');
       }
     } catch (e) {
-      addMessage('Lo siento, hubo un error. Inténtalo de nuevo.', 'bot');
+      typingEl.remove();
+      console.error('[AIgenciaLab Widget] Network error:', e);
+      addMessage('Sin conexión. Verifica tu internet e intenta de nuevo.', 'bot');
     } finally {
       chatInput.disabled = false;
       sendBtn.disabled = false;
