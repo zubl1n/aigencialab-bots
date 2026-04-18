@@ -19,8 +19,8 @@ const NewLogo = ({ theme = 'dark' }) => (
         <div className="bg-[#a78bfa] rounded-[2px]" />
       </div>
     </div>
-    <span className={`font-semibold text-[2rem] tracking-tight font-['Outfit'] leading-none ${theme === 'light' ? 'text-slate-800' : 'text-white'}`}>
-      gencia<span className="font-light opacity-80">Lab</span>
+    <span className={`flex items-center text-[2rem] tracking-tight font-['Outfit'] leading-none ${theme === 'light' ? 'text-slate-800' : 'text-white'}`}>
+      <span className="font-black">AI</span><span className="font-medium">gencia</span><span className="font-light opacity-80">Lab</span>
     </span>
   </div>
 );
