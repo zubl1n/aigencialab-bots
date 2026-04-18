@@ -107,6 +107,18 @@ export default async function AdminDashboard() {
     supabase.from('tickets').select('id', { count: 'exact', head: true }).in('status', ['open', 'in_progress']),
   ])
 
+  // Churn risk: trialing clients with period ending within 3 days
+  const in3Days = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString()
+  const { count: churnRiskCount } = await supabase.from('subscriptions')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'trialing').lte('current_period_end', in3Days)
+
+  // Platform health: inactive bots
+  const { count: inactiveBotsCount } = await supabase.from('bot_configs')
+    .select('id', { count: 'exact', head: true }).eq('active', false)
+  const healthScore = (botsTotal ?? 0) > 0
+    ? Math.round(((botsActive ?? 0) / (botsTotal ?? 1)) * 100) : 100
+
   // MRR usando config/plans.ts precios CLP
   const PLAN_MONTHLY_CLP: Record<string, number> = {
     Basic: 45000, Starter: 120000, Pro: 200000, Enterprise: 0,
@@ -222,6 +234,21 @@ export default async function AdminDashboard() {
           icon={TicketIcon}
           gradient={(openTickets ?? 0) > 0 ? 'from-red-600/30 to-orange-600/10 border-red-500/20' : 'from-white/5 to-white/[0.02] border-white/10'}
           alert={(openTickets ?? 0) > 0}
+        />
+        <StatCard
+          label="Riesgo de Churn"
+          value={churnRiskCount ?? 0}
+          sub="trials venciendo en ≤3 días"
+          icon={AlertCircle}
+          gradient={(churnRiskCount ?? 0) > 0 ? 'from-red-600/30 to-rose-600/10 border-red-500/20' : 'from-white/5 to-white/[0.02] border-white/10'}
+          alert={(churnRiskCount ?? 0) > 0}
+        />
+        <StatCard
+          label="Salud Plataforma"
+          value={`${healthScore}%`}
+          sub={`${inactiveBotsCount ?? 0} bots inactivos de ${botsTotal ?? 0}`}
+          icon={Activity}
+          gradient={healthScore >= 80 ? 'from-emerald-600/30 to-teal-600/10 border-emerald-500/20' : 'from-amber-600/30 to-orange-600/10 border-amber-500/20'}
         />
       </div>
 

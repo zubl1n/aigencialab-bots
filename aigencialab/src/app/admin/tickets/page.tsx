@@ -183,6 +183,34 @@ function TicketCard({ ticket, onRespond, onStatus }: {
               </div>
             </div>
           )}
+
+          {/* Internal notes (admin-only, not visible to client) */}
+          <div>
+            <p className="text-[10px] font-bold text-amber-500/70 uppercase tracking-wider mb-2">📝 Notas internas (no visible para el cliente)</p>
+            <textarea
+              rows={2}
+              placeholder="Notas internas sobre este ticket..."
+              className="w-full bg-amber-500/[0.03] border border-amber-500/10 rounded-xl px-4 py-3 text-sm text-amber-200 placeholder-amber-900/50 focus:outline-none focus:border-amber-500/30 resize-none transition"
+            />
+          </div>
+
+          {/* Canned responses */}
+          <div>
+            <p className="text-[10px] font-bold text-[#6B6480] uppercase tracking-wider mb-2">Respuestas rápidas</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { label: 'Recibido', text: 'Hemos recibido tu solicitud y estamos trabajando en ella.' },
+                { label: 'Escalado', text: 'Tu caso ha sido escalado al equipo técnico. Te contactaremos pronto.' },
+                { label: 'Info pedida', text: '¿Podrías enviarnos más detalles para poder ayudarte mejor?' },
+                { label: 'Resuelto', text: 'El problema ha sido resuelto. Si necesitas algo más, no dudes en contactarnos.' },
+              ].map(cr => (
+                <button key={cr.label} onClick={() => setText(cr.text)}
+                  className="text-[10px] font-bold px-2.5 py-1.5 rounded-lg bg-white/5 text-gray-400 border border-white/10 hover:bg-purple-500/10 hover:text-purple-400 hover:border-purple-500/20 transition">
+                  {cr.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       )}
     </div>

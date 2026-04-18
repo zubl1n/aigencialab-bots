@@ -11,7 +11,17 @@ import {
 import { createClient } from '@/lib/supabase/client';
 import { usePlan } from '@/hooks/usePlan';
 import { PLAN_CONFIG, PLAN_COLORS, formatLimit } from '@/lib/plans.config';
+import { PlanUsageBanner } from '@/components/shared/PlanUsageBanner';
 import Link from 'next/link';
+
+/** Inline mini sparkline SVG */
+function Sparkline({ data, color = '#7C3AED' }: { data: number[]; color?: string }) {
+  if (!data.length) return null;
+  const max = Math.max(...data, 1);
+  const w = 60, h = 20;
+  const pts = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - (v / max) * h}`).join(' ');
+  return <svg width={w} height={h} className="opacity-60"><polyline points={pts} fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" /></svg>;
+}
 
 interface DashboardData {
   client: any;
@@ -33,8 +43,8 @@ interface Notification {
   read: boolean;
 }
 
-function StatCard({ icon, label, value, sub, color = '#7C3AED', href, trend }: {
-  icon: React.ReactNode; label: string; value: string | number; sub?: string; color?: string; href?: string; trend?: number;
+function StatCard({ icon, label, value, sub, color = '#7C3AED', href, trend, sparkData }: {
+  icon: React.ReactNode; label: string; value: string | number; sub?: string; color?: string; href?: string; trend?: number; sparkData?: number[];
 }) {
   const content = (
     <div className="glass rounded-[24px] p-6 border border-white/5 hover:border-white/10 transition-all group cursor-default">
@@ -51,8 +61,13 @@ function StatCard({ icon, label, value, sub, color = '#7C3AED', href, trend }: {
           {href && <ChevronRight className="w-4 h-4 text-gray-700 group-hover:text-gray-500 transition" />}
         </div>
       </div>
-      <div className="text-2xl font-black text-white tracking-tight mb-0.5">{value}</div>
-      <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{label}</div>
+      <div className="flex items-end justify-between">
+        <div>
+          <div className="text-2xl font-black text-white tracking-tight mb-0.5">{value}</div>
+          <div className="text-[11px] font-bold text-gray-500 uppercase tracking-widest">{label}</div>
+        </div>
+        {sparkData && sparkData.length > 1 && <Sparkline data={sparkData} color={color} />}
+      </div>
       {sub && <div className="text-xs text-gray-600 mt-1">{sub}</div>}
     </div>
   );
@@ -154,6 +169,8 @@ export default function DashboardHomePage() {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-600">
+      {/* Plan Usage Banner */}
+      <PlanUsageBanner />
       {/* Header with logo */}
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-4">
