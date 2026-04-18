@@ -32,12 +32,12 @@ export function Navbar() {
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 shrink-0 group" aria-label="AIgenciaLab — Inicio">
-            <span className="bg-[#7C3AED] text-white rounded-md px-2 py-1 text-sm font-bold leading-none group-hover:bg-[#6D28D9] transition-colors">
-              AI
-            </span>
-            <span className="text-[#F1F0F5] font-bold text-lg">
-              genciaLab
-            </span>
+            <img
+              src="/logo-aigencialab.svg"
+              alt="AIgenciaLab"
+              className="h-9 w-auto"
+              style={{ filter: 'drop-shadow(0 0 8px rgba(124,58,237,0.3))' }}
+            />
           </Link>
 
           {/* Desktop navigation */}

@@ -59,17 +59,20 @@ export function AdminSidebar() {
       {/* Logo */}
       <div className={`p-4 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
         {!isCollapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-              <Bot className="text-primary-foreground w-5 h-5" />
-            </div>
-            <span className="font-bold text-foreground tracking-tight text-sm">AIgenciaLab</span>
-          </div>
+          <Link href="/admin" className="flex-1 overflow-hidden">
+            <img
+              src="/logo-aigencialab.svg"
+              alt="AIgenciaLab"
+              className="h-8 w-auto max-w-[160px] object-left"
+            />
+          </Link>
         )}
         {isCollapsed && (
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <Bot className="text-primary-foreground w-5 h-5" />
-          </div>
+          <Link href="/admin" title="AIgenciaLab Admin">
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#A555EC,#311B92)' }}>
+              <span className="text-white font-black text-xs leading-none">AI</span>
+            </div>
+          </Link>
         )}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}

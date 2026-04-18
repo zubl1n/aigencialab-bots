@@ -149,23 +149,23 @@ export function ClientSidebar() {
         <div className={`p-4 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
           {!isCollapsed ? (
             <div className="flex items-center gap-3 overflow-hidden">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 rounded-lg flex-shrink-0 overflow-hidden" style={{ background: 'linear-gradient(135deg,#A555EC,#311B92)' }}>
                 {client?.logo_url ? (
-                  <img src={client.logo_url} alt="Logo" className="w-full h-full object-cover rounded-lg" />
+                  <img src={client.logo_url} alt="Logo" className="w-full h-full object-cover" />
                 ) : (
-                  <Bot className="text-primary-foreground w-5 h-5" />
+                  <span className="w-full h-full flex items-center justify-center text-white font-black text-xs">AI</span>
                 )}
               </div>
               <div className="flex-1 min-w-0">
-                <h2 className="text-sm font-bold text-foreground truncate uppercase tracking-tighter">{client?.company_name || 'Mi Empresa'}</h2>
+                <img src="/logo-aigencialab.svg" alt="AIgenciaLab" className="h-5 w-auto mb-0.5" />
                 <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest leading-none">
                   {PLAN_CONFIG[clientPlan]?.name ?? 'Basic'}
                 </p>
               </div>
             </div>
           ) : (
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Bot className="text-primary-foreground w-5 h-5" />
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'linear-gradient(135deg,#A555EC,#311B92)' }}>
+              <span className="text-white font-black text-xs leading-none">AI</span>
             </div>
           )}
           <button

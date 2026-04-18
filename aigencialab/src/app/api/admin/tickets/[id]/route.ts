@@ -59,12 +59,14 @@ export async function PATCH(
 
   // BUG FIX B1: Insert admin reply into ticket_messages so client chat view shows it
   if (admin_response) {
-    void supabase.from('ticket_messages').insert({
-      ticket_id: id,
-      author_id: 'admin',
-      role:      'agent',
-      body:      admin_response,
+    const { error: msgErr } = await supabase.from('ticket_messages').insert({
+      ticket_id:  id,
+      author_id:  admin.id,      // real admin UUID for auditability
+      role:       'agent',
+      body:       admin_response,
+      created_at: new Date().toISOString(),
     });
+    if (msgErr) console.error('[B1] ticket_messages insert failed:', msgErr.message);
   }
 
   // Email notification to client
