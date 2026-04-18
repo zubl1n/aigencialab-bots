@@ -71,11 +71,13 @@ export async function POST(req: NextRequest) {
   const { data: ticket, error } = await supabase.from('tickets').insert({
     client_id: userId,
     subject:   body.subject.trim(),
+    message:   body.message.trim(),
     status:    'open',
     priority,
     unread_admin:  true,
     unread_client: false,
   }).select('id').single()
+
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 
