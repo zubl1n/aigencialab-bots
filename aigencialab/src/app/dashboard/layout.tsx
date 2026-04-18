@@ -1,6 +1,7 @@
 export const dynamic = 'force-dynamic'
 import { ClientSidebar } from '@/components/dashboard/ClientSidebar'
 import NotificationBell from '@/components/dashboard/NotificationBell'
+import { PlanUsageBanner } from '@/components/shared/PlanUsageBanner'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import type { Metadata } from 'next'
@@ -28,6 +29,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
         </header>
         <main className="flex-1 p-4 lg:p-8 overflow-y-auto">
           <div className="max-w-7xl mx-auto pt-14 lg:pt-0">
+            <PlanUsageBanner />
             {children}
           </div>
         </main>
@@ -35,4 +37,3 @@ export default async function DashboardLayout({ children }: { children: React.Re
     </div>
   )
 }
-

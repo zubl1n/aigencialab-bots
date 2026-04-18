@@ -1,0 +1,30 @@
+<svg width="600" height="150" viewBox="0 0 600 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ICON -->
+  <g transform="translate(15, 15) scale(0.234375)">
+    <rect x="128" y="128" width="256" height="256" rx="64" fill="url(#botBase)"/>
+    <rect x="128" y="128" width="256" height="256" rx="64" stroke="url(#botStroke)" stroke-width="8"/>
+    <rect x="160" y="170" width="192" height="150" rx="40" fill="white" fill-opacity="0.1"/>
+    <rect x="160" y="170" width="192" height="150" rx="40" stroke="white" stroke-opacity="0.2" stroke-width="4"/>
+    <path d="M210 230 Q210 210 230 210 Q250 210 250 230 Q250 250 230 250 Q210 250 210 230 Z" fill="#00E5FF"/>
+    <path d="M262 230 Q262 210 282 210 Q302 210 302 230 Q302 250 282 250 Q262 250 262 230 Z" fill="#00E5FF"/>
+    <path d="M210 270 Q256 295 302 270" stroke="#00E5FF" stroke-width="8" stroke-linecap="round" fill="none"/>
+    <path d="M256 128 L256 80" stroke="url(#botBase)" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="256" cy="70" r="14" fill="#00E5FF"/>
+    <path d="M128 256 L80 256" stroke="url(#botBase)" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="70" cy="256" r="14" fill="#00E5FF"/>
+    <path d="M384 256 L432 256" stroke="url(#botBase)" stroke-width="12" stroke-linecap="round"/>
+    <circle cx="442" cy="256" r="14" fill="#00E5FF"/>
+  </g>
+  <!-- TEXT -->
+  <text x="155" y="100" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="70" fill="#FFFFFF">AI<tspan font-weight="600" fill="#E2E8F0">genciaLab</tspan></text>
+  <defs>
+    <linearGradient id="botBase" x1="128" y1="128" x2="384" y2="384" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#A555EC"/>
+      <stop offset="100%" stop-color="#5500FF"/>
+    </linearGradient>
+    <linearGradient id="botStroke" x1="128" y1="128" x2="384" y2="384" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#D9A8FF"/>
+      <stop offset="100%" stop-color="#4A00E0"/>
+    </linearGradient>
+  </defs>
+</svg>

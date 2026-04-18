@@ -1,0 +1,20 @@
+<svg width="600" height="150" viewBox="0 0 600 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g transform="translate(15, 15) scale(0.234375)">
+    <rect x="100" y="100" width="312" height="312" rx="76" fill="url(#mainBase)"/>
+    <text x="140" y="300" font-family="monospace" font-weight="900" font-size="140" fill="#00E5FF">[</text><text x="320" y="300" font-family="monospace" font-weight="900" font-size="140" fill="#00E5FF">]</text><path d="M230 180 L280 180 L256 256 L280 330 L230 330 Z" fill="white"/>
+  </g>
+  <text x="155" y="100" font-family="'Inter', system-ui, -apple-system, sans-serif" font-weight="900" font-size="70" fill="#FFFFFF">AI<tspan font-weight="400" fill="#E2E8F0">genciaLab</tspan></text>
+  <defs>
+    
+  <radialGradient id="mainGlow" cx="0.5" cy="0.5" r="0.5">
+    <stop offset="0%" stop-color="#9C27B0"/>
+    <stop offset="100%" stop-color="#4A148C" stop-opacity="0"/>
+  </radialGradient>
+  <linearGradient id="mainBase" x1="100" y1="100" x2="412" y2="412" gradientUnits="userSpaceOnUse">
+    <stop offset="0%" stop-color="#A555EC"/>
+    <stop offset="100%" stop-color="#311B92"/>
+  </linearGradient>
+
+    
+  </defs>
+</svg>

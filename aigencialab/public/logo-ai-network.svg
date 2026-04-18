@@ -1,0 +1,29 @@
+<svg width="600" height="150" viewBox="0 0 600 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ICON -->
+  <g transform="translate(15, 15) scale(0.234375)">
+    <rect x="100" y="100" width="312" height="312" rx="76" fill="url(#netBase)"/>
+    <path d="M160 160 L220 220 L300 180 L350 250 L280 320 L200 280 Z" stroke="white" stroke-opacity="0.9" stroke-width="6" stroke-linejoin="round" fill="none"/>
+    <path d="M220 220 L256 120" stroke="white" stroke-opacity="0.4" stroke-width="4"/>
+    <path d="M300 180 L380 200" stroke="white" stroke-opacity="0.4" stroke-width="4"/>
+    <path d="M350 250 L390 350" stroke="white" stroke-opacity="0.4" stroke-width="4"/>
+    <path d="M280 320 L240 380" stroke="white" stroke-opacity="0.4" stroke-width="4"/>
+    <path d="M200 280 L120 300" stroke="white" stroke-opacity="0.4" stroke-width="4"/>
+    <circle cx="160" cy="160" r="14" fill="#00E5FF"/>
+    <circle cx="220" cy="220" r="18" fill="white"/>
+    <circle cx="300" cy="180" r="16" fill="#00E5FF"/>
+    <circle cx="350" cy="250" r="22" fill="white"/>
+    <circle cx="280" cy="320" r="18" fill="#00E5FF"/>
+    <circle cx="200" cy="280" r="16" fill="white"/>
+    <line x1="220" y1="220" x2="280" y2="320" stroke="white" stroke-opacity="0.6" stroke-width="4"/>
+    <line x1="300" y1="180" x2="200" y2="280" stroke="white" stroke-opacity="0.6" stroke-width="4"/>
+  </g>
+  <!-- TEXT -->
+  <text x="155" y="100" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="70" fill="#FFFFFF">AI<tspan font-weight="600" fill="#E2E8F0">genciaLab</tspan></text>
+  <defs>
+    <linearGradient id="netBase" x1="100" y1="100" x2="412" y2="412" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#B24CFF"/>
+      <stop offset="50%" stop-color="#7B1FA2"/>
+      <stop offset="100%" stop-color="#311B92"/>
+    </linearGradient>
+  </defs>
+</svg>

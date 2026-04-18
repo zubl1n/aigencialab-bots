@@ -4,13 +4,16 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Home,
+  LayoutDashboard,
   Bot,
   MessageSquare,
-  Target,
-  Download,
-  CreditCard,
-  HelpCircle,
+  UserPlus,
+  Users,
+  BarChart3,
+  Plug,
+  LifeBuoy,
+  Users2,
+  FileBarChart,
   Settings,
   LogOut,
   Menu,
@@ -23,32 +26,36 @@ import {
   Clock,
   Zap,
   AlertTriangle,
-  TicketIcon,
   Lock,
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { Client, BotConfig } from '@/types/client';
+import { normalizePlanId, planAtLeast, PLAN_CONFIG, type PlanId } from '@/lib/plans.config';
 
-// requiresPlan: minimum plan needed to access this nav item
-const navItems = [
-  { name: 'Inicio',           href: '/dashboard',              icon: Home },
-  { name: 'Mi bot',           href: '/dashboard/bot',          icon: Bot,         showStatus: true },
-  { name: 'Conversaciones',   href: '/dashboard/conversations', icon: MessageSquare },
-  { name: 'Leads capturados', href: '/dashboard/leads',        icon: Target },
-  { name: 'Instalación',     href: '/dashboard/installation', icon: Download },
-  { name: 'Connect',          href: '/dashboard/connect',      icon: Zap,         requiresPlan: 'starter' },
-  { name: 'Facturación',     href: '/dashboard/billing',      icon: CreditCard },
-  { name: 'Tickets',          href: '/dashboard/tickets',      icon: TicketIcon,  showUnread: true },
-  { name: 'Soporte',          href: '/dashboard/support',      icon: HelpCircle },
-  { name: 'Configuración',   href: '/dashboard/settings',     icon: Settings },
-];
-
-const PLAN_ORDER = ['basic', 'starter', 'pro', 'enterprise'];
-function planHasAccess(clientPlan: string, required: string): boolean {
-  const ci = PLAN_ORDER.indexOf((clientPlan ?? '').toLowerCase());
-  const ri = PLAN_ORDER.indexOf(required.toLowerCase());
-  return ci >= 0 && ri >= 0 && ci >= ri;
+/* ── Nav configuration — matches Prompt Maestro v3.0 spec ────────── */
+interface NavItem {
+  name: string;
+  href: string;
+  icon: React.ElementType;
+  showStatus?: boolean;   // show bot status indicator
+  showUnread?: boolean;   // show unread badge count
+  requiresPlan?: string;  // minimum plan required
+  badge?: string;         // plan badge text (e.g., "Pro")
 }
+
+const navItems: NavItem[] = [
+  { name: 'Inicio',          href: '/dashboard',               icon: LayoutDashboard },
+  { name: 'Mi Agente IA',    href: '/dashboard/bot',           icon: Bot,             showStatus: true },
+  { name: 'Conversaciones',  href: '/dashboard/conversations', icon: MessageSquare },
+  { name: 'Leads',           href: '/dashboard/leads',         icon: UserPlus },
+  { name: 'CRM',             href: '/dashboard/crm',           icon: Users,           requiresPlan: 'pro',  badge: 'Pro' },
+  { name: 'Analytics',       href: '/dashboard/analytics',     icon: BarChart3 },
+  { name: 'Integraciones',   href: '/dashboard/integrations',  icon: Plug },
+  { name: 'Tickets',         href: '/dashboard/tickets',       icon: LifeBuoy,        showUnread: true },
+  { name: 'Equipo',          href: '/dashboard/team',          icon: Users2,          requiresPlan: 'pro',  badge: 'Pro' },
+  { name: 'Reportes',        href: '/dashboard/reports',       icon: FileBarChart,    requiresPlan: 'pro',  badge: 'Pro' },
+  { name: 'Ajustes',         href: '/dashboard/settings',      icon: Settings },
+];
 
 export function ClientSidebar() {
   const pathname = usePathname();
@@ -61,7 +68,7 @@ export function ClientSidebar() {
   const [trialExpired, setTrialExpired]   = useState(false);
   const [trialTotalDays, setTrialTotalDays] = useState(14);
   const [unreadTickets, setUnreadTickets] = useState(0);
-  const [clientPlan, setClientPlan]       = useState('basic');
+  const [clientPlan, setClientPlan]       = useState<PlanId>('basic');
 
   const supabase = createClient();
 
@@ -87,7 +94,7 @@ export function ClientSidebar() {
 
       // Set client plan from subscriptions or clients table
       const plan = subRes.data?.plan ?? (clientRes.data as any)?.plan ?? 'basic';
-      setClientPlan((plan as string).toLowerCase());
+      setClientPlan(normalizePlanId(plan));
 
       const trialEndStr = subRes.data?.trial_ends_at ?? (clientRes.data as any)?.trial_ends_at;
       if (trialEndStr) {
@@ -151,7 +158,9 @@ export function ClientSidebar() {
               </div>
               <div className="flex-1 min-w-0">
                 <h2 className="text-sm font-bold text-foreground truncate uppercase tracking-tighter">{client?.company_name || 'Mi Empresa'}</h2>
-                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest leading-none">{client?.plan || 'Starter'}</p>
+                <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-widest leading-none">
+                  {PLAN_CONFIG[clientPlan]?.name ?? 'Basic'}
+                </p>
               </div>
             </div>
           ) : (
@@ -167,7 +176,7 @@ export function ClientSidebar() {
           </button>
         </div>
 
-        {/* ─── FASE 2: Trial Badge ─────────────────────────────────────── */}
+        {/* ─── Trial Badge ───────────────────────────────────────── */}
         {!isCollapsed && (trialDaysLeft !== null || trialExpired) && (
           <div className="mx-2 mb-2">
             {trialExpired ? (
@@ -217,16 +226,17 @@ export function ClientSidebar() {
         {/* Navigation */}
         <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
-            const isActive = pathname === item.href;
-            const isLocked = !!(item.requiresPlan && !planHasAccess(clientPlan, item.requiresPlan));
+            const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname?.startsWith(item.href));
+            const isLocked = !!(item.requiresPlan && !planAtLeast(clientPlan, item.requiresPlan));
 
             if (isLocked) {
               return (
-                <div
+                <Link
                   key={item.href}
-                  title={`Requiere plan ${item.requiresPlan?.charAt(0).toUpperCase()}${item.requiresPlan?.slice(1)} o superior`}
+                  href="/dashboard/billing"
+                  title={`Requiere plan ${item.badge ?? item.requiresPlan} o superior`}
                   className={`
-                    flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg opacity-40 cursor-not-allowed group relative
+                    flex items-center gap-3 px-3 py-2 text-sm font-medium rounded-lg opacity-40 hover:opacity-60 transition-opacity group relative
                     ${isCollapsed ? 'justify-center' : ''}
                     text-muted-foreground
                   `}
@@ -235,15 +245,20 @@ export function ClientSidebar() {
                   {!isCollapsed && (
                     <>
                       <span className="flex-1">{item.name}</span>
+                      {item.badge && (
+                        <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                          {item.badge}
+                        </span>
+                      )}
                       <Lock size={12} className="opacity-60" />
                     </>
                   )}
                   {isCollapsed && (
                     <div className="absolute left-14 invisible group-hover:visible bg-foreground text-background text-xs px-2 py-1 rounded whitespace-nowrap z-[100]">
-                      {item.name} 🔒 Plan {item.requiresPlan}
+                      {item.name} 🔒 Plan {item.badge ?? item.requiresPlan}
                     </div>
                   )}
-                </div>
+                </Link>
               );
             }
 
