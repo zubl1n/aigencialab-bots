@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AigenciaLab - Brand Kit</title>
+  <style>
+    body {
+      background-color: #0B0F19;
+      color: #FFF;
+      font-family: system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      margin-bottom: 40px;
+      background: linear-gradient(90deg, #A555EC, #00E5FF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 40px;
+      width: 100%;
+      max-width: 800px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .card img {
+      width: 100%;
+      max-width: 600px;
+      height: auto;
+    }
+    .download-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 24px;
+      background: #5500FF;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      font-weight: bold;
+    }
+    .download-btn:hover {
+      background: #A555EC;
+    }
+  </style>
+</head>
+<body>
+  <h1>AigenciaLab - Nuevos Logos SVG</h1>
+  <p>Formatos vectoriales listos para escalar a cualquier tamaño sin perder calidad.</p>
+  
+  <div class="grid">
+    <div class="card">
+      <h2>Opcion 1: Mascot (El Agente amigable)</h2>
+      <img src="./logo-ai-mascot.svg" alt="Mascot Logo">
+      <br>
+      <a href="./logo-ai-mascot.svg" download class="download-btn">Descargar SVG</a>
+    </div>
+
+    <div class="card">
+      <h2>Opcion 2: Network Brain (Cerebro IA)</h2>
+      <img src="./logo-ai-network.svg" alt="Network Logo">
+      <br>
+      <a href="./logo-ai-network.svg" download class="download-btn">Descargar SVG</a>
+    </div>
+
+    <div class="card">
+      <h2>Opcion 3: AI Flask (Laboratorio de IA)</h2>
+      <img src="./logo-ai-flask.svg" alt="Flask Logo">
+      <br>
+      <a href="./logo-ai-flask.svg" download class="download-btn">Descargar SVG</a>
+    </div>
+  </div>
+</body>
+</html>

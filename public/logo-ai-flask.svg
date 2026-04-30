@@ -1,0 +1,27 @@
+<svg width="600" height="150" viewBox="0 0 600 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- ICON -->
+  <g transform="translate(15, 15) scale(0.234375)">
+    <rect x="96" y="96" width="320" height="320" rx="80" fill="url(#flaskBase)"/>
+    <path d="M226 150 L286 150 L286 210 L350 320 C364 344 346 376 316 376 L196 376 C166 376 148 344 162 320 L226 210 L226 150 Z" fill="white" fill-opacity="0.1" stroke="white" stroke-width="8" stroke-linejoin="round"/>
+    <path d="M174 300 Q216 280 256 300 Q296 320 338 300 L345 312 C355 330 342 356 316 356 L196 356 C170 356 157 330 167 312 L174 300 Z" fill="url(#flaskLiquid)"/>
+    <circle cx="220" cy="330" r="10" fill="#00E5FF"/>
+    <circle cx="280" cy="340" r="14" fill="#FFF"/>
+    <circle cx="256" cy="280" r="8" fill="#00E5FF"/>
+    <circle cx="240" cy="240" r="6" fill="#FFF"/>
+    <circle cx="270" cy="210" r="10" fill="#00E5FF"/>
+    <path d="M140 180 L145 165 L160 160 L145 155 L140 140 L135 155 L120 160 L135 165 Z" fill="#00E5FF"/>
+    <path d="M370 200 L373 191 L382 188 L373 185 L370 176 L367 185 L358 188 L367 191 Z" fill="white"/>
+  </g>
+  <!-- TEXT -->
+  <text x="155" y="100" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="70" fill="#FFFFFF">AI<tspan font-weight="600" fill="#E2E8F0">genciaLab</tspan></text>
+  <defs>
+    <linearGradient id="flaskBase" x1="96" y1="96" x2="416" y2="416" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8E24AA"/>
+      <stop offset="100%" stop-color="#1A237E"/>
+    </linearGradient>
+    <linearGradient id="flaskLiquid" x1="170" y1="290" x2="340" y2="356" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00E5FF"/>
+      <stop offset="100%" stop-color="#D500F9"/>
+    </linearGradient>
+  </defs>
+</svg>

@@ -1,0 +1,1 @@
+const cp = require('child_process'); cp.execSync('npx vercel env add MP_ACCESS_TOKEN production -y', { input: 'APP_USR-3223728455330165-041412-a4064fa5c1ef4d3083ab085a500aceb9-3334780714', stdio: ['pipe', 'inherit', 'inherit'] });
