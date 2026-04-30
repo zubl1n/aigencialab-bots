@@ -23,7 +23,7 @@ const POSTS: Record<string, {
       '## Estrategia 3: Seguimiento automático post-conversación',
       'El 80% de las ventas requieren al menos 5 touchpoints. Un agente IA puede mantener el contacto de manera personalizada durante semanas, construyendo confianza hasta que el cliente esté listo.',
       '## Resultado esperado',
-      'Empresas como MaxFPS.cl implementaron estas 3 estrategias y lograron 1.200 conversaciones automatizadas al mes con una tasa de conversión del 35%. El ROI fue positivo desde el primer mes.',
+      'Empresas que implementaron estas 3 estrategias lograron más de 1.000 conversaciones automatizadas al mes con una tasa de conversión del 35%. El ROI fue positivo desde el primer mes.',
     ],
   },
   'chatbot-vs-agente-ia': {
@@ -42,22 +42,7 @@ const POSTS: Record<string, {
       'Empresas que migraron de chatbots a agentes IA reportan un 60% de aumento en satisfacción del cliente y un 40% más de leads calificados por conversación.',
     ],
   },
-  'caso-maxfps-1200-consultas': {
-    emoji: '🎮',
-    title: 'Caso de uso: Cómo MaxFPS.cl automatizó 1.200 consultas al mes',
-    category: 'Casos de Uso', date: 'Enero 2026', readTime: '6 min',
-    content: [
-      'MaxFPS.cl es una de las tiendas de hardware gaming más reconocidas en Chile. Con un catálogo de más de 2.000 productos y una comunidad activa, enfrentaban un desafío crítico: demasiadas consultas, demasiado pocos recursos humanos.',
-      '## El problema',
-      'El equipo recibía más de 1.200 mensajes al mes por WhatsApp, email e Instagram, 70% de los cuales eran preguntas repetitivas: ¿Tienen stock de la RTX 4090? ¿Cuánto tarda el envío a Concepción? ¿Me conviene más el i7 o el Ryzen 7 para gaming?',
-      '## La solución implementada',
-      'En 72 horas, AIgenciaLab instaló un agente conversacional entrenado con el catálogo completo de MaxFPS.cl, políticas de envío, garantías y las 50 preguntas más frecuentes documentadas por el equipo.',
-      '## Resultados al primer mes',
-      'El agente comenzó a responder automáticamente el 78% de las consultas. El 22% restante se escalaba al equipo humano con contexto completo de la conversación. Los tiempos de respuesta pasaron de horas a segundos.',
-      '## Impacto en ventas',
-      'El 35% de las conversaciones automatizadas culminó en una compra directa o una visita a la tienda. El agente también identificó patrones: los clientes que preguntaban por RTX tenían 3 veces más probabilidades de convertir si recibían respuesta en menos de 1 minuto.',
-    ],
-  },
+
   'implementar-ia-sin-codigo': {
     emoji: '⚙️',
     title: 'Guía completa: Implementar IA conversacional sin código',

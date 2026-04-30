@@ -21,10 +21,10 @@ const POSTS = [
     category: 'IA', readTime: '4 min', date: 'Febrero 2026', emoji: '🤖',
   },
   {
-    slug: 'caso-maxfps-1200-consultas',
-    title: 'Caso de uso: Cómo MaxFPS.cl automatizó 1.200 consultas al mes',
-    excerpt: 'La tienda gamer chilena eliminó el 70% de consultas repetitivas con un agente IA. Te mostramos cómo lo hicieron y qué resultados obtuvieron.',
-    category: 'Casos de Uso', readTime: '6 min', date: 'Enero 2026', emoji: '🎮',
+    slug: 'costo-no-tener-ia-2026',
+    title: 'Cuánto pierde tu empresa sin un agente IA en 2026',
+    excerpt: 'Cálculo real del costo de no responder a tiempo: leads perdidos, clientes que se van a la competencia y el impacto en tu revenue mensual.',
+    category: 'Ventas', readTime: '6 min', date: 'Abril 2026', emoji: '💸',
   },
   {
     slug: 'implementar-ia-sin-codigo',
@@ -37,12 +37,6 @@ const POSTS = [
     title: '5 métricas que debes medir en tu agente IA para optimizar resultados',
     excerpt: 'Tasa de resolución, tiempo de conversación, leads capturados, CSAT y retención. Te explicamos cómo medir y mejorar cada una.',
     category: 'IA', readTime: '5 min', date: 'Noviembre 2025', emoji: '📊',
-  },
-  {
-    slug: 'costo-no-tener-ia-2026',
-    title: 'Cuánto pierde tu empresa sin un agente IA en 2026',
-    excerpt: 'Cálculo real del costo de no responder a tiempo: leads perdidos, clientes que se van a la competencia y el impacto en tu revenue mensual.',
-    category: 'Ventas', readTime: '6 min', date: 'Abril 2026', emoji: '💸',
   },
   {
     slug: 'automatizacion-ia-ecommerce-chile',

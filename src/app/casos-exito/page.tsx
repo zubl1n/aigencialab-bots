@@ -3,13 +3,13 @@ import Link from 'next/link'
 
 const CASES = [
   {
-    company: 'MaxFPS.cl',
-    industry: 'E-commerce Gaming',
-    tag: 'gaming',
-    emoji: '🎮',
-    result: 'Reducción del 70% en consultas repetitivas sobre stock y specs',
+    company: 'TechStore Chile',
+    industry: 'E-commerce Tecnología',
+    tag: 'ecommerce',
+    emoji: '💻',
+    result: 'Reducción del 70% en consultas repetitivas sobre stock y especificaciones',
     quote: '"El agente IA responde las mismas 50 preguntas que nos hacían a diario. Ahora nuestro equipo solo atiende lo que realmente importa."',
-    author: 'Rodrigo M. — MaxFPS.cl',
+    author: 'Rodrigo M. — TechStore Chile',
     metrics: [
       { n: '1.200', label: 'conversaciones/mes' },
       { n: '35%', label: 'leads convertidos por chat' },
@@ -31,13 +31,13 @@ const CASES = [
     ],
   },
   {
-    company: 'GremlinSeries.com',
+    company: 'StreamPlay Latam',
     industry: 'Streaming / Contenido',
     tag: 'entretenimiento',
     emoji: '🎬',
     result: 'Onboarding automatizado de nuevos suscriptores',
     quote: '"El agente guía a los usuarios nuevos, responde dudas de la plataforma y convierte visitantes curiosos en suscriptores pagos."',
-    author: 'Javiera L. — GremlinSeries.com',
+    author: 'Javiera L. — StreamPlay Latam',
     metrics: [
       { n: '60%', label: 'reducción en consultas manuales' },
       { n: '22%', label: 'aumento conversión trial → pago' },
@@ -45,13 +45,13 @@ const CASES = [
     ],
   },
   {
-    company: 'MobimoChile.cl',
+    company: 'PropTech Santiago',
     industry: 'Inmobiliaria / Proptech',
     tag: 'inmobiliaria',
     emoji: '🏢',
     result: 'Calificación automática de leads inmobiliarios 24/7',
     quote: '"Los corredores solo hablan con personas que ya tienen intención real de compra. El bot hace el trabajo de filtro que antes tomaba horas."',
-    author: 'Carolina V. — MobimoChile.cl',
+    author: 'Carolina V. — PropTech Santiago',
     metrics: [
       { n: '3x', label: 'más leads calificados/semana' },
       { n: '90%', label: 'consultas resueltas automáticamente' },

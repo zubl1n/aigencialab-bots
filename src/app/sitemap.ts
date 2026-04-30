@@ -5,7 +5,6 @@ const BASE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aigencialab.cl'
 const BLOG_SLUGS = [
   'triplicar-ventas-con-ia',
   'chatbot-vs-agente-ia',
-  'caso-maxfps-1200-consultas',
   'implementar-ia-sin-codigo',
   'metricas-agente-ia',
   'costo-no-tener-ia-2026',

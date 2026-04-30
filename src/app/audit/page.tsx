@@ -138,8 +138,8 @@ export default function AuditPage() {
             {/* Testimonials */}
             <div className="space-y-4">
               {[
-                { q: '"Recibimos 23 leads calificados el primer mes gracias a la auditoría"', a: '— Rodrigo M., MaxFPS.cl' },
-                { q: '"En 24 horas tuvimos un plan de acción claro. Implementamos en una semana."', a: '— Carolina V., MobimoChile.cl' },
+                { q: '"Recibimos 23 leads calificados el primer mes gracias a la auditoría"', a: '— Rodrigo M., TechStore Chile' },
+                { q: '"En 24 horas tuvimos un plan de acción claro. Implementamos en una semana."', a: '— Carolina V., PropTech Santiago' },
               ].map(t => (
                 <div key={t.a} className="bg-[#16161E] border border-white/8 rounded-xl p-5">
                   <p className="text-[#F1F0F5] italic mb-2">{t.q}</p>
